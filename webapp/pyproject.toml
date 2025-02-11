@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "brico"
+version = "0.1.0"
+description = ""
+authors = ["Nicolas Oudard <nicolas@oudard.org>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "^5.1.4"
+django-allauth = "^65.4.0"
+requests = "^2.32.3"
+environs = "^14.1.0"
+honcho = "^2.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+ruff = "^0.9.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+]
+ignore = []
+
+[tool.ruff.isort]
+known-first-party = ["brico"]
