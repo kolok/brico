@@ -1,0 +1,9 @@
+.env
+.venv
+__pycache__
+node_modules
+*.bak
+.parcel-cache
+static/compiled
+staticfiles
+pgdata

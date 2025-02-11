@@ -1,0 +1,67 @@
+{
+  "scripts": {
+    "build": "parcel build",
+    "eslint": "eslint . --fix",
+    "lint-check": "prettier --check static/to_compile",
+    "lint": "prettier static/to_compile --write",
+    "watch": "parcel watch"
+  },
+  "source": [
+    "static/to_compile/entrypoints/main.ts",
+    "static/to_compile/entrypoints/main.css"
+  ],
+  "targets": {
+    "default": {
+      "distDir": "./static/compiled"
+    }
+  },
+  "browserslist": [
+    "defaults",
+    "iOS 14"
+  ],
+  "@parcel/transformer-css": {
+    "errorRecovery": true
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "printWidth": 88,
+    "semi": false
+  },
+  "dependencies": {
+    "eslint-config-prettier": "^10.0.1",
+    "tailwindcss": "^3.4.17"
+  },
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^7.0.2",
+    "@parcel/optimizer-svgo": "^2.13.3",
+    "@parcel/transformer-inline-string": "^2.13.3",
+    "@playwright/test": "^1.49.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@types/jest": "^29.5.13",
+    "@types/leaflet": "^1.9.16",
+    "@types/lodash": "^4.17.15",
+    "@types/node": "^22.10.7",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "buffer": "^6.0.3",
+    "eslint": "^9.20.1",
+    "eslint-config-love": "^117.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^17.15.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-promise": "^7.2.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "parcel": "^2.13.3",
+    "postcss": "^8.4.47",
+    "postcss-nesting": "^13.0.1",
+    "prettier": "^3.4.2",
+    "svgo": "^3.3.2",
+    "tailwindcss-animate": "^1.0.7",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "optionalDependencies": {
+    "@parcel/watcher-linux-x64-glibc": "^2.5.1"
+  }
+}
