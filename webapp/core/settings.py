@@ -45,8 +45,14 @@ INSTALLED_APPS = [
     # django-allauth
     "allauth",
     "allauth.account",
+    "allauth.headless",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.github",
+    "corsheaders",
+    'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +65,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # Configuration django-allauth
@@ -76,20 +83,40 @@ SOCIALACCOUNT_PROVIDERS = {
             "client_id": env.str("GITHUB_CLIENT_ID"),
             "secret": env.str("GITHUB_SECRET"),
             "key": "",
-        }
+        },
+        "PROVIDER_ACCOUNT_UNIQUE": False  # Permet d'avoir un compte email même si l'email est utilisé par GitHub
     }
 }
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://10.0.2.2:8000",  # Pour l'émulateur Android
+]
+
 # Paramètres supplémentaires allauth
 LOGIN_REDIRECT_URL = "/"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
-ACCOUNT_LOGIN_METHOD = {"email"}
+# Supprimer ces paramètres dépréciés
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
+# ACCOUNT_LOGIN_METHOD = {"email"}
+
+# Nouveau paramètre recommandé
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'email2*', 'password1*', 'password2*']
+ACCOUNT_LOGIN_METHODS = ['email']  # Correction du nom du paramètre (METHOD -> METHODS)
+
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 ACCOUNT_SIGNUP_FORM_HONEYPOT_FIELD = "phone"
 ACCOUNT_EMAIL_VERIFICATION = "none"  #'mandatory' -> nécessite une config email
 
+# Ajouter cette ligne pour la déconnexion directe
+ACCOUNT_LOGOUT_ON_GET = True
+
+# Paramètres pour permettre des comptes multiples avec le même email
+# SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+# SOCIALACCOUNT_AUTO_SIGNUP = False
+# SOCIALACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_UNIQUE_EMAIL = False  # Permet d'avoir plusieurs comptes avec le même email
 
 ROOT_URLCONF = "core.urls"
 
@@ -176,3 +203,16 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Ajoutez ces configurations pour REST framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+# Configuration pour dj-rest-auth
+REST_AUTH = {
+    'USE_JWT': False,
+    'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',
+}

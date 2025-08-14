@@ -1,6 +1,17 @@
 # Brico
 
+## Prerequis
+
+- installation de [UV](https://docs.astral.sh/uv/getting-started/installation/)
+
 ## Installation
+
+Si première utilisation :
+
+```sh
+make init-dev
+make run
+```
 
 Copie `.env.template` to `.env` and fill it with your own values.
 
@@ -11,14 +22,13 @@ cp .env.template .env
 Install dependencies.
 
 ```sh
-pip install poetry
-poetry install
+make sync
 ```
 
 Run migrations.
 
 ```sh
-python manage.py migrate
+make migrate
 ```
 
 ## Manage translations
@@ -40,5 +50,5 @@ Edit the translation file `locale/fr/LC_MESSAGES/django.po`
 Run the project.
 
 ```sh
-honcho start -f Procfile.dev
+make run
 ```

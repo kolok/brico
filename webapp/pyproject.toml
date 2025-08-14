@@ -1,26 +1,32 @@
-[tool.poetry]
+[project]
 name = "brico"
 version = "0.1.0"
 description = ""
-authors = ["Nicolas Oudard <nicolas@oudard.org>"]
+authors = [
+    { name = "Nicolas Oudard", email = "nicolas@oudard.org" }
+]
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.1.4",
+    "django-allauth>=65.4.0",
+    "requests>=2.32.3",
+    "environs>=14.1.0",
+    "honcho>=2.0.0",
+    "django-cors-headers>=4.7.0",
+    "dj-rest-auth>=5.0.2",
+    "djangorestframework>=3.14.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-django = "^5.1.4"
-django-allauth = "^65.4.0"
-requests = "^2.32.3"
-environs = "^14.1.0"
-honcho = "^2.0.0"
-
-
-[tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
-ruff = "^0.9.5"
+[project.optional-dependencies]
+dev = [
+    "black>=25.1.0",
+    "ruff>=0.9.5",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.black]
 line-length = 88
