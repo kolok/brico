@@ -8,14 +8,15 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "django>=5.1.4",
+    "dj-database-url>=3.0.1",
     "django-allauth>=65.4.0",
-    "requests>=2.32.3",
+    "django-cors-headers>=4.7.0",
+    "django>=5.1.4",
+    "djangorestframework>=3.14.0",
     "environs>=14.1.0",
     "honcho>=2.0.0",
-    "django-cors-headers>=4.7.0",
-    "dj-rest-auth>=5.0.2",
-    "djangorestframework>=3.14.0",
+    "requests>=2.32.3",
+    "psycopg2-binary>=2.9.10",
 ]
 
 [project.optional-dependencies]
