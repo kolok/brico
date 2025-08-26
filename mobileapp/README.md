@@ -13,8 +13,9 @@ flutter pub get
 
 ## Lancement de l'application
 
+lancer un emulateur depuis 
 ```sh
-
+flutter run
 ````
 
 ## mise à jour des dépendances

@@ -5,6 +5,7 @@ class AuthService {
   final String baseUrl = 'http://10.0.2.2:8000'; // Pour l'émulateur Android
   
   Future<Map<String, dynamic>> signUp({
+    required String username,
     required String email,
     required String password1,
     required String password2,
@@ -13,6 +14,7 @@ class AuthService {
       Uri.parse('$baseUrl/api/auth/registration/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
+        'username': username,
         'email': email,
         'password1': password1,
         'password2': password2,

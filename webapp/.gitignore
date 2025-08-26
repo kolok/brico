@@ -8,3 +8,4 @@ node_modules
 static/compiled
 staticfiles
 pgdata
+db.sqlite3

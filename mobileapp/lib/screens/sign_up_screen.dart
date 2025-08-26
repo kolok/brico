@@ -9,6 +9,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _password1Controller = TextEditingController();
   final _password2Controller = TextEditingController();
   final _authService = AuthService();
@@ -17,6 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         final response = await _authService.signUp(
+          username: _usernameController.text,
           email: _emailController.text,
           password1: _password1Controller.text,
           password2: _password2Controller.text,
@@ -48,6 +50,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
           key: _formKey,
           child: Column(
             children: [
+              TextFormField(
+                controller: _usernameController,
+                decoration: InputDecoration(labelText: 'Username'),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Veuillez entrer votre identifiant';
+                  }
+                  return null;
+                },
+              ),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(labelText: 'Email'),
