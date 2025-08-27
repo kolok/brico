@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "allauth.headless",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.github",
+    "dj_rest_auth.registration",
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
@@ -208,3 +209,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+# Configuration de dj-rest-auth
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  # ou 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # Désactive la vérification par email pour simplifier

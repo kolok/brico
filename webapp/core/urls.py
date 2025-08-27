@@ -24,6 +24,7 @@ urlpatterns = [
     # Auth interface
     path('accounts/', include('allauth.urls')),
     # Include the API endpoints
-    path("_allauth/", include("allauth.headless.urls")),
+    path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path("", RedirectView.as_view(url="brico/")),
 ]

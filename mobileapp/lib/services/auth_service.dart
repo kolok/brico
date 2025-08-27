@@ -47,4 +47,15 @@ class AuthService {
       throw Exception('Erreur de connexion: ${response.body}');
     }
   }
+
+  Future<void> signOut() async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/logout/'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Erreur lors de la déconnexion: ${response.body}');
+    }
+  }
 } 
