@@ -1,0 +1,33 @@
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "uv"
+    directory: "/webapp/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00" # UTC
+  - package-ecosystem: "npm"
+    directory: "/webapp/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00" # UTC
+    groups:
+      parcel:
+        patterns:
+          - "@parcel/*"
+          - "parcel"
+      jest:
+        patterns:
+          - "*jest*"
+      eslint:
+        patterns:
+          - "*eslint*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00" # UTC
