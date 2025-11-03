@@ -1,0 +1,59 @@
+{
+  "scripts": {
+    "build": "parcel build",
+    "lint": "eslint . --fix",
+    "lint-check": "prettier --check static/to_compile",
+    "watch": "parcel watch",
+    "format:check": "prettier --check static/to_compile",
+    "format": "prettier static/to_compile --write"
+  },
+  "source": [
+    "static/to_compile/entrypoints/main.ts",
+    "static/to_compile/entrypoints/main.css"
+  ],
+  "targets": {
+    "default": {
+      "distDir": "./static/compiled"
+    }
+  },
+  "browserslist": [
+    "defaults",
+    "iOS 14"
+  ],
+  "@parcel/transformer-css": {
+    "errorRecovery": true
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "printWidth": 88,
+    "semi": false
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.0.14",
+    "eslint-config-prettier": "^10.0.1",
+    "tailwindcss": "^3.4.17"
+  },
+  "devDependencies": {
+    "@parcel/transformer-inline-string": "^2.13.3",
+    "@types/jest": "^29.5.13",
+    "@types/leaflet": "^1.9.16",
+    "@types/lodash": "^4.17.15",
+    "@types/node": "^22.10.7",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "eslint": "^9.20.1",
+    "eslint-config-love": "^117.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^17.15.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-promise": "^7.2.1",
+    "parcel": "^2.13.3",
+    "postcss": "^8.5.3",
+    "postcss-nesting": "^13.0.1",
+    "prettier": "^3.4.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "optionalDependencies": {
+    "@parcel/watcher-linux-x64-glibc": "^2.5.1"
+  }
+}

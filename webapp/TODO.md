@@ -1,0 +1,11 @@
+- [x] lier les Boutons "sign in" et "sign on"
+- [ ] DB postgres
+- [ ] Surdéfinir les templates de login et signup et deconnection
+- [ ] Afficher l'information que l'utilisateur est connecté et le bouton déconnecter
+- [ ] Créer les headers et footers dans la section layout
+- [ ] Mette enpage avec tailwind
+- [ ] Ajout des précommit
+- [ ] Ajout de la CI/CD
+- [ ] Ajout d'un premier test unitaire
+- [ ] Ajout d'un premier test dintegration
+- [ ] Ajout du package qui auto-reload django

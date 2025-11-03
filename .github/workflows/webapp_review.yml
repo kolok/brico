@@ -1,0 +1,96 @@
+name: 💣 Review
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./webapp
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend_linter:
+    name: 📝 Backend Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install uv
+        uses:  astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41
+        with:
+          enable-cache: true
+      - uses: actions/cache@v4
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ./.venv
+          key: venv-dev-airflow-${{ hashFiles('uv.lock') }}
+      - name: Install the project dependencies
+        run: uv sync --group dev
+      - name: Check code formatting
+        run: make check-format
+      - uses: astral-sh/ruff-action@57714a7c8a2e59f32539362ba31877a1957dded1 # v3.5.1
+        with:
+          src: "."
+
+  frontend_linter:
+    name: 📝 Frontend Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: "./webapp/.tool-versions"
+          cache: "npm"
+          cache-dependency-path: "./webapp/package-lock.json"
+      - name: Build assets
+        run: |
+          npm ci
+      - name: Check code formatting
+        run: npm run format:check
+
+  backend_tests:
+    name: ✅ Backend Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:15-3.3-alpine
+        env:
+          POSTGRES_USER: brico
+          POSTGRES_PASSWORD: brico # pragma: allowlist secret
+          POSTGRES_DB: brico
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 1s
+          --health-timeout 1s
+          --health-retries 50
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install uv
+        uses:  astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41
+        with:
+          enable-cache: true
+      - uses: actions/cache@v4
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ./webapp/.venv
+          key: venv-webapp-${{ hashFiles('webapp/uv.lock') }}
+      - name: Prepare environment
+        run: |
+          cp .env.template .env
+          echo DEBUG=false >> .env
+      - name: Install the project dependencies
+        run: uv sync
+      - name: Run unit tests
+        run: uv run pytest
+      - name: Check for missing migrations
+        run: uv run python manage.py makemigrations --check --no-input
+

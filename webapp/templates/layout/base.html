@@ -1,0 +1,35 @@
+{% load i18n static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Brico{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'main.css' %}">
+    </head>
+    <body class="w-full flex flex-col items-center">
+        <div class="w-full max-w-[1000px]">
+            <header class="w-full">
+                <nav class="flex justify-end">
+                    {% if user.is_authenticated %}
+                        <p>{% trans "Hello" %} {{ user.username }}</p>
+                        <a href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
+                    {% else %}
+                        <a href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
+                        <a href="{% url 'account_signup' %}">{% trans "Sign On" %}</a>
+                    {% endif %}
+                </nav>
+            </header>
+        
+            <main>
+                <h1>{% trans "Brico" %}</h1>
+                {% block content %}{% endblock %}
+            </main>
+            
+            <footer>
+                <a href="">{% trans "Legales Mentions" %}</a>
+            </footer>
+        </div>
+    </body>
+</html>
