@@ -1,8 +1,12 @@
 {% extends 'layout/base.html' %}
+{% load i18n %}
 
 {% block title %}Brico{% endblock %}
 
 {% block content %}
-    <h1>Welcome to Brico</h1>
-    <p>Find the best handymen in your area</p>
-{% endblock %}
+    <h1>{% translate "Welcome to Brico" %}</h1>
+
+    {% include "components/messages.html" %}
+
+    <p>{% translate "Quality assurance and security, in collaborative mode and IA driven" %}</p>
+{% endblock content %}

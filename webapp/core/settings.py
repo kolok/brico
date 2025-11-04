@@ -108,16 +108,31 @@ DATABASE_URL = env.str("DATABASE_URL")
 
 DATABASES = {"default": dj_database_url.config(default=DATABASE_URL)}
 
+# Email configuration
+# In development, display emails in the console
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    # In production, you can configure a real SMTP backend
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = env.str("EMAIL_HOST", default="localhost")
+    EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+    EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", default="")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD", default="")
+
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="noreply@example.com")
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "fr"
+LANGUAGE_CODE = "en"
 USE_I18N = True
 USE_L10N = True
 
 LANGUAGES = [
-    ("fr", "French"),
     ("en", "English"),
+    ("fr", "French"),
 ]
 
 LOCALE_PATHS = [
@@ -158,13 +173,14 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-ACCOUNT_SIGNUP_FIELDS = ["email*", "email2*", "password1*", "password2*"]
 ACCOUNT_LOGIN_METHODS = ["email"]
+ACCOUNT_SIGNUP_FIELDS = ["email*", "email2*", "password1*", "password2*"]
 
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 ACCOUNT_SIGNUP_FORM_HONEYPOT_FIELD = "phone"
-ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 
+# Do not display a logout page
 ACCOUNT_LOGOUT_ON_GET = True
 
 # Password validation
@@ -195,8 +211,6 @@ REST_FRAMEWORK = {
 }
 
 # Configuration de dj-rest-auth
-ACCOUNT_LOGIN_METHODS = {"email", "username"}  # ou 'username_email'
-ACCOUNT_SIGNUP_FIELDS = ["email*", "email2*", "password1*", "password2*"]
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = (
     "none"  # Désactive la vérification par email pour simplifier

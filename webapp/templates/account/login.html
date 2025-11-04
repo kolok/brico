@@ -1,0 +1,44 @@
+{% extends "layout/base.html" %}
+{% load i18n socialaccount %}
+
+{% block title %}
+    {% translate "Sign In" %}
+{% endblock title %}
+
+{% block content %}
+
+  <h2>{% translate "Sign In" %}</h2>
+
+  {% include "components/messages.html" %}
+
+  {% get_providers as socialaccount_providers %}
+
+  {% if socialaccount_providers %}
+  <p>{% translate "Sign in with:" %}</p>
+
+  <div>
+    {% for provider in socialaccount_providers %}
+      <a href="{% provider_login_url provider.id %}" class="socialaccount_provider {{ provider.id }}">
+        <button type="button">{% translate "Sign in with" %} {{ provider.name }}</button>
+      </a>
+    {% endfor %}
+  </div>
+
+  <p>{% translate "Or" %}</p>
+
+  {% endif %}
+
+  <form class="login" method="POST" action="{% url 'account_login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+    {% endif %}
+    <button type="submit">{% translate "Sign In" %}</button>
+    <a href="{% url 'account_reset_password' %}">{% translate "Forgot Password?" %}</a>
+  </form>
+
+  <p>{% blocktranslate %}If you have not created an account yet, then please
+  <a href="{{ signup_url }}">sign up</a> first.{% endblocktranslate %}</p>
+
+{% endblock content %}

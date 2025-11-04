@@ -1,0 +1,28 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% translate "Social Network Login Failure" %}
+{% endblock title %}
+
+{% block content %}
+    <h2 class="text-2xl font-bold mb-4 text-red-600">
+        {% translate "Authentication Error" %}
+    </h2>
+
+    {% include "components/messages.html" %}
+
+    <p>
+        {% translate "An error occurred while attempting to sign in with your social account." %}
+    </p>
+
+    <div>
+        <a href="{% url 'account_login' %}">
+            {% translate "Back to login" %}
+        </a>
+
+        <a href="{% url 'account_signup' %}">
+            {% translate "Create an account" %}
+        </a>
+    </div>
+{% endblock content %}

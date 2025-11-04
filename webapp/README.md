@@ -36,13 +36,13 @@ make migrate
 To create a new translation file:
 
 ```sh
-python manage.py makemessages -l fr
+make makemessages
 ```
 
 To compile the translations:
 
 ```sh
-python manage.py compilemessages -l fr
+make compilemessages
 ```
 
 Edit the translation file `locale/fr/LC_MESSAGES/django.po`
@@ -50,5 +50,5 @@ Edit the translation file `locale/fr/LC_MESSAGES/django.po`
 Run the project.
 
 ```sh
-make run
+make run-all
 ```
