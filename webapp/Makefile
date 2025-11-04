@@ -19,6 +19,11 @@ run-webapp:
 run:
 	$(UV_RUN) honcho start -f Procfile.dev
 
+run-all:
+	docker-compose up -d
+	sleep 5
+	$(UV_RUN) honcho start -f Procfile.dev
+
 run-docker:
 	docker compose -f ../docker-compose.yml up -d
 
