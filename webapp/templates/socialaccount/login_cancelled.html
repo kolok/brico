@@ -1,0 +1,24 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% translate "Login Cancelled" %}
+{% endblock title %}
+
+{% block content %}
+    <h2>
+        {% translate "Login Cancelled" %}
+    </h2>
+
+    {% include "components/messages.html" %}
+
+    <div>
+        <a href="{% url 'account_login' %}">
+            {% translate "Back to login" %}
+        </a>
+
+        <a href="{% url 'account_signup' %}">
+            {% translate "Create an account" %}
+        </a>
+    </div>
+{% endblock content %}

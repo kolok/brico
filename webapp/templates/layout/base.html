@@ -13,22 +13,22 @@
             <header class="w-full">
                 <nav class="flex justify-end">
                     {% if user.is_authenticated %}
-                        <p>{% trans "Hello" %} {{ user.username }}</p>
-                        <a href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
+                        <p>{% translate "Hello" %} {{ user.username }}</p>
+                        <a href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
                     {% else %}
-                        <a href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
-                        <a href="{% url 'account_signup' %}">{% trans "Sign On" %}</a>
+                        <a href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
+                        <a href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
                     {% endif %}
                 </nav>
             </header>
-        
+
             <main>
-                <h1>{% trans "Brico" %}</h1>
+                <h1>{% translate "Brico" %}</h1>
                 {% block content %}{% endblock %}
             </main>
-            
+
             <footer>
-                <a href="">{% trans "Legales Mentions" %}</a>
+                <a href="">{% translate "Legal Mentions" %}</a>
             </footer>
         </div>
     </body>

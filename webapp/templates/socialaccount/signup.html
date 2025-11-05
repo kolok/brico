@@ -1,0 +1,32 @@
+{% extends "socialaccount/base_entrance.html" %}
+{% load i18n %}
+
+{% block head_title %}
+    {% translate "Signup" %}
+{% endblock head_title %}
+
+{% block content %}
+    <h2>
+        {% blocktranslate with provider_name=account.get_provider.name site_name=site.name %}Sign up with {{ provider_name }}{% endblocktranslate %}
+    </h2>
+
+    {% include "components/messages.html" %}
+
+    <form method="post" action="{% url 'socialaccount_signup' %}">
+        {% csrf_token %}
+
+        <div>
+            {{ form.as_p }}
+        </div>
+
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+
+        <button type="submit">
+            {% translate "Continue" %}
+        </button>
+    </form>
+
+    <a href="{% url 'account_login' %}">{% translate "Back to login" %}</a>
+{% endblock content %}

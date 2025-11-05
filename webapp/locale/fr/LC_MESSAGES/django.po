@@ -1,35 +1,234 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# French translations for Brico project.
+# Copyright (C) 2025 Brico
+# This file is distributed under the same license as the Brico package.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Brico 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-06 21:27+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2025-11-05 08:04+0000\n"
+"PO-Revision-Date: 2025-11-05 10:00+0000\n"
+"Last-Translator: Nicolas Oudard\n"
+"Language-Team: French\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: templates/layout/base.html:13
+#: templates/account/login.html:5 templates/account/login.html:10
+#: templates/account/login.html:37 templates/layout/base.html:19
+#: templates/socialaccount/login.html:5
 msgid "Sign In"
 msgstr "Se connecter"
 
-#: templates/layout/base.html:14
-msgid "Sign On"
+#: templates/account/login.html:17
+msgid "Sign in with:"
+msgstr "Se connecter avec :"
+
+#: templates/account/login.html:22
+msgid "Sign in with"
+msgstr "Se connecter avec"
+
+#: templates/account/login.html:27 templates/account/signup.html:26
+msgid "Or"
+msgstr "Ou"
+
+#: templates/account/login.html:38
+msgid "Forgot Password?"
+msgstr "Mot de passe oublié ?"
+
+#: templates/account/login.html:41
+#, python-format
+msgid ""
+"If you have not created an account yet, then please\n"
+"  <a href=\"%(signup_url)s\">sign up</a> first."
+msgstr ""
+"Si vous n'avez pas encore créé de compte, veuillez d'abord\n"
+"  <a href=\"%(signup_url)s\">vous inscrire</a>."
+
+#: templates/account/password_reset.html:5
+#: templates/account/password_reset.html:9
+#: templates/account/password_reset_done.html:5
+#: templates/account/password_reset_done.html:10
+msgid "Password Reset"
+msgstr "Réinitialisation du mot de passe"
+
+#: templates/account/password_reset.html:13
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll send you "
+"an email allowing you to reset it."
+msgstr ""
+"Mot de passe oublié ? Entrez votre adresse e-mail ci-dessous, et nous vous "
+"enverrons un e-mail vous permettant de le réinitialiser."
+
+#: templates/account/password_reset.html:18
+msgid "Reset My Password"
+msgstr "Réinitialiser mon mot de passe"
+
+#: templates/account/password_reset.html:21
+msgid "Please contact us if you have any trouble resetting your password."
+msgstr ""
+"Veuillez nous contacter si vous avez des difficultés à réinitialiser votre "
+"mot de passe."
+
+#: templates/account/password_reset_done.html:16
+msgid "You are already logged in."
+msgstr "Vous êtes déjà connecté."
+
+#: templates/account/password_reset_done.html:18
+msgid ""
+"We have sent you an email. If you have not received it please check your "
+"spam folder. Otherwise contact us if you do not receive it in a few minutes."
+msgstr ""
+"Nous vous avons envoyé un e-mail. Si vous ne l'avez pas reçu, veuillez "
+"vérifier votre dossier spam. Sinon, contactez-nous si vous ne le recevez pas "
+"dans quelques minutes."
+
+#: templates/account/password_reset_from_key_done.html:5
+#: templates/account/password_reset_from_key_done.html:10
+msgid "Change Password"
+msgstr "Changer le mot de passe"
+
+#: templates/account/password_reset_from_key_done.html:16
+msgid "Your password is now changed."
+msgstr "Votre mot de passe a été modifié."
+
+#: templates/account/signup.html:5 templates/socialaccount/signup.html:5
+msgid "Signup"
+msgstr "Inscription"
+
+#: templates/account/signup.html:9 templates/account/signup.html:38
+#: templates/layout/base.html:20
+msgid "Sign Up"
 msgstr "S'inscrire"
 
-#: templates/layout/base.html:19
-msgid "Brico"
-msgstr ""
+#: templates/account/signup.html:16
+msgid "Sign up with:"
+msgstr "S'inscrire avec :"
 
-#: templates/layout/base.html:24
-msgid "Legales Mentions"
+#: templates/account/signup.html:21
+msgid "Sign up with"
+msgstr "S'inscrire avec"
+
+#: templates/account/signup.html:30
+#, python-format
+msgid ""
+"Already have an account? Then please <a href=\"%(login_url)s\">sign in</a>."
 msgstr ""
+"Vous avez déjà un compte ? Alors veuillez <a href=\"%(login_url)s\">vous "
+"connecter</a>."
+
+#: templates/index.html:7
+msgid "Welcome to Brico"
+msgstr "Bienvenu sur Brico"
+
+#: templates/index.html:11
+msgid "Quality assurance and security, in collaborative mode and IA driven"
+msgstr "Assurance qualité et sécurité, en mode collaboratif et guidé par l'IA"
+
+#: templates/layout/base.html:16
+msgid "Hello"
+msgstr "Bonjour"
+
+#: templates/layout/base.html:17
+msgid "Sign Out"
+msgstr "Se déconnecter"
+
+#: templates/layout/base.html:26
+msgid "Brico"
+msgstr "Brico"
+
+#: templates/layout/base.html:31
+msgid "Legal Mentions"
+msgstr "Mentions légales"
+
+#: templates/socialaccount/authentication_error.html:5
+msgid "Social Network Login Failure"
+msgstr "Échec de connexion réseau social"
+
+#: templates/socialaccount/authentication_error.html:10
+msgid "Authentication Error"
+msgstr "Erreur d'authentification"
+
+#: templates/socialaccount/authentication_error.html:16
+msgid "An error occurred while attempting to sign in with your social account."
+msgstr ""
+"Une erreur s'est produite lors de la tentative de connexion avec votre "
+"compte social."
+
+#: templates/socialaccount/authentication_error.html:21
+#: templates/socialaccount/login.html:34
+#: templates/socialaccount/login_cancelled.html:17
+#: templates/socialaccount/signup.html:31
+msgid "Back to login"
+msgstr "Retour à la connexion"
+
+#: templates/socialaccount/authentication_error.html:25
+#: templates/socialaccount/login_cancelled.html:21
+msgid "Create an account"
+msgstr "Créer un compte"
+
+#: templates/socialaccount/connections.html:5
+#: templates/socialaccount/connections.html:10
+msgid "Account Connections"
+msgstr "Connexions de compte"
+
+#: templates/socialaccount/connections.html:17
+msgid ""
+"You can sign in to your account using any of the following third party "
+"accounts:"
+msgstr ""
+"Vous pouvez vous connecter à votre compte en utilisant l'un des comptes "
+"tiers suivants :"
+
+#: templates/socialaccount/connections.html:45
+msgid "Remove"
+msgstr "Supprimer"
+
+#: templates/socialaccount/connections.html:50
+msgid "You currently have no third party accounts connected to this account."
+msgstr "Vous n'avez actuellement aucun compte tiers connecté à ce compte."
+
+#: templates/socialaccount/connections.html:56
+msgid "Add a Third Party Account"
+msgstr "Ajouter un compte tiers"
+
+#: templates/socialaccount/connections.html:66
+#: templates/socialaccount/login.html:11
+#, python-format
+msgid "Connect %(provider)s"
+msgstr "Connecter %(provider)s"
+
+#: templates/socialaccount/login.html:13
+#, python-format
+msgid "Sign in with %(provider)s"
+msgstr "Se connecter avec %(provider)s"
+
+#: templates/socialaccount/login.html:21
+#, python-format
+msgid "You are about to connect a new third-party account from %(provider)s."
+msgstr ""
+"Vous êtes sur le point de connecter un nouveau compte tiers depuis "
+"%(provider)s."
+
+#: templates/socialaccount/login.html:25
+#, python-format
+msgid "You are about to sign in using a third-party account from %(provider)s."
+msgstr ""
+"Vous êtes sur le point de vous connecter en utilisant un compte tiers depuis "
+"%(provider)s."
+
+#: templates/socialaccount/login.html:31 templates/socialaccount/signup.html:27
+msgid "Continue"
+msgstr "Continuer"
+
+#: templates/socialaccount/login_cancelled.html:5
+#: templates/socialaccount/login_cancelled.html:10
+msgid "Login Cancelled"
+msgstr "Connexion annulée"
+
+#: templates/socialaccount/signup.html:10
+#, python-format
+msgid "Sign up with %(provider_name)s"
+msgstr "S'inscrire avec %(provider_name)s"
