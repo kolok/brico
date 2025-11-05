@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+
 import '../services/auth_service.dart';
 
 class HomeScreen extends StatelessWidget {
   final AuthService authService = AuthService();
 
-  HomeScreen({Key? key}) : super(key: key);
+  HomeScreen({super.key});
 
   void _handleLogout(BuildContext context) async {
     try {

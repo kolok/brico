@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../services/auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -23,7 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           password1: _password1Controller.text,
           password2: _password2Controller.text,
         );
-        
+
         if (response['key'] != null) {
           // Navigation vers l'écran principal après inscription réussie
           Navigator.pushReplacementNamed(context, '/home');
