@@ -33,7 +33,7 @@ DEBUG = env.bool("DEBUG")
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "10.0.2.2",  # Pour l'émulateur Android
+    "10.0.2.2",  # Android emulator
 ]
 
 
@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
-    # django-allauth
     "allauth",
     "allauth.account",
     "allauth.headless",
@@ -80,48 +79,10 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-# Paramètres GitHub OAuth
-SOCIALACCOUNT_PROVIDERS = {
-    "github": {
-        "APP": {
-            "client_id": env.str("GITHUB_CLIENT_ID"),
-            "secret": env.str("GITHUB_SECRET"),
-            "key": "",
-        },
-        # Permet d'avoir un compte email même si l'email est utilisé par GitHub
-        "PROVIDER_ACCOUNT_UNIQUE": False,
-    }
-}
-
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://10.0.2.2:8000",  # Pour l'émulateur Android
 ]
-
-# Paramètres supplémentaires allauth
-LOGIN_REDIRECT_URL = "/"
-# Supprimer ces paramètres dépréciés
-# ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_USERNAME_REQUIRED = False
-# ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
-# ACCOUNT_LOGIN_METHOD = {"email"}
-
-# Nouveau paramètre recommandé
-ACCOUNT_SIGNUP_FIELDS = ["email*", "email2*", "password1*", "password2*"]
-ACCOUNT_LOGIN_METHODS = ["email"]  # Correction du nom du paramètre (METHOD -> METHODS)
-
-SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
-# ACCOUNT_SIGNUP_FORM_HONEYPOT_FIELD = "phone"
-ACCOUNT_EMAIL_VERIFICATION = "none"  #'mandatory' -> nécessite une config email
-
-# Ajouter cette ligne pour la déconnexion directe
-ACCOUNT_LOGOUT_ON_GET = True
-
-# Paramètres pour permettre des comptes multiples avec le même email
-# SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
-# SOCIALACCOUNT_AUTO_SIGNUP = False
-# SOCIALACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_UNIQUE_EMAIL = False  # Permet d'avoir plusieurs comptes avec le même email
 
 ROOT_URLCONF = "core.urls"
 
@@ -146,28 +107,6 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASE_URL = env.str("DATABASE_URL")
 
 DATABASES = {"default": dj_database_url.config(default=DATABASE_URL)}
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": (
-            "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-        ),
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -203,6 +142,50 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGIN_REDIRECT_URL = "/"
+
+# GitHub OAuth
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "APP": {
+            "client_id": env.str("GITHUB_CLIENT_ID"),
+            "secret": env.str("GITHUB_SECRET"),
+            "key": "",
+        },
+        # Allow to useemail even if it is used by a third party provider
+        "PROVIDER_ACCOUNT_UNIQUE": False,
+    }
+}
+
+ACCOUNT_SIGNUP_FIELDS = ["email*", "email2*", "password1*", "password2*"]
+ACCOUNT_LOGIN_METHODS = ["email"]
+
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+ACCOUNT_SIGNUP_FORM_HONEYPOT_FIELD = "phone"
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+ACCOUNT_LOGOUT_ON_GET = True
+
+# Password validation
+# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": (
+            "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+        ),
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
 
 # Ajoutez ces configurations pour REST framework
 REST_FRAMEWORK = {
