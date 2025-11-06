@@ -81,7 +81,7 @@ logs-docker:
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) logs -f
 
 .PHONY: runserver
-runserver:
+run-server:
 	$(MANAGE_PY) runserver
 
 .PHONY: makemessages
