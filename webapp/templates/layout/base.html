@@ -8,8 +8,8 @@
         <title>{% block title %}Brico{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'main.css' %}">
     </head>
-    <body class="w-full flex flex-col items-center">
-        <div class="w-full max-w-[1000px]">
+    <body class="w-full flex flex-col items-center bg-info/5">
+        {% block headers %}
             <header class="w-full">
                 <nav class="flex justify-end">
                     {% if user.is_authenticated %}
@@ -21,15 +21,18 @@
                     {% endif %}
                 </nav>
             </header>
-
+        {% endblock headers %}
+        {% block main %}
             <main>
                 <h1>{% translate "Brico" %}</h1>
                 {% block content %}{% endblock %}
             </main>
+        {% endblock main %}
 
+        {% block footers %}
             <footer>
                 <a href="">{% translate "Legal Mentions" %}</a>
             </footer>
-        </div>
+        {% endblock footers %}
     </body>
 </html>
