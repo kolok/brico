@@ -19,5 +19,5 @@ label {
 }
 
 input {
-  @apply py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-600 focus:ring-0;
+  @apply py-3 px-4 block border-gray-200 rounded-md text-sm focus:border-blue-600 focus:ring-0;
 }
