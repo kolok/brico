@@ -18,7 +18,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         logging.warning("validate")
         if attrs["password1"] != attrs["password2"]:
             raise serializers.ValidationError(
-                {"password": "Les mots de passe ne correspondent pas."}
+                {
+                    "password": (
+                        "Les mots de passe ne correspondent pas."
+                    )  # pragma: allowlist secret
+                }
             )
         if attrs["email"] != attrs["email2"]:
             raise serializers.ValidationError(
@@ -38,3 +42,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=password,
         )
         return user
+
+    def save(self, request=None):
+        """
+        dj-rest-auth passes the request as a positional argument to save().
+        We accept it here to keep the same signature while reusing the existing
+        creation logic.
+        """
+        return self.create(validated_data=dict(self.validated_data))

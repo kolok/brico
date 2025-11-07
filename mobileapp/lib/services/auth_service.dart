@@ -3,10 +3,10 @@ import 'dart:convert';
 
 class AuthService {
   final String baseUrl = 'http://10.0.2.2:8000'; // Pour l'émulateur Android
-  
+
   Future<Map<String, dynamic>> signUp({
-    required String username,
     required String email,
+    required String emailConfirmation,
     required String password1,
     required String password2,
   }) async {
@@ -14,19 +14,22 @@ class AuthService {
       Uri.parse('$baseUrl/api/auth/registration/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        // 'username': username,
         'email': email,
-        'email2': email,
+        'email2': emailConfirmation,
         'password1': password1,
         'password2': password2,
-        // 'phone': '',
       }),
     );
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Erreur d\'inscription: ${response.body}');
+      try {
+        final errorBody = jsonDecode(response.body);
+        throw Exception('Erreur d\'inscription: $errorBody');
+      } catch (_) {
+        throw Exception('Erreur d\'inscription: ${response.body}');
+      }
     }
   }
 
@@ -60,4 +63,4 @@ class AuthService {
       throw Exception('Erreur lors de la déconnexion: ${response.body}');
     }
   }
-} 
+}

@@ -12,17 +12,17 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _usernameController = TextEditingController();
+  final _emailConfirmationController = TextEditingController();
   final _password1Controller = TextEditingController();
   final _password2Controller = TextEditingController();
   final _authService = AuthService();
 
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
-      // try {
+      try {
         final response = await _authService.signUp(
-          username: _usernameController.text,
           email: _emailController.text,
+          emailConfirmation: _emailConfirmationController.text,
           password1: _password1Controller.text,
           password2: _password2Controller.text,
         );
@@ -35,11 +35,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
             SnackBar(content: Text('Erreur d\'inscription')),
           );
         }
-      // } catch (e) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text('Erreur: $e')),
-      //   );
-      // }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur: $e')),
+        );
+      }
     }
   }
 
@@ -54,21 +54,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             children: [
               TextFormField(
-                controller: _usernameController,
-                decoration: InputDecoration(labelText: 'Username'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Veuillez entrer votre identifiant';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Veuillez entrer votre email';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _emailConfirmationController,
+                decoration: InputDecoration(labelText: 'Confirmer l\'email'),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Veuillez confirmer votre email';
+                  }
+                  if (value != _emailController.text) {
+                    return 'Les adresses email ne correspondent pas';
                   }
                   return null;
                 },
