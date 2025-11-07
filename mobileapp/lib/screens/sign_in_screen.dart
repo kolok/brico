@@ -4,7 +4,9 @@ import 'package:mobileapp/l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+  const SignInScreen({super.key, this.authService});
+
+  final AuthService? authService;
 
   @override
   _SignInScreenState createState() => _SignInScreenState();
@@ -14,7 +16,20 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
+  late final AuthService _authService;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
