@@ -32,6 +32,45 @@
 - **Qualité** : `make analyze`, `make format`, `make test`, `make lint`.
 - **Builds** : cibles dédiées (`make build-android[-apk|-aab]`, `make build-ios`, `make build-web`, `make build-all`).
 
+### Standards de code
+
+- **Python** : PEP 8, type hints requis, docstrings pour les fonctions publiques.
+- **TypeScript** : ESLint + Prettier, nommage camelCase.
+- **Flutter** : conventions Dart officielles, widgets immutables préférés.
+
+### Exigences de test
+
+- Couverture minimale : 80% pour webapp/backend.
+- Tests obligatoires : nouvelles features, corrections de bugs.
+- CI doit passer avant merge (lint + tests).
+
+### Workflow PR
+
+- Template : voir `.github/pull_request_template.md`.
+- Auto-review obligatoire avant demande de review.
+- Commits : messages explicites en français ou anglais.
+- Pas de force-push sur les branches partagées.
+
+### Décisions d'architecture
+
+- Auth centralisée via django-allauth (pas de JWT custom).
+- Frontend : Hotwire/Turbo (pas de SPA React/Vue).
+- Mobile : Flutter pour multi-plateforme (pas de natif).
+- API : REST via DRF (pas de GraphQL actuellement).
+
+### Points d'attention
+
+- Ne pas committer `static/compiled/` (généré par Parcel).
+- Toujours run migrations après pull de `main`.
+- Mobile : vérifier compatibilité Android API 21+ et iOS 12+.
+- i18n : `make compilemessages` après modification des `.po`.
+
+### Configuration
+
+- Variables d'env : voir `.env.template` (ne jamais committer `.env`).
+- Secrets sensibles : utiliser les GitHub Secrets pour CI.
+- Local : `.env` à la racine pour Docker, `.env.local` pour webapp.
+
 ### Références rapides
 
 - Root README : instructions Docker communes.
