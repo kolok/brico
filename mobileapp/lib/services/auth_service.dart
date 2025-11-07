@@ -26,9 +26,9 @@ class AuthService {
     } else {
       try {
         final errorBody = jsonDecode(response.body);
-        throw Exception('Erreur d\'inscription: $errorBody');
+        throw Exception('Sign-up error: $errorBody');
       } catch (_) {
-        throw Exception('Erreur d\'inscription: ${response.body}');
+        throw Exception('Sign-up error: ${response.body}');
       }
     }
   }
@@ -49,7 +49,7 @@ class AuthService {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Erreur de connexion: ${response.body}');
+      throw Exception('Sign-in error: ${response.body}');
     }
   }
 
@@ -60,7 +60,7 @@ class AuthService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Erreur lors de la déconnexion: ${response.body}');
+      throw Exception('Logout error: ${response.body}');
     }
   }
 }

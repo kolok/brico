@@ -1,0 +1,43 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Démo Auth Flutter",
+  "signInTitle": "Connexion",
+  "signInError": "Erreur de connexion",
+  "emailLabel": "Email",
+  "emailRequired": "Veuillez entrer votre email",
+  "passwordLabel": "Mot de passe",
+  "passwordRequired": "Veuillez entrer votre mot de passe",
+  "signInButton": "Se connecter",
+  "goToSignUp": "Créer un compte",
+  "signUpTitle": "Inscription",
+  "signUpError": "Erreur d'inscription",
+  "genericError": "Erreur : {error}",
+  "@genericError": {
+    "description": "Message d'erreur générique avec la cause interpolée",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmEmailLabel": "Confirmer l'email",
+  "confirmEmailRequired": "Veuillez confirmer votre email",
+  "emailMismatch": "Les adresses email ne correspondent pas",
+  "confirmPasswordLabel": "Confirmer le mot de passe",
+  "confirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+  "passwordMismatch": "Les mots de passe ne correspondent pas",
+  "signUpButton": "S'inscrire",
+  "logout": "Déconnexion",
+  "logoutError": "Erreur lors de la déconnexion : {error}",
+  "@logoutError": {
+    "description": "Message affiché quand la déconnexion échoue",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "welcomeTitle": "Bienvenue sur Brico !",
+  "welcomeSubtitle": "Votre assistant pour tous vos projets de bricolage"
+}
+

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/l10n/app_localizations.dart';
 
 import '../services/auth_service.dart';
 
@@ -28,16 +29,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
 
         if (response['key'] != null) {
-          // Navigation vers l'écran principal après inscription réussie
           Navigator.pushReplacementNamed(context, '/home');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erreur d\'inscription')),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.signUpError),
+            ),
           );
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur: $e')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.genericError(
+                e.toString(),
+              ),
+            ),
+          ),
         );
       }
     }
@@ -46,64 +54,76 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Inscription')),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.signUpTitle),
+      ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.emailLabel,
+                ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez entrer votre email';
+                    return AppLocalizations.of(context)!.emailRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _emailConfirmationController,
-                decoration: InputDecoration(labelText: 'Confirmer l\'email'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.confirmEmailLabel,
+                ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez confirmer votre email';
+                    return AppLocalizations.of(context)!.confirmEmailRequired;
                   }
                   if (value != _emailController.text) {
-                    return 'Les adresses email ne correspondent pas';
+                    return AppLocalizations.of(context)!.emailMismatch;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _password1Controller,
-                decoration: InputDecoration(labelText: 'Mot de passe'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.passwordLabel,
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez entrer votre mot de passe';
+                    return AppLocalizations.of(context)!.passwordRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _password2Controller,
-                decoration: InputDecoration(labelText: 'Confirmer le mot de passe'),
+                decoration: InputDecoration(
+                  labelText:
+                      AppLocalizations.of(context)!.confirmPasswordLabel,
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez confirmer votre mot de passe';
+                    return AppLocalizations.of(context)!
+                        .confirmPasswordRequired;
                   }
                   if (value != _password1Controller.text) {
-                    return 'Les mots de passe ne correspondent pas';
+                    return AppLocalizations.of(context)!.passwordMismatch;
                   }
                   return null;
                 },
               ),
               ElevatedButton(
                 onPressed: _signUp,
-                child: Text('S\'inscrire'),
+                child: Text(AppLocalizations.of(context)!.signUpButton),
               ),
             ],
           ),
