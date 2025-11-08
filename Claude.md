@@ -67,9 +67,8 @@
 
 ### Configuration
 
-- Variables d'env : voir `.env.template` (ne jamais committer `.env`).
+- Variables d'env de la webapp : voir `webapp/.env.template` (ne jamais committer `.env`).
 - Secrets sensibles : utiliser les GitHub Secrets pour CI.
-- Local : `.env` à la racine pour Docker, `.env.local` pour webapp.
 
 ### Références rapides
 
