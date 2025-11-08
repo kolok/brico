@@ -1,8 +1,10 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../config.dart';
+
 class AuthService {
-  final String baseUrl = 'http://10.0.2.2:8000'; // Pour l'émulateur Android
+  final String baseUrl = Config.apiBaseUrl;
 
   Future<Map<String, dynamic>> signUp({
     required String email,

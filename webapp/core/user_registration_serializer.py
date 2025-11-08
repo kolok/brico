@@ -1,6 +1,5 @@
-import logging
-
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 
@@ -15,18 +14,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {"email": {"required": True}}
 
     def validate(self, attrs):
-        logging.warning("validate")
         if attrs["password1"] != attrs["password2"]:
             raise serializers.ValidationError(
                 {
-                    "password": (
-                        "Les mots de passe ne correspondent pas."
-                    )  # pragma: allowlist secret
+                    "password": _("Passwords do not match.")  # pragma: allowlist secret
                 }
             )
         if attrs["email"] != attrs["email2"]:
             raise serializers.ValidationError(
-                {"email": "Les adresses email ne correspondent pas."}
+                {"email": _("Email addresses do not match.")}
             )
         return attrs
 

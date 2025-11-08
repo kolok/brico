@@ -33,7 +33,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
-      // try {
+      try {
         final response = await _authService.signIn(
           email: _emailController.text,
           password: _passwordController.text,
@@ -50,11 +50,17 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           );
         }
-      // } catch (e) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text('Erreur: $e')),
-      //   );
-      // }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.genericError(
+                e.toString(),
+              ),
+            ),
+          ),
+        );
+      }
     }
   }
 
