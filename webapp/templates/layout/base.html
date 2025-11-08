@@ -1,37 +1,55 @@
 {% load i18n static %}
 
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Brico{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'main.css' %}">
     </head>
-    <body class="w-full flex flex-col items-center bg-info/5">
+    <body class="min-h-screen flex flex-col bg-slate-50 m-0">
         {% block headers %}
-            <header class="w-full">
-                <nav class="flex justify-end">
-                    {% if user.is_authenticated %}
-                        <p>{% translate "Hello" %} {{ user.username }}</p>
-                        <a href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
-                    {% else %}
-                        <a href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
-                        <a href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
-                    {% endif %}
-                </nav>
+            <header class="w-full bg-blue-600 text-white shadow">
+                <div class="max-w-6xl mx-auto px-4">
+                    <nav class="flex h-16 items-center justify-between">
+                        <a href="/" class="text-lg font-semibold tracking-wide">
+                            {% translate "Brico" %}
+                        </a>
+                        <div class="flex items-center gap-4 text-sm font-medium">
+                            {% if user.is_authenticated %}
+                                <p class="hidden sm:block">{% translate "Hello" %} {{ user.username }}</p>
+                                <a class="hover:text-blue-100 transition" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
+                            {% else %}
+                                <a class="hover:text-blue-100 transition" href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
+                                <a class="rounded bg-white px-3 py-1 text-blue-600 shadow hover:bg-blue-50 transition" href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
+                            {% endif %}
+                        </div>
+                    </nav>
+                </div>
             </header>
         {% endblock headers %}
         {% block main %}
-            <main>
-                <h1>{% translate "Brico" %}</h1>
-                {% block content %}{% endblock %}
+            <main class="flex-1 w-full flex">
+                <div class="flex-1 max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 px-4 py-8">
+                    <aside class="w-full lg:w-64 bg-blue-600 border border-slate-200 rounded-lg p-4 shadow-sm shrink-0">
+                        {% block sidepanel %}
+                            <p class="text-sm text-slate-600">{% translate "Navigation" %}</p>
+                        {% endblock sidepanel %}
+                    </aside>
+                    <section class="flex-1 flex flex-col">
+                        {% block content %}{% endblock %}
+                    </section>
+                </div>
             </main>
         {% endblock main %}
 
         {% block footers %}
-            <footer>
-                <a href="">{% translate "Legal Mentions" %}</a>
+            <footer class="w-full bg-blue-600 text-white">
+                <div class="max-w-6xl mx-auto flex h-16 items-center justify-between px-4 text-sm">
+                    <p class="font-semibold">Brico</p>
+                    <a class="hover:text-slate-200 transition" href="">{% translate "Legal Mentions" %}</a>
+                </div>
             </footer>
         {% endblock footers %}
         <script type="module" src="{% static 'main.js' %}"></script>
