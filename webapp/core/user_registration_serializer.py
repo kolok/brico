@@ -16,9 +16,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs["password1"] != attrs["password2"]:
             raise serializers.ValidationError(
-                {
-                    "password": _("Passwords do not match.")  # pragma: allowlist secret
-                }
+                {"password": _("Passwords do not match.")}  # pragma: allowlist secret
             )
         if attrs["email"] != attrs["email2"]:
             raise serializers.ValidationError(
