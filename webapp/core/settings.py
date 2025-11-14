@@ -14,13 +14,13 @@ from pathlib import Path
 
 import dj_database_url
 from environs import env
+from import_export.formats.base_formats import CSV, XLS, XLSX
 
 # Read .env into os.environ
 env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django_extensions",
+    "import_export",
     "allauth",
     "allauth.account",
     "allauth.headless",
@@ -56,6 +58,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
+    "audits",
 ]
 
 MIDDLEWARE = [
@@ -222,3 +225,8 @@ REST_AUTH = {
         "core.user_registration_serializer.UserRegistrationSerializer"
     ),
 }
+
+# Import / export settings
+# ------------------------
+IMPORT_EXPORT_TMP_STORAGE_CLASS = "import_export.tmp_storages.MediaStorage"
+IMPORT_EXPORT_FORMATS = [CSV, XLSX, XLS]

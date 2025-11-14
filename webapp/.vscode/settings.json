@@ -40,6 +40,12 @@
             "source.organizeImports.ruff": "explicit"
         }
     },
+    "python.analysis.fixAll": [],
+    "python.analysis.organizeImports": false,
+    "ruff.fix": {
+        "enable": true
+    },
+    "ruff.organizeImports": true,
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,

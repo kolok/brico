@@ -21,11 +21,11 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("brico/", include("brico.urls")),
+    path("audits/", include("audits.urls")),
     # Auth interface
     path("accounts/", include("allauth.urls")),
     # Include the API endpoints
     path("api/auth/", include("dj_rest_auth.urls")),
     path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
-    path("", RedirectView.as_view(url="brico/")),
+    path("", RedirectView.as_view(url="audits/")),
 ]

@@ -30,12 +30,6 @@ repos:
           name: Detect secrets
           language: python
           entry: detect-secrets-hook
-    - repo: https://github.com/pycqa/isort
-      rev: 6.0.1
-      hooks:
-        - id: isort
-          name: isort (python)
-          args: ["--profile", "black", "--filter-files"]
 
     - repo: local
       hooks:
