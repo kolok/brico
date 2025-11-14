@@ -1,4 +1,4 @@
-## Test views for the brico app
+## Test views for the audits app
 
 import pytest
 from django.urls import reverse

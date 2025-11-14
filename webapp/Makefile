@@ -92,6 +92,14 @@ makemessages:
 compilemessages:
 	$(MANAGE_PY) compilemessages -l fr
 
+.PHONY: makemigrations
+makemigrations:
+	$(MANAGE_PY) makemigrations
+
+.PHONY: migrate
+migrate:
+	$(MANAGE_PY) migrate
+
 .PHONY: check-format
 check-format:
 	$(UV_RUN) black --check --diff .
