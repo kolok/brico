@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/l10n/app_localizations.dart';
 
 import '../services/auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  const SignUpScreen({super.key, this.authService});
+
+  final AuthService? authService;
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -12,95 +15,132 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _usernameController = TextEditingController();
+  final _emailConfirmationController = TextEditingController();
   final _password1Controller = TextEditingController();
   final _password2Controller = TextEditingController();
-  final _authService = AuthService();
+  late final AuthService _authService;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _emailConfirmationController.dispose();
+    _password1Controller.dispose();
+    _password2Controller.dispose();
+    super.dispose();
+  }
 
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
-      // try {
+      try {
         final response = await _authService.signUp(
-          username: _usernameController.text,
           email: _emailController.text,
+          emailConfirmation: _emailConfirmationController.text,
           password1: _password1Controller.text,
           password2: _password2Controller.text,
         );
 
         if (response['key'] != null) {
-          // Navigation vers l'écran principal après inscription réussie
           Navigator.pushReplacementNamed(context, '/home');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erreur d\'inscription')),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.signUpError),
+            ),
           );
         }
-      // } catch (e) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text('Erreur: $e')),
-      //   );
-      // }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.genericError(
+                e.toString(),
+              ),
+            ),
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Inscription')),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.signUpTitle),
+      ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
-                controller: _usernameController,
-                decoration: InputDecoration(labelText: 'Username'),
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.emailLabel,
+                ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez entrer votre identifiant';
+                    return AppLocalizations.of(context)!.emailRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                controller: _emailConfirmationController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.confirmEmailLabel,
+                ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez entrer votre email';
+                    return AppLocalizations.of(context)!.confirmEmailRequired;
+                  }
+                  if (value != _emailController.text) {
+                    return AppLocalizations.of(context)!.emailMismatch;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _password1Controller,
-                decoration: InputDecoration(labelText: 'Mot de passe'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.passwordLabel,
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez entrer votre mot de passe';
+                    return AppLocalizations.of(context)!.passwordRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _password2Controller,
-                decoration: InputDecoration(labelText: 'Confirmer le mot de passe'),
+                decoration: InputDecoration(
+                  labelText:
+                      AppLocalizations.of(context)!.confirmPasswordLabel,
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez confirmer votre mot de passe';
+                    return AppLocalizations.of(context)!
+                        .confirmPasswordRequired;
                   }
                   if (value != _password1Controller.text) {
-                    return 'Les mots de passe ne correspondent pas';
+                    return AppLocalizations.of(context)!.passwordMismatch;
                   }
                   return null;
                 },
               ),
               ElevatedButton(
                 onPressed: _signUp,
-                child: Text('S\'inscrire'),
+                child: Text(AppLocalizations.of(context)!.signUpButton),
               ),
             ],
           ),

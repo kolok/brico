@@ -1,12 +1,14 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../config.dart';
+
 class AuthService {
-  final String baseUrl = 'http://10.0.2.2:8000'; // Pour l'émulateur Android
-  
+  final String baseUrl = Config.apiBaseUrl;
+
   Future<Map<String, dynamic>> signUp({
-    required String username,
     required String email,
+    required String emailConfirmation,
     required String password1,
     required String password2,
   }) async {
@@ -14,19 +16,22 @@ class AuthService {
       Uri.parse('$baseUrl/api/auth/registration/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        // 'username': username,
         'email': email,
-        'email2': email,
+        'email2': emailConfirmation,
         'password1': password1,
         'password2': password2,
-        // 'phone': '',
       }),
     );
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Erreur d\'inscription: ${response.body}');
+      try {
+        final errorBody = jsonDecode(response.body);
+        throw Exception('Sign-up error: $errorBody');
+      } catch (_) {
+        throw Exception('Sign-up error: ${response.body}');
+      }
     }
   }
 
@@ -46,7 +51,7 @@ class AuthService {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Erreur de connexion: ${response.body}');
+      throw Exception('Sign-in error: ${response.body}');
     }
   }
 
@@ -57,7 +62,7 @@ class AuthService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Erreur lors de la déconnexion: ${response.body}');
+      throw Exception('Logout error: ${response.body}');
     }
   }
-} 
+}

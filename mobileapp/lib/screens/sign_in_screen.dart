@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/l10n/app_localizations.dart';
 
 import '../services/auth_service.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+  const SignInScreen({super.key, this.authService});
+
+  final AuthService? authService;
 
   @override
   _SignInScreenState createState() => _SignInScreenState();
@@ -13,72 +16,100 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
+  late final AuthService _authService;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
-      // try {
+      try {
         final response = await _authService.signIn(
           email: _emailController.text,
           password: _passwordController.text,
         );
 
         if (response['key'] != null) {
-          // Navigation vers l'écran principal après connexion réussie
           Navigator.pushReplacementNamed(context, '/home');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erreur de connexion')),
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context)!.signInError,
+              ),
+            ),
           );
         }
-      // } catch (e) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text('Erreur: $e')),
-      //   );
-      // }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.genericError(
+                e.toString(),
+              ),
+            ),
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Connexion')),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.signInTitle),
+      ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.emailLabel,
+                ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez entrer votre email';
+                    return AppLocalizations.of(context)!.emailRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Mot de passe'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.passwordLabel,
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Veuillez entrer votre mot de passe';
+                    return AppLocalizations.of(context)!.passwordRequired;
                   }
                   return null;
                 },
               ),
               ElevatedButton(
                 onPressed: _signIn,
-                child: Text('Se connecter'),
+                child: Text(AppLocalizations.of(context)!.signInButton),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/signup');
                 },
-                child: Text('Créer un compte'),
+                child: Text(AppLocalizations.of(context)!.goToSignUp),
               ),
             ],
           ),

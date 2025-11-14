@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/l10n/app_localizations.dart';
 
 import '../services/auth_service.dart';
 
@@ -12,9 +13,13 @@ class HomeScreen extends StatelessWidget {
       await authService.signOut();
       Navigator.pushReplacementNamed(context, '/signin');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de la déconnexion: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          AppLocalizations.of(context)!.logoutError(
+            e.toString(),
+          ),
+        ),
+      ));
     }
   }
 
@@ -26,9 +31,9 @@ class HomeScreen extends StatelessWidget {
         actions: [
           TextButton.icon(
             icon: const Icon(Icons.logout, color: Colors.blue),
-            label: const Text(
-              'Déconnexion',
-              style: TextStyle(color: Colors.blue),
+            label: Text(
+              AppLocalizations.of(context)!.logout,
+              style: const TextStyle(color: Colors.blue),
             ),
             onPressed: () => _handleLogout(context),
           ),
@@ -39,25 +44,25 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(
+            children: [
+              const Icon(
                 Icons.home_repair_service,
                 size: 80.0,
                 color: Colors.blue,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
-                'Bienvenue sur Brico !',
-                style: TextStyle(
+                AppLocalizations.of(context)!.welcomeTitle,
+                style: const TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
-                'Votre assistant pour tous vos projets de bricolage',
+                AppLocalizations.of(context)!.welcomeSubtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16.0,
                   color: Colors.grey,
                 ),

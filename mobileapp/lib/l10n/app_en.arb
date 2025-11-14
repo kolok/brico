@@ -1,0 +1,43 @@
+{
+  "@@locale": "en",
+  "appTitle": "Flutter Auth Demo",
+  "signInTitle": "Sign In",
+  "signInError": "Sign-in error",
+  "emailLabel": "Email",
+  "emailRequired": "Please enter your email",
+  "passwordLabel": "Password",
+  "passwordRequired": "Please enter your password",
+  "signInButton": "Sign In",
+  "goToSignUp": "Create an account",
+  "signUpTitle": "Sign Up",
+  "signUpError": "Sign-up error",
+  "genericError": "Error: {error}",
+  "@genericError": {
+    "description": "Generic error message with an interpolated error cause",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmEmailLabel": "Confirm email",
+  "confirmEmailRequired": "Please confirm your email",
+  "emailMismatch": "Email addresses do not match",
+  "confirmPasswordLabel": "Confirm password",
+  "confirmPasswordRequired": "Please confirm your password",
+  "passwordMismatch": "Passwords do not match",
+  "signUpButton": "Sign Up",
+  "logout": "Log out",
+  "logoutError": "Error during logout: {error}",
+  "@logoutError": {
+    "description": "Message shown when logout fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "welcomeTitle": "Welcome to Brico!",
+  "welcomeSubtitle": "Your assistant for all your DIY projects"
+}
+
