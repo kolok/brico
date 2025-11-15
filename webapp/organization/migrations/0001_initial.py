@@ -9,18 +9,35 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ("organization", "0001_initial"),
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name="AuditLibrary",
+            name="Organization",
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 ("id", models.AutoField(primary_key=True, serialize=False)),
-                ("name", models.CharField(max_length=255)),
+                ("name", models.CharField(max_length=255, unique=True)),
+                (
+                    "slug",
+                    django_extensions.db.fields.AutoSlugField(
+                        blank=True, editable=False, populate_from="name", unique=True
+                    ),
+                ),
+                ("description", models.TextField(blank=True, default="")),
+            ],
+            options={
+                "abstract": False,
+            },
+        ),
+        migrations.CreateModel(
+            name="Project",
+            fields=[
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=255, unique=True)),
                 (
                     "slug",
                     django_extensions.db.fields.AutoSlugField(
@@ -32,56 +49,44 @@ class Migration(migrations.Migration):
                     "organization",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="audit_libraries",
+                        related_name="projects",
                         to="organization.organization",
                     ),
                 ),
             ],
             options={
-                "verbose_name_plural": "Audit Libraries",
-                "unique_together": {("organization", "slug")},
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name="Criterion",
+            name="Resource",
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 ("id", models.AutoField(primary_key=True, serialize=False)),
-                ("public_id", models.CharField(max_length=255)),
                 ("name", models.CharField(max_length=255)),
                 (
-                    "slug",
-                    django_extensions.db.fields.AutoSlugField(
-                        blank=True, editable=False, populate_from="name"
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("frontend_code", "Frontend Code"),
+                            ("backend_code", "Backend Code"),
+                            ("infrastructure", "Infrastructure"),
+                            ("technical_documentation", "Technical Documentation"),
+                            ("business_documentation", "Business Documentation"),
+                        ],
+                        max_length=255,
+                        null=True,
                     ),
                 ),
+                ("url", models.URLField(blank=True, default="", null=True)),
                 ("description", models.TextField(blank=True, default="")),
                 (
-                    "audit_library",
+                    "project",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="criterias",
-                        to="audits.auditlibrary",
-                    ),
-                ),
-            ],
-            options={
-                "verbose_name_plural": "Criteria",
-                "unique_together": {("audit_library", "public_id")},
-            },
-        ),
-        migrations.CreateModel(
-            name="Tag",
-            fields=[
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                ("updated_at", models.DateTimeField(auto_now=True)),
-                ("id", models.AutoField(primary_key=True, serialize=False)),
-                ("name", models.CharField(max_length=255, unique=True)),
-                (
-                    "criteria",
-                    models.ManyToManyField(
-                        blank=True, related_name="tags", to="audits.criterion"
+                        related_name="resources",
+                        to="organization.project",
                     ),
                 ),
             ],

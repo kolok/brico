@@ -1,6 +1,7 @@
 import pytest
-from audits.admin import CriterionResource
-from audits.models import AuditLibrary, Criterion, Organization, Tag
+from audits.admin.audit import CriterionResource
+from audits.models.audit import AuditLibrary, Criterion, Tag
+from organization.models.organization import Organization
 from tablib import Dataset
 
 

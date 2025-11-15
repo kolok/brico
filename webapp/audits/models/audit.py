@@ -1,21 +1,10 @@
-# Create your models here.
+from core.models.mixin import TimestampedModel
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
+from organization.models.organization import Organization
 
 
-class Organization(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, unique=True, null=False, blank=False)
-    slug = AutoSlugField(populate_from="name", unique=True)  # type: ignore
-    description = models.TextField(blank=True, default="", null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-
-class AuditLibrary(models.Model):
+class AuditLibrary(TimestampedModel, models.Model):
 
     id = models.AutoField(primary_key=True)
     organization = models.ForeignKey(
@@ -24,8 +13,6 @@ class AuditLibrary(models.Model):
     name = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from="name")  # type: ignore
     description = models.TextField(blank=True, default="", null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = "Audit Libraries"
@@ -35,7 +22,7 @@ class AuditLibrary(models.Model):
         return self.name
 
 
-class Criterion(models.Model):
+class Criterion(TimestampedModel, models.Model):
 
     id = models.AutoField(primary_key=True)
     audit_library = models.ForeignKey(
@@ -45,8 +32,6 @@ class Criterion(models.Model):
     name = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from="name")  # type: ignore
     description = models.TextField(blank=True, default="", null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = "Criteria"
@@ -56,12 +41,10 @@ class Criterion(models.Model):
         return self.name
 
 
-class Tag(models.Model):
+class Tag(TimestampedModel, models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True, null=False, blank=False)
     criteria = models.ManyToManyField(Criterion, related_name="tags", blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name

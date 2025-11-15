@@ -1,4 +1,4 @@
-from audits.models import AuditLibrary, Criterion, Organization, Tag
+from audits.models.audit import AuditLibrary, Criterion, Tag
 from django.contrib import admin
 from django.utils.text import slugify
 from import_export import fields, resources
@@ -41,12 +41,6 @@ class CriterionResource(resources.ModelResource):
             "created_at",
             "updated_at",
         ]
-
-
-@admin.register(Organization)
-class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug")
-    search_fields = ("name", "slug")
 
 
 @admin.register(AuditLibrary)
