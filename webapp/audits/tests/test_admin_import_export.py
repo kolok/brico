@@ -1,30 +1,31 @@
 import pytest
 from audits.admin.audit import CriterionResource
-from audits.models.audit import AuditLibrary, Criterion, Tag
-from organization.models.organization import Organization
+from audits.models.audit import Criterion, Tag
+from audits.tests.factories import AuditLibraryFactory, CriterionFactory, TagFactory
+from organization.tests.factories import OrganizationFactory
 from tablib import Dataset
 
 
 @pytest.fixture
 def organization():
-    return Organization.objects.create(name="My Organization")
+    return OrganizationFactory()
 
 
 @pytest.fixture
 def audit_library(organization):
-    return AuditLibrary.objects.create(name="Library", organization=organization)
+    return AuditLibraryFactory(organization=organization)
 
 
 @pytest.fixture
 def criterion(audit_library):
-    return Criterion.objects.create(
+    return CriterionFactory(
         audit_library=audit_library, public_id="CRI-001", name="Test Criterion"
     )
 
 
 @pytest.fixture
 def tag():
-    return Tag.objects.create(name="Tag 1")
+    return TagFactory(name="Tag 1")
 
 
 @pytest.mark.django_db
@@ -32,8 +33,8 @@ class TestCriterionResource:
 
     def test_export_criterion_with_tags(self, audit_library, criterion):
         """Test the export of a criterion with its tags."""
-        tag1 = Tag.objects.create(name="Tag 1")
-        tag2 = Tag.objects.create(name="Tag 2")
+        tag1 = TagFactory(name="Tag 1")
+        tag2 = TagFactory(name="Tag 2")
         criterion.tags.add(tag1, tag2)
 
         resource = CriterionResource()
@@ -98,7 +99,7 @@ class TestCriterionResource:
         assert len(criterion.tags.all()) == 3
 
     def test_import_criterion_existing_tags(self, audit_library):
-        Tag.objects.create(name="Existing Tag")
+        TagFactory(name="Existing Tag")
 
         dataset = Dataset()
         dataset.headers = [
@@ -186,8 +187,8 @@ class TestCriterionResource:
         assert "Tag 1" in [tag.name for tag in criterion.tags.all()]
 
     def test_import_criterion_tags_cleared_before_add(self, audit_library, criterion):
-        tag1 = Tag.objects.create(name="Old Tag 1")
-        tag2 = Tag.objects.create(name="Old Tag 2")
+        tag1 = TagFactory(name="Old Tag 1")
+        tag2 = TagFactory(name="Old Tag 2")
         criterion.tags.add(tag1, tag2)
 
         # Import with new tags
