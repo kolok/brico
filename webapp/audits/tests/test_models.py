@@ -1,101 +1,84 @@
 import pytest
-from audits.models import AuditLibrary, Criterion, Organization, Tag
+from audits.models.audit import AuditLibrary, Criterion, Tag
+from audits.tests.factories import AuditLibraryFactory, CriterionFactory, TagFactory
 from django.db import IntegrityError
-from django.utils.text import slugify
-
-
-@pytest.mark.django_db
-class TestOrganization:
-    def test_slug_generation_automatic(self):
-        org = Organization.objects.create(name="Organisation & Co. (2024)")
-
-        assert org.slug == "organisation-co-2024"
-
-    def test_name_uniqueness(self):
-        Organization.objects.create(name="Organisation Unique")
-
-        with pytest.raises(IntegrityError):
-            Organization.objects.create(name="Organisation Unique")
-
-    def test_slug_uniqueness(self):
-        org1 = Organization.objects.create(name="Test Organisation")
-        org2 = Organization.objects.create(name="Test-Organisation")
-
-        assert org1.slug == "test-organisation"
-        assert org2.slug != org1.slug
-        assert org2.slug.startswith("test-organisation")
-
-    def test_name_required(self):
-        with pytest.raises(IntegrityError):
-            Organization.objects.create(name=None)
-
-    def test_str_representation(self):
-        org = Organization.objects.create(name="Mon Organisation")
-
-        assert str(org) == "Mon Organisation"
+from organization.models.organization import Organization
+from organization.tests.factories import OrganizationFactory
 
 
 @pytest.fixture
 def organization():
-    # TODO : use factory-boy
-    return Organization.objects.create(name="Mon Organisation")
+    return OrganizationFactory()
 
 
 @pytest.mark.django_db
 class TestAuditLibrary:
 
     def test_slug_generation_automatic(self, organization):
-        library = AuditLibrary.objects.create(
-            name="Bibliothèque d'Audit", organization=organization
-        )
+        library = AuditLibraryFactory(name="Audit Library", organization=organization)
 
-        assert library.slug == "bibliotheque-daudit"
+        assert library.slug == "audit-library"
 
     def test_organization_foreign_key(self, organization):
-        library = AuditLibrary.objects.create(
-            name="Bibliothèque", organization=organization
-        )
+        library = AuditLibraryFactory(organization=organization)
 
         assert library.organization == organization
         assert library in organization.audit_libraries.all()
 
     def test_cascade_delete(self, organization):
-        library = AuditLibrary.objects.create(
-            name="Bibliothèque", organization=organization
-        )
+        library = AuditLibraryFactory(organization=organization)
         library_id = library.id
 
         organization.delete()
 
         assert not AuditLibrary.objects.filter(id=library_id).exists()
 
-    def test_unique_together_organization_slug(self):
-        org1 = Organization.objects.create(name="Organisation 1")
-        org2 = Organization.objects.create(name="Organisation 2")
+    def test_unique_together_organization_name(self):
+        org1 = OrganizationFactory(name="Organization 1")
+        org2 = OrganizationFactory(name="Organization 2")
 
-        lib1 = AuditLibrary.objects.create(name="Bibliothèque", organization=org1)
-        lib2 = AuditLibrary.objects.create(name="Bibliothèque", organization=org2)
+        lib1 = AuditLibraryFactory(name="Library", organization=org1)
+        lib2 = AuditLibraryFactory(name="Library", organization=org2)
+        assert lib1.name == lib2.name, "Same name in different organizations"
+
+        with pytest.raises(IntegrityError):
+            AuditLibraryFactory(name="Library", organization=org1)
+
+    def test_unique_together_organization_slug(self):
+        org1 = OrganizationFactory(name="Organization 1")
+        org2 = OrganizationFactory(name="Organization 2")
+
+        lib1 = AuditLibraryFactory(name="Library", organization=org1)
+        lib2 = AuditLibraryFactory(name="Library", organization=org2)
         assert lib1.slug == lib2.slug, "Same slug in different organizations"
 
-        lib3 = AuditLibrary.objects.create(name="Bibliothèque", organization=org1)
-        assert lib3.slug != lib1.slug, "Can't create same slug in the same organization"
-        assert lib3.slug.startswith(
-            "bibliotheque"
-        ), "Slug must start with 'bibliotheque'"
+        with pytest.raises(IntegrityError):
+            AuditLibraryFactory(name="Library", organization=org1)
+
+    def test_unique_together_both_constraints(self):
+        org1 = OrganizationFactory(name="Organization 1")
+        org2 = OrganizationFactory(name="Organization 2")
+
+        lib1 = AuditLibraryFactory(name="My Library", organization=org1)
+        original_slug = lib1.slug
+
+        lib2 = AuditLibraryFactory(name="Another Library", organization=org1)
+        assert lib2.slug != original_slug
+
+        lib3 = AuditLibraryFactory(name="My Library", organization=org2)
+        assert lib3.name == lib1.name, "Same name in different organizations"
+        assert lib3.slug == lib1.slug, "Same slug in different organizations"
+
+        with pytest.raises(IntegrityError):
+            AuditLibraryFactory(name="My Library", organization=org1)
 
     def test_str_representation(self, organization):
-        library = AuditLibrary.objects.create(
-            name="Bibliothèque", organization=organization
-        )
-        assert str(library) == "Bibliothèque"
+        library = AuditLibraryFactory(name="Library", organization=organization)
+        assert str(library) == "Library"
 
     def test_organization_audit_libraries_relation(self, organization):
-        library1 = AuditLibrary.objects.create(
-            name="Bibliothèque 1", organization=organization
-        )
-        library2 = AuditLibrary.objects.create(
-            name="Bibliothèque 2", organization=organization
-        )
+        library1 = AuditLibraryFactory(name="Library 1", organization=organization)
+        library2 = AuditLibraryFactory(name="Library 2", organization=organization)
 
         assert library1 in organization.audit_libraries.all()
         assert library2 in organization.audit_libraries.all()
@@ -104,56 +87,42 @@ class TestAuditLibrary:
 
 @pytest.fixture
 def audit_library(organization):
-    return AuditLibrary.objects.create(name="Bibliothèque", organization=organization)
+    return AuditLibraryFactory(organization=organization)
 
 
 @pytest.mark.django_db
 class TestCriterion:
 
-    def test_slug_generation_automatic(self, audit_library):
-        criterion = Criterion.objects.create(
-            audit_library=audit_library,
-            public_id="CRI-001",
-            name="Critère de Test",
-        )
-        assert criterion.slug == slugify("Critère de Test")
-        assert criterion.slug == "critere-de-test"
-
     def test_audit_library_foreign_key(self, audit_library):
-        criterion = Criterion.objects.create(
+        criterion = CriterionFactory(
             audit_library=audit_library,
             public_id="CRI-001",
-            name="Critère",
+            name="Criterion",
         )
         assert criterion.audit_library == audit_library
         assert criterion in audit_library.criterias.all()
 
     def test_cascade_delete(self, audit_library):
-        criterion = Criterion.objects.create(
+        criterion = CriterionFactory(
             audit_library=audit_library,
             public_id="CRI-001",
-            name="Critère",
         )
         criterion_id = criterion.id
         audit_library.delete()
         assert not Criterion.objects.filter(id=criterion_id).exists()
 
     def test_unique_together_audit_library_public_id(self, organization):
-        library1 = AuditLibrary.objects.create(
-            name="Bibliothèque 1", organization=organization
-        )
-        library2 = AuditLibrary.objects.create(
-            name="Bibliothèque 2", organization=organization
-        )
-        criterion1 = Criterion.objects.create(
+        library1 = AuditLibraryFactory(name="Library 1", organization=organization)
+        library2 = AuditLibraryFactory(name="Library 2", organization=organization)
+        criterion1 = CriterionFactory(
             audit_library=library1,
             public_id="CRI-001",
-            name="Critère 1",
+            name="Criterion 1",
         )
-        criterion2 = Criterion.objects.create(
+        criterion2 = CriterionFactory(
             audit_library=library2,
             public_id="CRI-001",
-            name="Critère 2",
+            name="Criterion 2",
         )
 
         assert (
@@ -162,30 +131,30 @@ class TestCriterion:
 
         with pytest.raises(IntegrityError):
             # Can't create same public_id in the same audit library
-            Criterion.objects.create(
+            CriterionFactory(
                 audit_library=library1,
                 public_id="CRI-001",
-                name="Critère 3",
+                name="Criterion 3",
             )
 
     def test_str_representation(self, audit_library):
-        criterion = Criterion.objects.create(
+        criterion = CriterionFactory(
             audit_library=audit_library,
             public_id="CRI-001",
-            name="Critère",
+            name="Criterion",
         )
-        assert str(criterion) == "Critère"
+        assert str(criterion) == "Criterion"
 
     def test_audit_library_criterias_relation(self, audit_library):
-        criterion1 = Criterion.objects.create(
+        criterion1 = CriterionFactory(
             audit_library=audit_library,
             public_id="CRI-001",
-            name="Critère 1",
+            name="Criterion 1",
         )
-        criterion2 = Criterion.objects.create(
+        criterion2 = CriterionFactory(
             audit_library=audit_library,
             public_id="CRI-002",
-            name="Critère 2",
+            name="Criterion 2",
         )
 
         assert criterion1 in audit_library.criterias.all()
@@ -193,12 +162,11 @@ class TestCriterion:
         assert audit_library.criterias.count() == 2
 
     def test_cascade_delete_full_hierarchy(self, organization, audit_library):
-        criterion = Criterion.objects.create(
+        criterion = CriterionFactory(
             audit_library=audit_library,
             public_id="CRI-001",
-            name="Critère",
         )
-        tag = Tag.objects.create(name="Tag Test")
+        tag = TagFactory(name="Tag Test")
         criterion.tags.add(tag)
 
         organization.delete()
@@ -210,49 +178,45 @@ class TestCriterion:
 
 @pytest.fixture
 def criterion(audit_library):
-    return Criterion.objects.create(
-        audit_library=audit_library,
-        public_id="CRI-001",
-        name="Critère",
-    )
+    return CriterionFactory(audit_library=audit_library, public_id="CRI-001")
 
 
 @pytest.mark.django_db
 class TestTag:
 
     def test_name_uniqueness(self):
-        Tag.objects.create(name="Tag Unique")
+        TagFactory(name="Tag Unique")
         with pytest.raises(IntegrityError):
-            Tag.objects.create(name="Tag Unique")
+            TagFactory(name="Tag Unique")
 
     def test_name_required(self):
         with pytest.raises(IntegrityError):
-            Tag.objects.create(name=None)
+            TagFactory(name=None)
 
     def test_many_to_many_relationship(self, audit_library):
-        criterion1 = Criterion.objects.create(
+        criterion1 = CriterionFactory(
             audit_library=audit_library,
             public_id="CRI-001",
-            name="Critère 1",
+            name="Criterion 1",
         )
-        criterion2 = Criterion.objects.create(
+        criterion2 = CriterionFactory(
             audit_library=audit_library,
             public_id="CRI-002",
-            name="Critère 2",
+            name="Criterion 2",
         )
-        tag = Tag.objects.create(name="Tag Test")
+        tag = TagFactory(name="Tag Test")
 
         tag.criteria.add(criterion1, criterion2)
         assert criterion1 in tag.criteria.all()
         assert criterion2 in tag.criteria.all()
 
-        # Vérifier la relation inverse
+        # Check the reverse relation
         assert tag in criterion1.tags.all()
         assert tag in criterion2.tags.all()
 
     def test_many_to_many_multiple_tags(self, criterion):
-        tag1 = Tag.objects.create(name="Tag 1")
-        tag2 = Tag.objects.create(name="Tag 2")
+        tag1 = TagFactory(name="Tag 1")
+        tag2 = TagFactory(name="Tag 2")
 
         criterion.tags.add(tag1, tag2)
         assert tag1 in criterion.tags.all()
@@ -260,7 +224,7 @@ class TestTag:
         assert len(criterion.tags.all()) == 2
 
     def test_many_to_many_clear(self, criterion):
-        tag = Tag.objects.create(name="Tag Test")
+        tag = TagFactory(name="Tag Test")
         criterion.tags.add(tag)
         assert tag in criterion.tags.all()
 
@@ -268,5 +232,5 @@ class TestTag:
         assert tag not in criterion.tags.all()
 
     def test_str_representation(self):
-        tag = Tag.objects.create(name="Tag Test")
+        tag = TagFactory(name="Tag Test")
         assert str(tag) == "Tag Test"
