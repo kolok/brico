@@ -110,11 +110,11 @@ def project(organization):
 
 @pytest.mark.django_db
 class TestResource:
-    def test_resource_type_nullable(self, project):
-        """Test que le type peut être None."""
-        resource = Resource.objects.create(name="Resource Sans Type", project=project)
-
-        assert resource.type is None
+    def test_resource_type_cant_be_null(self, project):
+        with pytest.raises(IntegrityError):
+            Resource.objects.create(
+                name="Resource Sans Type", type=None, project=project
+            )
 
     def test_project_foreign_key(self, project):
         resource = Resource.objects.create(

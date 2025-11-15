@@ -6,15 +6,18 @@ from organization.models.organization import Organization, Project, Resource
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ("name", "slug")
     search_fields = ("name", "slug")
+    readonly_fields = ("slug", "created_at", "updated_at")
 
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug")
-    search_fields = ("name", "slug")
+    list_display = ("name", "slug", "organization")
+    search_fields = ("name", "slug", "organization__name")
+    readonly_fields = ("slug", "created_at", "updated_at")
 
 
 @admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
-    list_display = ("name", "type")
-    search_fields = ("name", "type")
+    list_display = ("name", "type", "project", "project__organization")
+    search_fields = ("name", "type", "project__name", "project__organization__name")
+    readonly_fields = ("created_at", "updated_at")

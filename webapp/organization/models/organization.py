@@ -39,8 +39,8 @@ class Resource(TimestampedModel, models.Model):
         Project, on_delete=models.CASCADE, related_name="resources"
     )
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, choices=ResourceType.choices, null=True)
-    url = models.URLField(blank=True, default="", null=True)
+    type = models.CharField(max_length=255, choices=ResourceType.choices)
+    url = models.URLField(blank=True, default="", null=False)
     description = models.TextField(blank=True, default="", null=False)
 
     def __str__(self):

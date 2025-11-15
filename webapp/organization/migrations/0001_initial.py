@@ -76,10 +76,10 @@ class Migration(migrations.Migration):
                             ("business_documentation", "Business Documentation"),
                         ],
                         max_length=255,
-                        null=True,
+                        null=False,
                     ),
                 ),
-                ("url", models.URLField(blank=True, default="", null=True)),
+                ("url", models.URLField(blank=True, default="", null=False)),
                 ("description", models.TextField(blank=True, default="")),
                 (
                     "project",
