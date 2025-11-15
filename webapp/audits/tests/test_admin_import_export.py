@@ -7,18 +7,18 @@ from tablib import Dataset
 
 @pytest.fixture
 def organization():
-    return Organization.objects.create(name="Mon Organisation")
+    return Organization.objects.create(name="My Organization")
 
 
 @pytest.fixture
 def audit_library(organization):
-    return AuditLibrary.objects.create(name="Bibliothèque", organization=organization)
+    return AuditLibrary.objects.create(name="Library", organization=organization)
 
 
 @pytest.fixture
 def criterion(audit_library):
     return Criterion.objects.create(
-        audit_library=audit_library, public_id="CRI-001", name="Critère Test"
+        audit_library=audit_library, public_id="CRI-001", name="Test Criterion"
     )
 
 
@@ -31,7 +31,7 @@ def tag():
 class TestCriterionResource:
 
     def test_export_criterion_with_tags(self, audit_library, criterion):
-        """Test l'export d'un critère avec ses tags."""
+        """Test the export of a criterion with its tags."""
         tag1 = Tag.objects.create(name="Tag 1")
         tag2 = Tag.objects.create(name="Tag 2")
         criterion.tags.add(tag1, tag2)
@@ -42,7 +42,7 @@ class TestCriterionResource:
         assert len(dataset) == 1
         exported_row = dataset[0]
 
-        assert exported_row[dataset.headers.index("name")] == "Critère Test"
+        assert exported_row[dataset.headers.index("name")] == "Test Criterion"
         assert exported_row[dataset.headers.index("public_id")] == "CRI-001"
 
         audit_library_index = dataset.headers.index("audit_library")
@@ -74,7 +74,7 @@ class TestCriterionResource:
         dataset.append(
             [
                 "CRI-002",
-                "Nouveau Critère",
+                "New Criterion",
                 "Description",
                 audit_library.slug,
                 "Tag 1, Tag 2, Tag 3",
@@ -88,7 +88,7 @@ class TestCriterionResource:
         assert result.totals["new"] == 1
 
         criterion = Criterion.objects.get(public_id="CRI-002")
-        assert criterion.name == "Nouveau Critère"
+        assert criterion.name == "New Criterion"
         assert criterion.audit_library == audit_library
 
         tag_names = [tag.name for tag in criterion.tags.all()]
@@ -98,7 +98,7 @@ class TestCriterionResource:
         assert len(criterion.tags.all()) == 3
 
     def test_import_criterion_existing_tags(self, audit_library):
-        Tag.objects.create(name="Tag Existant")
+        Tag.objects.create(name="Existing Tag")
 
         dataset = Dataset()
         dataset.headers = [
@@ -111,10 +111,10 @@ class TestCriterionResource:
         dataset.append(
             [
                 "CRI-003",
-                "Critère avec Tags Existants",
+                "Criterion with Existing Tags",
                 "Description",
                 audit_library.slug,
-                "Tag Existant, Nouveau Tag",
+                "Existing Tag, New Tag",
             ]
         )
 
@@ -125,9 +125,9 @@ class TestCriterionResource:
         criterion = Criterion.objects.get(public_id="CRI-003")
 
         tag_names = [tag.name for tag in criterion.tags.all()]
-        assert "Tag Existant" in tag_names
-        assert "Nouveau Tag" in tag_names
-        assert Tag.objects.filter(name="Tag Existant").count() == 1
+        assert "Existing Tag" in tag_names
+        assert "New Tag" in tag_names
+        assert Tag.objects.filter(name="Existing Tag").count() == 1
 
     @pytest.mark.django_db
     def test_import_criterion_invalid_audit_library(self):
@@ -142,7 +142,7 @@ class TestCriterionResource:
         dataset.append(
             [
                 "CRI-005",
-                "Critère",
+                "Criterion",
                 "Description",
                 "slug-inexistant",
                 "",
@@ -152,7 +152,7 @@ class TestCriterionResource:
         resource = CriterionResource()
         result = resource.import_data(dataset, dry_run=False)
 
-        # L'import doit échouer car l'audit_library n'existe pas
+        # The import must fail because the audit_library does not exist
         assert result.has_errors() or result.totals["error"] > 0
 
     def test_import_criterion_update_existing(self, audit_library, criterion):
@@ -170,8 +170,8 @@ class TestCriterionResource:
             [
                 criterion.id,
                 criterion.public_id,
-                "Critère Modifié",
-                "Nouvelle description",
+                "Modified Criterion",
+                "New description",
                 audit_library.slug,
                 "Tag 1",
             ]
@@ -181,16 +181,16 @@ class TestCriterionResource:
         resource.import_data(dataset, dry_run=False)
 
         criterion.refresh_from_db()
-        assert criterion.name == "Critère Modifié"
-        assert criterion.description == "Nouvelle description"
+        assert criterion.name == "Modified Criterion"
+        assert criterion.description == "New description"
         assert "Tag 1" in [tag.name for tag in criterion.tags.all()]
 
     def test_import_criterion_tags_cleared_before_add(self, audit_library, criterion):
-        tag1 = Tag.objects.create(name="Ancien Tag 1")
-        tag2 = Tag.objects.create(name="Ancien Tag 2")
+        tag1 = Tag.objects.create(name="Old Tag 1")
+        tag2 = Tag.objects.create(name="Old Tag 2")
         criterion.tags.add(tag1, tag2)
 
-        # Importer avec de nouveaux tags
+        # Import with new tags
         dataset = Dataset()
         dataset.headers = [
             "id",
@@ -204,10 +204,10 @@ class TestCriterionResource:
             [
                 criterion.id,
                 criterion.public_id,
-                "Critère",
+                "Criterion",
                 "Description",
                 audit_library.slug,
-                "Nouveau Tag 1, Nouveau Tag 2",
+                "New Tag 1, New Tag 2",
             ]
         )
 
@@ -216,17 +216,17 @@ class TestCriterionResource:
 
         criterion.refresh_from_db()
         tag_names = [tag.name for tag in criterion.tags.all()]
-        assert "Ancien Tag 1" not in tag_names
-        assert "Ancien Tag 2" not in tag_names
-        assert "Nouveau Tag 1" in tag_names
-        assert "Nouveau Tag 2" in tag_names
+        assert "Old Tag 1" not in tag_names
+        assert "Old Tag 2" not in tag_names
+        assert "New Tag 1" in tag_names
+        assert "New Tag 2" in tag_names
 
     def test_export_excludes_timestamps(self, criterion):
 
         resource = CriterionResource()
         dataset = resource.export(Criterion.objects.filter(id=criterion.id))
 
-        # Vérifier que created_at et updated_at ne sont pas dans les headers
+        # Check that created_at and updated_at are not in the headers
         assert "created_at" not in dataset.headers
         assert "updated_at" not in dataset.headers
 
@@ -243,7 +243,7 @@ class TestCriterionResource:
         dataset.append(
             [
                 "CRI-009",
-                "Critère Sans Tags",
+                "Criterion Without Tags",
                 "Description",
                 audit_library.slug,
                 "",

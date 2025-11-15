@@ -18,9 +18,12 @@ class Project(TimestampedModel, models.Model):
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="projects"
     )
-    name = models.CharField(max_length=255, unique=True, null=False, blank=False)
+    name = models.CharField(max_length=255, null=False, blank=False)
     slug = AutoSlugField(populate_from="name")  # type: ignore
     description = models.TextField(blank=True, default="", null=False)
+
+    class Meta:
+        unique_together = [("organization", "name"), ("organization", "slug")]
 
     def __str__(self):
         return self.name

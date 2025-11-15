@@ -10,15 +10,12 @@ class CriterionResource(resources.ModelResource):
     audit_library = fields.Field(column_name="audit_library", attribute="audit_library")
 
     def dehydrate_audit_library(self, criteria):
-        """Export the audit library slug"""
         return criteria.audit_library.slug if criteria.audit_library else ""
 
     def dehydrate_tags(self, criteria):
-        """Dehydrate the tags field"""
         return ", ".join([tag.name for tag in criteria.tags.all()])
 
     def before_import_row(self, row, **kwargs):
-        """Manage the audit library while importing"""
         if "audit_library" in row and row["audit_library"]:
             slug = slugify(row["audit_library"])
             row["audit_library"] = AuditLibrary.objects.get(slug=slug)
@@ -48,13 +45,15 @@ class AuditLibraryAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "organization")
     search_fields = ("name", "slug", "organization__name")
     list_filter = ("organization",)
+    readonly_fields = ("slug", "created_at", "updated_at")
 
 
 @admin.register(Criterion)
 class CriterionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = CriterionResource
-    list_display = ("name", "slug", "audit_library")
-    search_fields = ("name", "slug", "audit_library__name")
+    list_display = ("name", "audit_library")
+    search_fields = ("name", "audit_library__name")
+    readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(Tag)
@@ -62,3 +61,4 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ("name",)
     filter_horizontal = ("criteria",)
+    readonly_fields = ("created_at", "updated_at")

@@ -16,7 +16,7 @@ class AuditLibrary(TimestampedModel, models.Model):
 
     class Meta:
         verbose_name_plural = "Audit Libraries"
-        unique_together = ("organization", "slug")
+        unique_together = [("organization", "name"), ("organization", "slug")]
 
     def __str__(self):
         return self.name
@@ -30,7 +30,6 @@ class Criterion(TimestampedModel, models.Model):
     )
     public_id = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
-    slug = AutoSlugField(populate_from="name")  # type: ignore
     description = models.TextField(blank=True, default="", null=False)
 
     class Meta:
