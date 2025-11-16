@@ -62,5 +62,6 @@
             "source.fixAll.eslint": "explicit"
         }
     },
-    "ruff.configuration": "${workspaceFolder}/webapp/pyproject.toml"
+    "ruff.configuration": "${workspaceFolder}/webapp/pyproject.toml",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
