@@ -21,7 +21,7 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("audits/", include("audits.urls")),
+    path("audits/", include(("audits.urls", "audits"), namespace="audits")),
     # Auth interface
     path("accounts/", include("allauth.urls")),
     # Include the API endpoints

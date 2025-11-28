@@ -1,0 +1,17 @@
+{% extends 'layout/base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "My Projects - Brico" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1>{% translate "My Projects" %}</h1>
+    <ul>
+        {% for project in object_list %}
+            <li><a href="{% url 'audits:project_detail' project.slug %}">{{ project.name }}</a></li>
+        {% empty %}
+            <li>{% translate "No projects yet." %}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock content %}
