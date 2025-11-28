@@ -50,7 +50,9 @@
     "eslint": "^9.39.1",
     "parcel": "^2.16.1",
     "postcss-nesting": "^13.0.1",
+    "postcss": "^8.5.6",
     "prettier": "^3.7.3",
+    "tailwindcss-animate": "^1.0.7",
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

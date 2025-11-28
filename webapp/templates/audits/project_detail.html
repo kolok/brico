@@ -20,13 +20,13 @@
     <ul>
         {% for audit in project.audits.all %}
             <li>{{ audit.audit_library.name }} →
-                <a href="{% url 'audits:audit_detail' audit.id %}">edit</a>
-                <a href="{% url 'audits:audit_delete' audit.id %}">delete</a>
+                <a href="{% url 'audits:audit_detail' project.slug audit.id %}">edit</a>
+                <a href="{% url 'audits:audit_delete' project.slug audit.id %}">delete</a>
             </li>
         {% empty %}
             <li>{% translate "No audits yet." %}</li>
         {% endfor %}
     </ul>
-    <a href="{% url 'audits:new_audit' project.id %}" class="btn btn-primary">{% translate "Start Audit" %}</a>
+    <a href="{% url 'audits:new_audit' project.slug %}" class="btn btn-primary">{% translate "Start Audit" %}</a>
 </div>
 {% endblock content %}

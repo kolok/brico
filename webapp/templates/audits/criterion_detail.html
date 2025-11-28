@@ -1,0 +1,34 @@
+{% extends 'layout/base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Criterion Detail - Brico" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1>{{ criterion.criterion.name }}</h1>
+    <p>{{ criterion.criterion.description }}</p>
+    <p>{% translate "Status:" %} {{ criterion.get_status_display }}</p>
+
+    <turbo-frame id="comments_frame" src="{% url 'audits:comments_list' project.slug audit.id criterion.id %}">
+        <div class="flex items-center justify-center py-8">
+            <div class="text-gray-500">{% translate "Loading comments..." %}</div>
+        </div>
+    </turbo-frame>
+
+    <h2>{% translate "Discussion with AI" %}</h2>
+    <turbo-frame id="prompts_frame" src="{% url 'audits:prompt' project.slug audit.id criterion.id %}?session_id={{ session_id }}">
+        <div class="flex items-center justify-center py-8">
+            <div class="text-gray-500">{% translate "Loading prompts..." %}</div>
+        </div>
+    </turbo-frame>
+
+    <h2>{% translate "Prompts history" %}</h2>
+    <ul>
+        {% for prompt in criterion.prompts.all %}
+            <li><a href="{% url 'audits:criterion_detail' project.slug audit.id criterion.id %}?session_id={{ prompt.session_id }}" data-turbo-frame="prompts_frame">{{ prompt }}</a></li>
+        {% empty %}
+            <li>{% translate "No prompts yet." %}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock content %}

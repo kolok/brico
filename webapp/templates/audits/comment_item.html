@@ -1,0 +1,27 @@
+{% load i18n %}
+
+<turbo-frame id="comment_{{ comment.id }}">
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <div class="flex justify-between items-start mb-2">
+            <div>
+                <p class="font-semibold text-gray-800">{{ comment.user.username }}</p>
+                <p class="text-sm text-gray-500">{{ comment.created_at|date:"d/m/Y H:i" }}</p>
+            </div>
+            {% if comment.user == user %}
+                <div class="flex gap-2">
+                    <a href="{% url 'audits:comment_update' project.slug audit.id criterion.id comment.id %}"
+                       class="text-blue-600 hover:text-blue-800 text-sm"
+                       data-turbo-frame="comment_{{ comment.id }}">
+                        {% translate "Edit" %}
+                    </a>
+                    <a href="{% url 'audits:comment_delete' project.slug audit.id criterion.id comment.id %}"
+                       class="text-red-600 hover:text-red-800 text-sm"
+                       data-turbo-frame="comment_{{ comment.id }}">
+                        {% translate "Delete" %}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        <p class="text-gray-700 whitespace-pre-wrap">{{ comment.comment }}</p>
+    </div>
+</turbo-frame>

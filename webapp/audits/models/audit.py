@@ -1,3 +1,5 @@
+import uuid
+
 from audits.models.chat import User
 from core.models.mixin import TimestampedModel
 from django.db import models
@@ -62,10 +64,10 @@ class ProjectAudit(TimestampedModel, models.Model):
 
 class ProjectAuditCriterion(TimestampedModel, models.Model):
     class ProjectAuditCriterionStatus(models.TextChoices):
-        NOT_HANDLED_YET = "NOT_HANDLED_YET", "Not Handled Yet"
-        NOT_COMPLIANT = "NOT_COMPLIANT", "Not Compliant"
-        PARTIALLY_COMPLIANT = "PARTIALLY_COMPLIANT", "Partially Compliant"
-        COMPLIANT = "COMPLIANT", "Compliant"
+        NOT_HANDLED_YET = "NOT_HANDLED_YET", "⚪️ Not Handled Yet"
+        NOT_COMPLIANT = "NOT_COMPLIANT", "🔴 Not Compliant"
+        PARTIALLY_COMPLIANT = "PARTIALLY_COMPLIANT", "🟡 Partially Compliant"
+        COMPLIANT = "COMPLIANT", "🟢 Compliant"
 
     id = models.AutoField(primary_key=True)
     project_audit = models.ForeignKey(
@@ -94,7 +96,12 @@ class ProjectAuditCriterionComment(TimestampedModel, models.Model):
 
 class ProjectAuditCriterionPrompt(TimestampedModel, models.Model):
     id = models.AutoField(primary_key=True)
+    session_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     project_audit_criterion = models.ForeignKey(
         ProjectAuditCriterion, on_delete=models.CASCADE, related_name="prompts"
     )
+    name = models.CharField(max_length=255, default="Prompt")
     prompt = models.JSONField(blank=True, default=dict, null=False)
+
+    def __str__(self):
+        return f"{self.name} ({self.created_at.strftime('%Y-%m-%d %H:%M:%S')})"

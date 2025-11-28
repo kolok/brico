@@ -1,0 +1,27 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView, ListView
+from organization.models.organization import Project
+
+
+class ProjectListView(LoginRequiredMixin, ListView):
+    """Liste tous les projets de l'utilisateur."""
+
+    model = Project
+    template_name = "audits/project_list.html"
+    context_object_name = "projects"
+    paginate_by = 20
+
+    def get_queryset(self):
+        return Project.objects.all()
+
+
+class ProjectDetailView(LoginRequiredMixin, DetailView):
+    """Affiche les détails d'un projet."""
+
+    model = Project
+    template_name = "audits/project_detail.html"
+    context_object_name = "project"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.prefetch_related("resources", "audits", "audits__criteria")
