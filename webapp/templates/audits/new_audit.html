@@ -1,0 +1,15 @@
+{% extends 'layout/base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "New Audit - Brico" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1>{{ project.name }} - {% translate "New Audit" %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">{% translate "Create Audit" %}</button>
+    </form>
+</div>
+{% endblock content %}

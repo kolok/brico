@@ -1,0 +1,32 @@
+{% extends 'layout/base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Project Detail - Brico" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1>{% translate "Project Detail" %}</h1>
+    <p>{{ project.name }}</p>
+    <p>{{ project.description }}</p>
+    <h2>{% translate "Resources" %}</h2>
+    <ul>
+        {% for resource in project.resources.all %}
+            <li>{{ resource.name }}</li>
+        {% empty %}
+            <li>{% translate "No resources yet." %}</li>
+        {% endfor %}
+    </ul>
+    <h2>{% translate "Audits" %}</h2>
+    <ul>
+        {% for audit in project.audits.all %}
+            <li>{{ audit.audit_library.name }} →
+                <a href="{% url 'audits:audit_detail' audit.id %}">edit</a>
+                <a href="{% url 'audits:audit_delete' audit.id %}">delete</a>
+            </li>
+        {% empty %}
+            <li>{% translate "No audits yet." %}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'audits:new_audit' project.id %}" class="btn btn-primary">{% translate "Start Audit" %}</a>
+</div>
+{% endblock content %}

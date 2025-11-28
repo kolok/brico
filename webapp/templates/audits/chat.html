@@ -1,0 +1,97 @@
+{% extends 'layout/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ conversation.title }}{% endblock %}
+
+{% block content %}
+<div class="flex h-[calc(100vh-4rem)]" data-controller="chat" data-chat-conversation-id-value="{{ conversation.id }}">
+    <!-- Sidebar avec liste des conversations -->
+    <div class="w-64 bg-gray-100 border-r border-gray-300 overflow-y-auto">
+        <div class="p-4">
+            <a href="{% url 'audits:new_conversation' %}"
+               class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition mb-4">
+                {% translate "Nouvelle conversation" %}
+            </a>
+            <a href="{% url 'audits:chat_list' %}"
+               class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg text-center transition">
+                {% translate "Toutes les conversations" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Zone de chat principale -->
+    <div class="flex-1 flex flex-col bg-white">
+        <!-- En-tête -->
+        <div class="bg-white border-b border-gray-200 px-6 py-4">
+            <h2 class="text-xl font-semibold" data-chat-target="title">{{ conversation.title }}</h2>
+        </div>
+
+        <!-- Messages -->
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4" data-chat-target="messages">
+            {% for message in messages %}
+                {% if message.role == "user" %}
+                    <div class="flex justify-end">
+                        <div class="bg-blue-600 text-white rounded-lg px-4 py-2 max-w-2xl">
+                            <div class="whitespace-pre-wrap">{{ message.content }}</div>
+                            <div class="text-xs text-blue-200 mt-1">{{ message.created|date:"H:i" }}</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex justify-start">
+                        <div class="bg-gray-100 text-gray-800 rounded-lg px-4 py-2 max-w-2xl">
+                            <div class="prose prose-sm max-w-none" data-chat-target="markdown">{{ message.content }}</div>
+                            <div class="text-xs text-gray-500 mt-1">{{ message.created|date:"H:i" }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Message de chargement -->
+            <div class="hidden" data-chat-target="loading">
+                <div class="flex justify-start">
+                    <div class="bg-gray-100 text-gray-800 rounded-lg px-4 py-2">
+                        <div class="flex space-x-2">
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zone de saisie -->
+        <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
+            <form data-action="submit->chat#sendMessage" class="flex space-x-4">
+                <input type="text"
+                       data-chat-target="input"
+                       placeholder="{% translate 'Posez votre question à Claude...' %}"
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       autocomplete="off"
+                       required>
+                <button type="submit"
+                        data-chat-target="submitButton"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    {% translate "Envoyer" %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Animation pour les points de chargement */
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-0.5rem);
+        }
+    }
+
+    .animate-bounce {
+        animation: bounce 1s infinite;
+    }
+</style>
+{% endblock content %}

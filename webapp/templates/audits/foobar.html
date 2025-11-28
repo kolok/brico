@@ -1,0 +1,18 @@
+{% extends 'layout/base.html' %}
+{% load i18n %}
+
+{% block title %}Title{% endblock %}
+
+{% block content %}
+
+    {% include "components/messages.html" %}
+
+    <turbo-frame id="choose-criterion">
+        {% include "components/messages.html" %}
+        <form method="post" data-controller="choose-criterion" data-turbo-frame="choose-criterion">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" data-choose-criterion-target="button">{% translate "Submit" %}</button>
+        </form>
+    </turbo-frame>
+{% endblock content %}
