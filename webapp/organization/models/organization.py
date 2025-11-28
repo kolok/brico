@@ -31,11 +31,11 @@ class Project(TimestampedModel, models.Model):
 
 class Resource(TimestampedModel, models.Model):
     class ResourceType(models.TextChoices):
-        FRONTEND_CODE = "frontend_code"
-        BACKEND_CODE = "backend_code"
-        INFRASTRUCTURE = "infrastructure"
-        TECHNICAL_DOCUMENTATION = "technical_documentation"
-        BUSINESS_DOCUMENTATION = "business_documentation"
+        FRONTEND_CODE = "frontend_code", "Frontend Code"
+        BACKEND_CODE = "backend_code", "Backend Code"
+        INFRASTRUCTURE = "infrastructure", "Infrastructure"
+        TECHNICAL_DOCUMENTATION = "technical_documentation", "Technical Documentation"
+        BUSINESS_DOCUMENTATION = "business_documentation", "Business Documentation"
 
     id = models.AutoField(primary_key=True)
     project = models.ForeignKey(

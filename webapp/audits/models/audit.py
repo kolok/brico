@@ -19,7 +19,14 @@ class AuditLibrary(TimestampedModel, models.Model):
 
     class Meta:
         verbose_name_plural = "Audit Libraries"
-        unique_together = [("organization", "name"), ("organization", "slug")]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["organization", "name"], name="unique_organization_name"
+            ),
+            models.UniqueConstraint(
+                fields=["organization", "slug"], name="unique_organization_slug"
+            ),
+        ]
 
     def __str__(self):
         return self.name

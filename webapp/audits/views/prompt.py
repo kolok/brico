@@ -1,4 +1,5 @@
 import uuid
+from pathlib import Path
 
 from audits.forms import PromptForm
 from audits.models.audit import (
@@ -6,6 +7,7 @@ from audits.models.audit import (
     ProjectAuditCriterion,
     ProjectAuditCriterionPrompt,
 )
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -13,6 +15,23 @@ from django.views import View
 from django.views.generic import FormView
 from organization.models.organization import Project
 from pydantic_ai import Agent
+
+
+def load_system_prompt(
+    criterion_name: str,
+    criterion_description: str,
+    ressources: str,
+    language: str,
+) -> str:
+    prompt_path = Path(settings.BASE_DIR) / "audits" / "prompts" / "system_prompt.md"
+    with open(prompt_path, "r", encoding="utf-8") as f:
+        prompt_template = f.read()
+    return prompt_template.format(
+        criterion_name=criterion_name,
+        criterion_description=criterion_description,
+        ressources=ressources,
+        language=language,
+    )
 
 
 class PromptParentMixin(View):
@@ -30,8 +49,6 @@ class PromptParentMixin(View):
 
 
 class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
-    """API pour envoyer un message à l'IA et recevoir une réponse."""
-
     form_class = PromptForm
     template_name = "audits/prompt.html"
 
@@ -40,7 +57,7 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
         context["criterion"] = self._get_criterion()
         context["audit"] = self._get_audit()
         context["project"] = self._get_project()
-        # Utiliser le session_id du formulaire s'il existe, sinon en générer un nouveau
+        # Use the form's session_id if it exists, otherwise generate a new one
         session_id = self.request.GET.get("session_id")
         if session_id:
             try:
@@ -54,7 +71,6 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
         return context
 
     def get_initial(self):
-        """Initialise le formulaire avec le session_id de la query string si présent."""
         initial = super().get_initial()
         session_id = self.request.GET.get("session_id")
         if session_id:
@@ -66,7 +82,7 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
         return initial
 
     def get_success_url(self):
-        # Récupérer le session_id depuis le formulaire validé
+        # Get the session_id from the validated form
         session_id = getattr(self, "_session_id", None)
 
         url = reverse(
@@ -78,7 +94,7 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
             },
         )
 
-        # Ajouter le session_id comme paramètre de requête
+        # Add the session_id as a query parameter
         if session_id:
             from urllib.parse import urlencode
 
@@ -89,7 +105,7 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
 
     def form_valid(self, form):
         session_id = form.cleaned_data.get("session_id")
-        # Stocker le session_id pour l'utiliser dans get_success_url
+        # Store the session_id to use it in get_success_url
         self._session_id = session_id
 
         message = form.cleaned_data.get("message", "").strip()
@@ -103,47 +119,46 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
             defaults={"name": name},
         )
 
-        # Récupérer le message de l'utilisateur
+        # Get the user's message
         user_message = form.cleaned_data.get("message", "").strip()
         if not user_message:
             return super().form_valid(form)
 
-        # Récupérer le critère pour le contexte
+        # Get the criterion for context
         criterion = self._get_criterion()
 
-        # Récupérer l'historique des messages depuis le prompt JSON
+        # Get the message history from the JSON prompt
         messages_history = prompt.prompt.get("messages", [])
 
-        # Préparer l'historique pour pydantic_ai
+        # Prepare the history for pydantic_ai
         history_messages = [
             {"role": msg["role"], "content": msg["content"]} for msg in messages_history
         ]
 
-        # Créer l'agent avec des instructions spécifiques au contexte d'audit
+        project = self._get_project()
+        ressources = ""
+        for resource in project.resources.all():
+            ressources += f"- {resource.get_type_display()}: {resource.url}\n"
+        # Create the agent with instructions specific to the audit context
+        system_prompt = load_system_prompt(
+            criterion_name=criterion.criterion.name,
+            criterion_description=criterion.criterion.description,
+            ressources=ressources,
+            language="english",
+        )
         agent = Agent(
             "anthropic:claude-sonnet-4-0",
-            instructions=(
-                "Tu es un assistant expert en audit et conformité. "
-                f"Tu aides à analyser le critère suivant : {criterion.criterion.name}. "
-                f"Description : {criterion.criterion.description}. "
-                "Réponds de manière claire, précise et professionnelle. "
-                "Utilise le markdown pour formater tes réponses si nécessaire. "
-                "L'utilisateur qui pose les question doit répondre si le critère est"
-                " conforme, partiellement conforme ou non conforme. "
-                "répond en anglais. "
-                "Le code de l'application à analysé est disponible à l'url suivante: "
-                "https://github.com/MTES-MCT/apilos/"
-            ),
+            instructions=system_prompt,
         )
 
         try:
-            # Envoyer le message à Claude avec l'historique
+            # Send the message to Claude with the history
             result = agent.run_sync(
                 user_message,
                 message_history=history_messages if history_messages else None,  # type: ignore
             )
 
-            # Ajouter le message utilisateur et la réponse à l'historique
+            # Add the user message and response to the history
             messages_history.append(
                 {
                     "role": "user",
@@ -157,13 +172,13 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
                 }
             )
 
-            # Sauvegarder l'historique mis à jour dans le prompt JSON
+            # Save the updated history to the JSON prompt
             prompt.prompt = {"messages": messages_history}
             prompt.save()
 
         except Exception:
-            # En cas d'erreur, on continue quand même pour ne pas bloquer l'utilisateur
-            # L'erreur pourrait être loggée ici si nécessaire
+            # In case of error, continue anyway to not block the user
+            # The error could be logged here if necessary
             pass
 
         return super().form_valid(form)
