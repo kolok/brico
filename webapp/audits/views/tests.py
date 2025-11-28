@@ -3,8 +3,7 @@
 # Criteria views
 import json
 
-from audits.forms import FooBarForm, NewAuditForm
-from audits.models.audit import ProjectAudit
+from audits.forms import FooBarForm
 from audits.models.chat import Conversation, Message
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,9 +12,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import FormView
-from organization.models.organization import Project
 from pydantic_ai import Agent
 
 
@@ -189,73 +187,3 @@ class NewConversationView(LoginRequiredMixin, View):
     def get(self, request):
         conversation = Conversation.objects.create(user=request.user)
         return redirect("audits:chat", conversation_id=conversation.id)
-
-
-class ProjectListView(LoginRequiredMixin, ListView):
-    """Liste tous les projets de l'utilisateur."""
-
-    model = Project
-    template_name = "audits/project_list.html"
-    context_object_name = "projects"
-    paginate_by = 20
-
-    def get_queryset(self):
-        return Project.objects.all()
-
-
-class ProjectDetailView(LoginRequiredMixin, DetailView):
-    """Affiche les détails d'un projet."""
-
-    model = Project
-    template_name = "audits/project_detail.html"
-    context_object_name = "project"
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.prefetch_related("resources", "audits")
-
-
-class AuditDetailView(LoginRequiredMixin, DetailView):
-    """Affiche les détails d'un audit."""
-
-    model = ProjectAudit
-    template_name = "audits/audit_detail.html"
-    context_object_name = "audit"
-
-
-class NewAuditView(LoginRequiredMixin, FormView):
-    """Crée un nouvel audit pour un projet."""
-
-    form_class = NewAuditForm
-    template_name = "audits/new_audit.html"
-    success_url = reverse_lazy("audits:project_detail")
-
-    def get_success_url(self):
-        return reverse_lazy(
-            "audits:project_detail", kwargs={"slug": self._get_project().slug}
-        )
-
-    def _get_project(self):
-        return get_object_or_404(Project, id=self.kwargs.get("project_id"))
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["project"] = self._get_project()
-        return context
-
-    def form_valid(self, form):
-        audit_library = form.cleaned_data.get("audit_library")
-        ProjectAudit.objects.create(
-            project=self._get_project(),
-            audit_library=audit_library,
-        )
-        messages.success(self.request, _("Audit created successfully"))
-        return super().form_valid(form)
-
-
-def delete_audit(request, pk):
-    audit = get_object_or_404(ProjectAudit, id=pk)
-    slug = audit.project.slug
-    audit.delete()
-    messages.success(request, _("Audit deleted successfully"))
-    return redirect("audits:project_detail", slug=slug)
