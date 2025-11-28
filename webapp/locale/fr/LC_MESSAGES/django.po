@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Brico 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 12:02+0000\n"
+"POT-Creation-Date: 2025-11-28 12:14+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -31,10 +31,6 @@ msgstr "Commentaire créé avec succès"
 #: audits/views/comment.py:100
 msgid "Comment updated successfully"
 msgstr "Commentaire mis à jour avec succès"
-
-#: audits/views/tests.py:54
-msgid "Form submitted successfully"
-msgstr "Formulaire soumis avec succès"
 
 #: core/user_registration_serializer.py:19
 msgid "Passwords do not match."
@@ -163,50 +159,6 @@ msgstr "Critères"
 msgid "No criteria yet."
 msgstr "Aucun critère pour le moment."
 
-#: templates/audits/chat.html:13 templates/audits/chat_list.html:12
-msgid "Nouvelle conversation"
-msgstr "Nouvelle conversation"
-
-#: templates/audits/chat.html:17
-msgid "Toutes les conversations"
-msgstr "Toutes les conversations"
-
-#: templates/audits/chat.html:68
-msgid "Posez votre question à Claude..."
-msgstr "Posez votre question à Claude..."
-
-#: templates/audits/chat.html:75
-msgid "Envoyer"
-msgstr "Envoyer"
-
-#: templates/audits/chat_list.html:4
-msgid "Mes conversations avec Claude"
-msgstr "Mes conversations avec Claude"
-
-#: templates/audits/chat_list.html:9
-msgid "Mes conversations"
-msgstr "Mes conversations"
-
-#: templates/audits/chat_list.html:25
-msgid "message(s)"
-msgstr "message(s)"
-
-#: templates/audits/chat_list.html:41
-msgid "Précédent"
-msgstr "Précédent"
-
-#: templates/audits/chat_list.html:52
-msgid "Suivant"
-msgstr "Suivant"
-
-#: templates/audits/chat_list.html:59
-msgid "Vous n'avez pas encore de conversations."
-msgstr "Vous n'avez pas encore de conversations."
-
-#: templates/audits/chat_list.html:62
-msgid "Commencer une conversation"
-msgstr "Commencer une conversation"
-
 #: templates/audits/comment_confirm_delete.html:6
 msgid "Delete Comment"
 msgstr "Supprimer le commentaire"
@@ -261,7 +213,6 @@ msgid "No comments yet."
 msgstr "Aucun commentaire pour le moment."
 
 #: templates/audits/components/prompt_form.html:9
-#: templates/audits/current_prompt.html:64
 msgid "Send"
 msgstr "Envoyer"
 
@@ -278,7 +229,6 @@ msgid "Loading comments..."
 msgstr "Chargement des commentaires..."
 
 #: templates/audits/criterion_detail.html:18
-#: templates/audits/current_prompt.html:5
 msgid "Discussion with AI"
 msgstr "Discussion avec l'IA"
 
@@ -294,19 +244,9 @@ msgstr "Historique des invites"
 msgid "No prompts yet."
 msgstr "Aucune invite pour le moment."
 
-#: templates/audits/current_prompt.html:33 templates/audits/prompt.html:31
-msgid "No messages yet. Start a conversation by asking a question below."
-msgstr ""
-"Aucun message pour le moment. Commencez une conversation en posant une "
-"question ci-dessous."
-
-#: templates/audits/current_prompt.html:57
-msgid "Ask a question about this criterion..."
-msgstr "Posez une question sur ce critère..."
-
 #: templates/audits/foobar.html:15
 msgid "Submit"
-msgstr "Soumettre"
+msgstr ""
 
 #: templates/audits/new_audit.html:4
 msgid "New Audit - Brico"
@@ -359,6 +299,12 @@ msgstr "Mes projets"
 #: templates/audits/project_list.html:13
 msgid "No projects yet."
 msgstr "Aucun projet pour le moment."
+
+#: templates/audits/prompt.html:30
+msgid "No messages yet. Start a conversation by asking a question below."
+msgstr ""
+"Aucun message pour le moment. Commencez une conversation en posant une "
+"question ci-dessous."
 
 #: templates/index.html:7
 msgid "Welcome to Brico"

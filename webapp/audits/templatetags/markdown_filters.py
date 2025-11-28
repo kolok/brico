@@ -21,7 +21,7 @@ def markdown_filter(value):
         value = value.replace("\\n", "\n")
         value = value.replace("\\t", "\t")
         value = re.sub(r"\n\s*```", "\n```", value)
-    print(value)
+
     # Configuration des extensions markdown
     # "extra" inclut déjà fenced_code et tables, donc on l'utilise comme base
     extensions = [
