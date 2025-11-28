@@ -1,0 +1,35 @@
+{% load i18n %}
+
+<turbo-frame id="comment_{{ object.id }}">
+    <div class="bg-white border border-red-200 rounded-lg p-4 mb-4">
+        <h3 class="text-lg font-semibold text-red-600 mb-3">
+            {% translate "Delete Comment" %}
+        </h3>
+
+        <p class="mb-4 text-gray-700">
+            {% translate "Are you sure you want to delete this comment? This action cannot be undone." %}
+        </p>
+
+        <div class="bg-gray-50 border border-gray-200 rounded p-3 mb-4">
+            <p class="text-sm text-gray-500 mb-1">{{ object.user.username }} - {{ object.created_at|date:"d/m/Y H:i" }}</p>
+            <p class="text-gray-700 whitespace-pre-wrap">{{ object.comment }}</p>
+        </div>
+
+        <form method="post"
+              action="{% url 'audits:comment_delete' project.slug audit.id criterion.id object.id %}"
+              data-turbo-frame="comments_frame">
+            {% csrf_token %}
+            <div class="flex gap-2">
+                <button type="submit"
+                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition">
+                    {% translate "Delete" %}
+                </button>
+                <a href="{% url 'audits:comment_fragment' project.slug audit.id criterion.id object.id %}"
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition"
+                   data-turbo-frame="comment_{{ object.id }}">
+                    {% translate "Cancel" %}
+                </a>
+            </div>
+        </form>
+    </div>
+</turbo-frame>

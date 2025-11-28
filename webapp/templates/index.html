@@ -9,4 +9,11 @@
     {% include "components/messages.html" %}
 
     <p>{% translate "Quality assurance and security, in collaborative mode and IA driven" %}</p>
+
+    {% if user.is_authenticated %}
+        <h2>{% translate "My projects" %}</h2>
+        <a href="{% url 'audits:project_list' %}">{% translate "Projects" %}</a>
+    {% else %}
+        TODO : affichage de la page hors connexion
+    {% endif %}
 {% endblock content %}

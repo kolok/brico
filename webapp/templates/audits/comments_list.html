@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<turbo-frame id="comments_frame">
+    <div class="mt-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2>{% translate "Comments" %}</h2>
+            <a href="{% url 'audits:comment_create' project.slug audit.id criterion.id %}"
+               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition"
+               data-turbo-frame="comment_form_frame">
+                {% translate "Add Comment" %}
+            </a>
+        </div>
+
+        <turbo-frame id="comment_form_frame">
+        </turbo-frame>
+
+        <div class="space-y-4 mt-4">
+            {% for comment in comments %}
+                {% include "audits/comment_item.html" with comment=comment project=project audit=audit criterion=criterion %}
+            {% empty %}
+                <p class="text-gray-500 italic">{% translate "No comments yet." %}</p>
+            {% endfor %}
+        </div>
+    </div>
+</turbo-frame>

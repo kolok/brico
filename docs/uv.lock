@@ -1,0 +1,45 @@
+version = 1
+revision = 3
+requires-python = ">=3.13"
+
+[[package]]
+name = "docs"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "sphynx" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "sphynx", specifier = ">=0.0.3" }]
+
+[[package]]
+name = "python-json-logger"
+version = "2.0.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4f/da/95963cebfc578dabd323d7263958dfb68898617912bb09327dd30e9c8d13/python-json-logger-2.0.7.tar.gz", hash = "sha256:23e7ec02d34237c5aa1e29a070193a4ea87583bb4e7f8fd06d3de8264c4b2e1c", size = 10508, upload-time = "2023-02-21T17:40:06.209Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/35/a6/145655273568ee78a581e734cf35beb9e33a370b29c5d3c8fee3744de29f/python_json_logger-2.0.7-py3-none-any.whl", hash = "sha256:f380b826a991ebbe3de4d897aeec42760035ac760345e57b812938dc8b35e2bd", size = 8067, upload-time = "2023-02-21T17:40:05.117Z" },
+]
+
+[[package]]
+name = "sphynx"
+version = "0.0.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-json-logger" },
+    { name = "structlog" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/26/87/1133516d8a4a6e200967730ee9a113094847ecacb699c5b988740c5f9607/sphynx-0.0.3.tar.gz", hash = "sha256:ecde5dc25e82f4ce4293a2fc4a9029ae660ea63dfb1bdf06f41ddba9a23f8c32", size = 2529, upload-time = "2021-04-14T13:20:37.168Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/78/a2/c76afe203151a5c626d76eb9e164825e28cb9b31a09f1d094c74c5e33f27/sphynx-0.0.3-py3-none-any.whl", hash = "sha256:12182e6f696d16bd9e5363ce2947c9d096da7a1dcd0687f0c3ea7c564eddbe8a", size = 2814, upload-time = "2021-04-14T13:20:36.118Z" },
+]
+
+[[package]]
+name = "structlog"
+version = "21.5.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ea/77/e38019e698b0c0134f903ab40e87f0975813ca7f74dad287272788134f03/structlog-21.5.0.tar.gz", hash = "sha256:68c4c29c003714fe86834f347cb107452847ba52414390a7ee583472bde00fc9", size = 473089, upload-time = "2021-12-16T12:48:11.976Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4b/a2/7c5d78fa0b6fc4f249d0a732811b2cef979d16677e21f10637bbedcd0e6a/structlog-21.5.0-py3-none-any.whl", hash = "sha256:fd7922e195262b337da85c2a91c84be94ccab1f8fd1957bd6986f6904e3761c8", size = 53394, upload-time = "2021-12-16T12:48:09.837Z" },
+]
