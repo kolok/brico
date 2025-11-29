@@ -9,33 +9,33 @@ register = template.Library()
 
 @register.filter(name="markdown")
 def markdown_filter(value):
-    """Convertit du markdown en HTML."""
+    """Convert markdown to HTML."""
     if not value:
         return ""
 
-    # Normaliser les caractères d'échappement si nécessaire
-    # Convertir les séquences \' en apostrophes simples
+    # Normalize escape characters if necessary
+    # Convert \' sequences to single quotes
     if isinstance(value, str):
-        # Remplacer les séquences d'échappement JSON courantes
+        # Replace common JSON escape sequences
         value = value.replace("\\'", "'")
         value = value.replace("\\n", "\n")
         value = value.replace("\\t", "\t")
         value = re.sub(r"\n\s*```", "\n```", value)
 
-    # Configuration des extensions markdown
-    # "extra" inclut déjà fenced_code et tables, donc on l'utilise comme base
+    # Configure markdown extensions
+    # "extra" already includes fenced_code and tables, so we use it as base
     extensions = [
-        "extra",  # Extensions supplémentaires (inclut fenced_code, tables, etc.)
-        "nl2br",  # Retours à la ligne automatiques
+        "extra",  # Additional extensions (includes fenced_code, tables, etc.)
+        "nl2br",  # Automatic line breaks
     ]
 
-    # Créer l'instance markdown avec les extensions
+    # Create markdown instance with extensions
     md = markdown.Markdown(extensions=extensions)
 
-    # Convertir le markdown en HTML
+    # Convert markdown to HTML
     html = md.convert(value)
 
-    # Réinitialiser l'instance pour éviter les problèmes de cache
+    # Reset instance to avoid cache issues
     md.reset()
 
     return mark_safe(html)

@@ -11,7 +11,7 @@ from organization.models.organization import Project
 
 
 class AuditDetailView(LoginRequiredMixin, DetailView):
-    """Affiche les détails d'un audit."""
+    """Display audit details."""
 
     model = ProjectAudit
     template_name = "audits/audit_detail.html"
@@ -22,12 +22,12 @@ class AuditDetailView(LoginRequiredMixin, DetailView):
         context["project"] = self._get_project()
         return context
 
-    def _get_project(self):
+    def _get_project(self) -> Project:
         return get_object_or_404(Project, slug=self.kwargs.get("project_slug"))
 
 
 class NewAuditView(LoginRequiredMixin, FormView):
-    """Crée un nouvel audit pour un projet."""
+    """Create a new audit for a project."""
 
     form_class = NewAuditForm
     template_name = "audits/new_audit.html"
@@ -38,7 +38,7 @@ class NewAuditView(LoginRequiredMixin, FormView):
             "audits:project_detail", kwargs={"slug": self._get_project().slug}
         )
 
-    def _get_project(self):
+    def _get_project(self) -> Project:
         return get_object_or_404(Project, slug=self.kwargs.get("project_slug"))
 
     def get_context_data(self, **kwargs):

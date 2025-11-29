@@ -16,4 +16,4 @@ Respond in {language}.
 
 ## Resources
 
-{ressources}
+{resources}
