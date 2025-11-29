@@ -16,27 +16,22 @@ from organization.models.organization import Project
 
 
 class CommentParentMixin(View):
-    def _get_project(self):
+    def _get_project(self) -> Project:
         return get_object_or_404(Project, slug=self.kwargs.get("project_slug"))
 
-    def _get_audit(self):
+    def _get_audit(self) -> ProjectAudit:
         return get_object_or_404(ProjectAudit, id=self.kwargs.get("audit_id"))
 
-    def _get_criterion(self):
+    def _get_criterion(self) -> ProjectAuditCriterion:
         criterion_id = self.kwargs.get("criterion_id")
         return get_object_or_404(ProjectAuditCriterion, id=criterion_id)
 
 
 # Comment views
 class CommentListView(LoginRequiredMixin, CommentParentMixin, TemplateView):
-    """Affiche la liste des commentaires d'un critère."""
+    """Display the list of comments for a criterion."""
 
     template_name = "audits/comments_list.html"
-
-    def get_queryset(self):
-        # TODO: this one is perhaps useless
-        queryset = super().get_queryset()
-        return queryset.prefetch_related("criterion__project_audit__project")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -52,7 +47,7 @@ class CommentListView(LoginRequiredMixin, CommentParentMixin, TemplateView):
 
 
 class CommentCreateView(LoginRequiredMixin, CommentParentMixin, CreateView):
-    """Crée un nouveau commentaire."""
+    """Create a new comment."""
 
     model = ProjectAuditCriterionComment
     form_class = CommentForm
@@ -83,7 +78,7 @@ class CommentCreateView(LoginRequiredMixin, CommentParentMixin, CreateView):
 
 
 class CommentUpdateView(LoginRequiredMixin, CommentParentMixin, UpdateView):
-    """Modifie un commentaire existant."""
+    """Update an existing comment."""
 
     model = ProjectAuditCriterionComment
     form_class = CommentForm
@@ -124,7 +119,7 @@ class CommentUpdateView(LoginRequiredMixin, CommentParentMixin, UpdateView):
 
 
 class CommentDeleteView(LoginRequiredMixin, CommentParentMixin, DeleteView):
-    """Supprime un commentaire."""
+    """Delete a comment."""
 
     model = ProjectAuditCriterionComment
     template_name = "audits/comment_confirm_delete.html"
@@ -148,13 +143,13 @@ class CommentDeleteView(LoginRequiredMixin, CommentParentMixin, DeleteView):
 
 
 class CommentFormCancelView(LoginRequiredMixin, TemplateView):
-    """Vide le formulaire de commentaire."""
+    """Empty the comment form."""
 
     template_name = "audits/comment_form_empty.html"
 
 
 class CommentFragmentView(LoginRequiredMixin, CommentParentMixin, TemplateView):
-    """Réaffiche un commentaire dans son Turbo Frame."""
+    """Re-display a comment in its Turbo Frame."""
 
     template_name = "audits/comment_item.html"
 

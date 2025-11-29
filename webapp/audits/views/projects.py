@@ -4,7 +4,7 @@ from organization.models.organization import Project
 
 
 class ProjectListView(LoginRequiredMixin, ListView):
-    """Liste tous les projets de l'utilisateur."""
+    """List all user projects."""
 
     model = Project
     template_name = "audits/project_list.html"
@@ -16,7 +16,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
 
 
 class ProjectDetailView(LoginRequiredMixin, DetailView):
-    """Affiche les détails d'un projet."""
+    """Display project details."""
 
     model = Project
     template_name = "audits/project_detail.html"

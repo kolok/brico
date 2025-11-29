@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import DOMPurify from "dompurify"
 import { marked } from "marked"
 
 class ChatController extends Controller<HTMLElement> {
@@ -18,23 +19,24 @@ class ChatController extends Controller<HTMLElement> {
   connect() {
     console.log("Chat controller connected")
 
-    // Configurer marked pour le rendu markdown
+    // Configure marked for markdown rendering
     marked.setOptions({
       breaks: true,
       gfm: true,
     })
 
-    // Rendre le markdown pour les messages existants
+    // Render markdown for existing messages
     this.renderMarkdown()
 
-    // Scroller vers le bas au chargement
+    // Scroll to bottom on load
     this.scrollToBottom()
   }
 
   renderMarkdown() {
     this.markdownTargets.forEach((target) => {
       const content = target.textContent || ""
-      target.innerHTML = marked.parse(content) as string
+      const htmlContent = DOMPurify.sanitize(marked.parse(content) as string)
+      target.innerHTML = htmlContent
     })
   }
 
@@ -44,22 +46,22 @@ class ChatController extends Controller<HTMLElement> {
     const message = this.inputTarget.value.trim()
     if (!message) return
 
-    // Désactiver le formulaire pendant l'envoi
+    // Disable form during submission
     this.inputTarget.disabled = true
     this.submitButtonTarget.disabled = true
 
-    // Ajouter le message de l'utilisateur à l'interface
+    // Add user message to the interface
     this.addUserMessage(message)
 
-    // Vider l'input
+    // Clear the input
     this.inputTarget.value = ""
 
-    // Afficher le loader
+    // Show the loader
     this.loadingTarget.classList.remove("hidden")
     this.scrollToBottom()
 
     try {
-      // Envoyer le message au backend
+      // Send message to backend
       const response = await fetch(`/audits/chat/${this.conversationIdValue}/send/`, {
         method: "POST",
         headers: {
@@ -70,29 +72,29 @@ class ChatController extends Controller<HTMLElement> {
       })
 
       if (!response.ok) {
-        throw new Error("Erreur lors de l'envoi du message")
+        throw new Error("Error sending message")
       }
 
       const data = await response.json()
 
-      // Masquer le loader
+      // Hide the loader
       this.loadingTarget.classList.add("hidden")
 
-      // Ajouter la réponse de l'assistant
+      // Add assistant response
       this.addAssistantMessage(data.message.content, data.message.created)
 
-      // Mettre à jour le titre si disponible
+      // Update title if available
       if (data.conversation_title) {
         this.titleTarget.textContent = data.conversation_title
       }
 
       this.scrollToBottom()
     } catch (error) {
-      console.error("Erreur:", error)
+      console.error("Error:", error)
       this.loadingTarget.classList.add("hidden")
-      alert("Une erreur est survenue lors de l'envoi du message")
+      alert("An error occurred while sending the message")
     } finally {
-      // Réactiver le formulaire
+      // Re-enable form
       this.inputTarget.disabled = false
       this.submitButtonTarget.disabled = false
       this.inputTarget.focus()
@@ -129,8 +131,8 @@ class ChatController extends Controller<HTMLElement> {
       minute: "2-digit",
     })
 
-    // Rendre le markdown
-    const htmlContent = marked.parse(content) as string
+    // Render the markdown
+    const htmlContent = DOMPurify.sanitize(marked.parse(content) as string)
 
     messageDiv.innerHTML = `
       <div class="bg-gray-100 text-gray-800 rounded-lg px-4 py-2 max-w-2xl">
@@ -162,7 +164,7 @@ class ChatController extends Controller<HTMLElement> {
       return token.value
     }
 
-    // Fallback: chercher dans les cookies
+    // Fallback: look in cookies
     const cookies = document.cookie.split(";")
     for (const cookie of cookies) {
       const [name, value] = cookie.trim().split("=")
