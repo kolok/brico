@@ -270,7 +270,7 @@ msgstr "Détail du projet"
 
 #: templates/audits/project_detail.html:11
 msgid "Resources"
-msgstr "Ressources"
+msgstr "resources"
 
 #: templates/audits/project_detail.html:16
 msgid "No resources yet."

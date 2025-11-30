@@ -18,7 +18,7 @@ class TestLoadSystemPrompt:
             "## Language used\n\n"
             "Respond in {language}.\n\n"
             "## Resources\n\n"
-            "{ressources}\n"
+            "{resources}\n"
         )
 
         with patch("builtins.open", mock_open(read_data=template_content)):
@@ -28,7 +28,7 @@ class TestLoadSystemPrompt:
                 result = load_system_prompt(
                     criterion_name="Test Criterion",
                     criterion_description="This is a test description",
-                    ressources="- Resource 1: http://example.com\n- Resource 2: http://test.com",
+                    resources="- Resource 1: http://example.com\n- Resource 2: http://test.com",
                     language="french",
                 )
 
@@ -40,7 +40,7 @@ class TestLoadSystemPrompt:
                 assert "{criterion_name}" not in result
                 assert "{criterion_description}" not in result
                 assert "{language}" not in result
-                assert "{ressources}" not in result
+                assert "{resources}" not in result
 
     def test_load_system_prompt_with_empty_strings(self):
         """Test que la fonction fonctionne avec des chaînes vides."""
@@ -48,7 +48,7 @@ class TestLoadSystemPrompt:
             "Criterion: {criterion_name}\n"
             "Description: {criterion_description}\n"
             "Language: {language}\n"
-            "Resources: {ressources}\n"
+            "Resources: {resources}\n"
         )
 
         with patch("builtins.open", mock_open(read_data=template_content)):
@@ -58,7 +58,7 @@ class TestLoadSystemPrompt:
                 result = load_system_prompt(
                     criterion_name="",
                     criterion_description="",
-                    ressources="",
+                    resources="",
                     language="",
                 )
 
@@ -74,7 +74,7 @@ class TestLoadSystemPrompt:
             "Name: {criterion_name}\n"
             "Description: {criterion_description}\n"
             "Language: {language}\n"
-            "Resources: {ressources}\n"
+            "Resources: {resources}\n"
         )
 
         with patch("builtins.open", mock_open(read_data=template_content)):
@@ -84,7 +84,7 @@ class TestLoadSystemPrompt:
                 result = load_system_prompt(
                     criterion_name="Criterion & Test < > \" '",
                     criterion_description="Description with\nnewlines\tand\ttabs",
-                    ressources="Resource: https://example.com?param=value&other=test",
+                    resources="Resource: https://example.com?param=value&other=test",
                     language="français",
                 )
 
@@ -104,7 +104,7 @@ class TestLoadSystemPrompt:
                 load_system_prompt(
                     criterion_name="Test",
                     criterion_description="Test",
-                    ressources="Test",
+                    resources="Test",
                     language="english",
                 )
 
@@ -126,7 +126,7 @@ class TestLoadSystemPrompt:
                 load_system_prompt(
                     criterion_name="Critère avec accents éàù",
                     criterion_description="",
-                    ressources="",
+                    resources="",
                     language="français",
                 )
 
@@ -136,14 +136,14 @@ class TestLoadSystemPrompt:
                 assert call_kwargs.get("encoding") == "utf-8"
 
     def test_load_system_prompt_multiline_resources(self):
-        """Test avec des ressources multilignes."""
-        template_content = "Resources:\n{ressources}"
+        """Test avec des resources multilignes."""
+        template_content = "Resources:\n{resources}"
 
         with patch("builtins.open", mock_open(read_data=template_content)):
             with patch("audits.views.prompt.settings") as mock_settings:
                 mock_settings.BASE_DIR = Path("/fake/base/dir")
 
-                ressources = (
+                resources = (
                     "- Type 1: http://example.com/resource1\n"
                     "- Type 2: http://example.com/resource2\n"
                     "- Type 3: http://example.com/resource3"
@@ -152,7 +152,7 @@ class TestLoadSystemPrompt:
                 result = load_system_prompt(
                     criterion_name="Test",
                     criterion_description="Test",
-                    ressources=ressources,
+                    resources=resources,
                     language="english",
                 )
 
@@ -169,7 +169,7 @@ class TestLoadSystemPrompt:
             "More text.\n"
             "Description: {criterion_description}\n"
             "Language: {language}\n"
-            "Resources: {ressources}\n\n"
+            "Resources: {resources}\n\n"
             "Some text after."
         )
 
@@ -180,7 +180,7 @@ class TestLoadSystemPrompt:
                 result = load_system_prompt(
                     criterion_name="Test Criterion",
                     criterion_description="Test Description",
-                    ressources="Test Resources",
+                    resources="Test Resources",
                     language="english",
                 )
 

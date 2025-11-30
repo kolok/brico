@@ -9,13 +9,11 @@ from audits.models.audit import (
     ProjectAuditCriterionPrompt,
 )
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView
-from django.utils.translation import gettext_lazy as _
 from organization.models.organization import Project
 from pydantic_ai import Agent
 
@@ -115,9 +113,9 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
 
         message = form.cleaned_data.get("message", "").strip()
         name = message if message else "Prompt"
-        max_name_length = ProjectAuditCriterionPrompt._meta.get_field('name').max_length
+        max_name_length = ProjectAuditCriterionPrompt._meta.get_field("name").max_length
         if len(name) > max_name_length:
-            name = name[:max_name_length - 1] + "…"
+            name = name[: max_name_length - 1] + "…"
 
         prompt, _ = ProjectAuditCriterionPrompt.objects.get_or_create(
             session_id=session_id,
@@ -142,9 +140,8 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
         ]
 
         # Check if ANTHROPIC_API_KEY is configured
-        if not hasattr(settings, 'ANTHROPIC_API_KEY') or not settings.ANTHROPIC_API_KEY:
-            messages.error(self.request, _("ANTHROPIC_API_KEY is not configured. Please contact the administrator."))
-            return super().form_valid(form)
+        if not hasattr(settings, "ANTHROPIC_API_KEY") or not settings.ANTHROPIC_API_KEY:
+            raise ValueError("ANTHROPIC_API_KEY is not configured.")
 
         project = self._get_project()
         resources = ""
