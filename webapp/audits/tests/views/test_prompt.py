@@ -1,7 +1,16 @@
+import uuid
 from unittest.mock import mock_open, patch
 
 import pytest
+from audits.tests.factories import (
+    ProjectAuditCriterionFactory,
+    ProjectAuditCriterionPromptFactory,
+)
 from audits.views.prompt import load_system_prompt
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+
+User = get_user_model()
 
 
 @pytest.fixture
@@ -127,3 +136,96 @@ class TestLoadSystemPrompt:
             mock_file.assert_called_once()
             call_kwargs = mock_file.call_args[1]
             assert call_kwargs.get("encoding") == "utf-8"
+
+
+@pytest.fixture
+def login_user(client):
+    user = User.objects.create_user(username="user", password="password")
+    client.login(username="user", password="password")  # pragma: allowlist secret
+    return user
+
+
+@pytest.fixture
+def project_audit_criterion():
+    """Create a project audit criterion for testing."""
+    return ProjectAuditCriterionFactory()
+
+
+@pytest.mark.django_db
+class TestPromptFormView:
+    """Test the prompt form view."""
+
+    def test_login_required(self, client, project_audit_criterion):
+        response = client.get(
+            reverse(
+                "audits:prompt",
+                kwargs={
+                    "project_slug": project_audit_criterion.project_audit.project.slug,
+                    "audit_id": project_audit_criterion.project_audit.id,
+                    "criterion_id": project_audit_criterion.id,
+                },
+            )
+        )
+        assert response.status_code == 302
+        assert reverse("account_login") in response.url
+
+    def test_prompt_form_view_get_context(
+        self, client, login_user, project_audit_criterion
+    ):
+        url = reverse(
+            "audits:prompt",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "criterion_id": project_audit_criterion.id,
+            },
+        )
+        response = client.get(url)
+
+        assert response.status_code == 200
+        assert response.context["criterion"] == project_audit_criterion
+        assert response.context["audit"] == project_audit_criterion.project_audit
+        assert (
+            response.context["project"] == project_audit_criterion.project_audit.project
+        )
+        assert "session_id" in response.context
+        assert isinstance(response.context["session_id"], uuid.UUID)
+
+    def test_prompt_form_view_get_with_valid_session_id(
+        self, client, login_user, project_audit_criterion
+    ):
+        session_id = uuid.uuid4()
+        prompt = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion, session_id=session_id
+        )
+
+        url = reverse(
+            "audits:prompt",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "criterion_id": project_audit_criterion.id,
+            },
+        )
+        response = client.get(url, {"session_id": str(session_id)})
+
+        assert response.status_code == 200
+        assert response.context["session_id"] == session_id
+        assert response.context["prompt"] == prompt
+
+    def test_prompt_form_view_get_with_invalid_session_id(
+        self, client, login_user, project_audit_criterion
+    ):
+        url = reverse(
+            "audits:prompt",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "criterion_id": project_audit_criterion.id,
+            },
+        )
+        response = client.get(url, {"session_id": "invalid-uuid"})
+
+        assert response.status_code == 200
+        assert isinstance(response.context["session_id"], uuid.UUID)
+        assert "prompt" not in response.context
