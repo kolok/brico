@@ -2,6 +2,7 @@ from audits.forms import NewAuditForm
 from audits.models.audit import ProjectAudit, ProjectAuditCriterion
 from audits.views.mixin import ProjectChildrenMixin
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -22,6 +23,12 @@ class AuditDetailView(LoginRequiredMixin, ProjectChildrenMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["project"] = self._get_project()
         return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.prefetch_related(
+            "project_audit_criteria", "project_audit_criteria__criterion"
+        )
 
 
 class NewAuditView(LoginRequiredMixin, FormView):
@@ -59,6 +66,7 @@ class NewAuditView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
+@login_required
 def delete_audit(request, project_slug, pk):
     audit = get_object_or_404(ProjectAudit, id=pk)
     audit.delete()

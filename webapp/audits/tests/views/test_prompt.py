@@ -106,10 +106,10 @@ class TestLoadSystemPrompt:
                 language="english",
             )
 
-            # Vérifier que le fichier est ouvert avec le bon chemin
+            # Check that the file is opened with the correct path
             mock_file.assert_called_once()
             call_args = mock_file.call_args
-            # Le premier argument est le chemin du fichier
+            # The first argument is the file path
             file_path = call_args[0][0]
             assert str(file_path).endswith("audits/prompts/system_prompt.md")
 
