@@ -1,5 +1,5 @@
-@import "../css/base.css";
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "../css/base.css" layer(base);
+
+@config '../../../tailwind.config.js';

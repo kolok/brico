@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Brico 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-01 07:08+0000\n"
+"POT-Creation-Date: 2025-12-01 23:29+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -16,19 +16,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: audits/views/audits.py:60
+#: audits/views/audits.py:65
 msgid "Audit created successfully"
 msgstr "Audit créé avec succès"
 
-#: audits/views/audits.py:67
+#: audits/views/audits.py:73
 msgid "Audit deleted successfully"
 msgstr "Audit supprimé avec succès"
 
-#: audits/views/comment.py:66
+#: audits/views/comment.py:48
 msgid "Comment created successfully"
 msgstr "Commentaire créé avec succès"
 
-#: audits/views/comment.py:95
+#: audits/views/comment.py:77
 msgid "Comment updated successfully"
 msgstr "Commentaire mis à jour avec succès"
 
