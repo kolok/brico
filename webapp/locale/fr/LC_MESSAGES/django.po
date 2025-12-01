@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Brico 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 12:14+0000\n"
+"POT-Creation-Date: 2025-12-01 07:08+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -24,11 +24,11 @@ msgstr "Audit créé avec succès"
 msgid "Audit deleted successfully"
 msgstr "Audit supprimé avec succès"
 
-#: audits/views/comment.py:71
+#: audits/views/comment.py:66
 msgid "Comment created successfully"
 msgstr "Commentaire créé avec succès"
 
-#: audits/views/comment.py:100
+#: audits/views/comment.py:95
 msgid "Comment updated successfully"
 msgstr "Commentaire mis à jour avec succès"
 
@@ -243,10 +243,6 @@ msgstr "Historique des invites"
 #: templates/audits/criterion_detail.html:30
 msgid "No prompts yet."
 msgstr "Aucune invite pour le moment."
-
-#: templates/audits/foobar.html:15
-msgid "Submit"
-msgstr ""
 
 #: templates/audits/new_audit.html:4
 msgid "New Audit - Brico"

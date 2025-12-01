@@ -9,36 +9,36 @@
 
 ### Webapp (`webapp/`)
 
-- **Backend**: Django 5 + Django REST Framework, auth via `django-allauth` / `dj-rest-auth`.
-- **Python management**: `uv` (Python ≥ 3.12). `make init-dev` sets up the environment, `make sync` installs dependencies, `make migrate` applies migrations.
-- **Running**: `make run` (Honcho + `Procfile.dev`), `make run-all` launches Docker then the app.
-- **Tests & quality**: `make test` (pytest), `make lint` (ruff), `make format` (black).
-- **i18n**: `make makemessages` and `make compilemessages`, files in `locale/fr/LC_MESSAGES/`.
+- Backend: Django 5 + Django REST Framework, auth via `django-allauth` / `dj-rest-auth`.
+- Python management: `uv` (Python ≥ 3.12). `make init-dev` sets up the environment, `make sync` installs dependencies, `make migrate` applies migrations.
+- Running: `make run` (Honcho + `Procfile.dev`), `make run-all` launches Docker then the app.
+- Tests & quality: `make test` (pytest), `make lint` (ruff), `make format` (black).
+- i18n: `make makemessages` and `make compilemessages`, files in `locale/fr/LC_MESSAGES/`.
 
 #### Associated Frontend
 
-- **Bundler**: Parcel (`npm run build/watch/lint` scripts in `package.json`).
-- **Languages**: TypeScript + CSS/Tailwind. Main entrypoints in `static/to_compile/entrypoints/` (`main.ts`, `main.css`).
-- **Asset organization**:
+- Bundler: Parcel (`npm run build/watch/lint` scripts in `package.json`).
+- Languages: TypeScript + CSS/Tailwind. Main entrypoints in `static/to_compile/entrypoints/` (`main.ts`, `main.css`).
+- Asset organization:
   - `static/to_compile/`: code to transpile (TS/CSS).
   - `static/to_collect/`: assets copied as-is.
   - `static/compiled/`: Parcel output, cleaned by `make clean`.
-- **Hotwire**: uses Stimulus + Turbo Frames.
+- Hotwire: uses Stimulus + Turbo Frames.
 
 ### Mobile (`mobileapp/`)
 
-- **Stack**: Flutter (SDK ≥ 3.3.1), multi-platform project (Android/iOS/Web/Desktop).
-- **Installation**: `flutter pub get` (or `make install`).
-- **Running**: `flutter run` (`make run`), `make hot-reload` for debug mode.
-- **Quality**: `make analyze`, `make format`, `make test`, `make lint`.
-- **Builds**: dedicated targets (`make build-android[-apk|-aab]`, `make build-ios`, `make build-web`, `make build-all`).
+- Stack: Flutter (SDK ≥ 3.3.1), multi-platform project (Android/iOS/Web/Desktop).
+- Installation: `flutter pub get` (or `make install`).
+- Running: `flutter run` (`make run`), `make hot-reload` for debug mode.
+- Quality: `make analyze`, `make format`, `make test`, `make lint`.
+- Builds: dedicated targets (`make build-android[-apk|-aab]`, `make build-ios`, `make build-web`, `make build-all`).
 
 ### Code Standards
 
-- **Python**: PEP 8, type hints required, docstrings for public functions.
-- **TypeScript**: ESLint + Prettier, camelCase naming.
-- **Flutter**: official Dart conventions, prefer immutable widgets.
-- **Language**: the application and documentation are all in English
+- Python: PEP 8, type hints required, docstrings for public functions.
+- TypeScript: ESLint + Prettier, camelCase naming.
+- Flutter: official Dart conventions, prefer immutable widgets.
+- Language: the application and documentation are all in English
 
 ### Testing Requirements
 

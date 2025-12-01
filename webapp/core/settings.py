@@ -235,4 +235,4 @@ IMPORT_EXPORT_FORMATS = [CSV, XLSX, XLS]
 # Anthropic AI settings
 # ----------------------
 ANTHROPIC_API_KEY = env.str("ANTHROPIC_API_KEY", default="")
-ANTHROPIC_MODEL = "anthropic:claude-sonnet-4-0"
+ANTHROPIC_MODEL = env.str("ANTHROPIC_MODEL", default="anthropic:claude-sonnet-4-0")

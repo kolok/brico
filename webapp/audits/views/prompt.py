@@ -3,18 +3,12 @@ import uuid
 from pathlib import Path
 
 from audits.forms import PromptForm
-from audits.models.audit import (
-    ProjectAudit,
-    ProjectAuditCriterion,
-    ProjectAuditCriterionPrompt,
-)
+from audits.models.audit import ProjectAuditCriterionPrompt
+from audits.views.mixin import CriteriaChildrenMixin
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.views import View
 from django.views.generic import FormView
-from organization.models.organization import Project
 from pydantic_ai import Agent
 
 logger = logging.getLogger(__name__)
@@ -37,21 +31,7 @@ def load_system_prompt(
     )
 
 
-class PromptParentMixin(View):
-    def _get_criterion(self) -> ProjectAuditCriterion:
-        criterion_id = self.kwargs.get("criterion_id")
-        return get_object_or_404(ProjectAuditCriterion, id=criterion_id)
-
-    def _get_audit(self) -> ProjectAudit:
-        audit_id = self.kwargs.get("audit_id")
-        return get_object_or_404(ProjectAudit, id=audit_id)
-
-    def _get_project(self) -> Project:
-        project_slug = self.kwargs.get("project_slug")
-        return get_object_or_404(Project, slug=project_slug)
-
-
-class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
+class PromptFormView(LoginRequiredMixin, CriteriaChildrenMixin, FormView):
     form_class = PromptForm
     template_name = "audits/prompt.html"
 
@@ -123,37 +103,27 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
             defaults={"name": name},
         )
 
-        # Get the user's message
         user_message = form.cleaned_data.get("message", "").strip()
         if not user_message:
             return super().form_valid(form)
-
-        # Get the criterion for context
         criterion = self._get_criterion()
-
-        # Get the message history from the JSON prompt
         messages_history = prompt.prompt.get("messages", [])
-
-        # Prepare the history for pydantic_ai
         history_messages = [
             {"role": msg["role"], "content": msg["content"]} for msg in messages_history
         ]
-
-        # Check if ANTHROPIC_API_KEY is configured
         if not hasattr(settings, "ANTHROPIC_API_KEY") or not settings.ANTHROPIC_API_KEY:
             raise ValueError("ANTHROPIC_API_KEY is not configured.")
-
         project = self._get_project()
         resources = ""
         for resource in project.resources.all():
             resources += f"- {resource.get_type_display()}: {resource.url}\n"
-        # Create the agent with instructions specific to the audit context
         system_prompt = load_system_prompt(
             criterion_name=criterion.criterion.name,
             criterion_description=criterion.criterion.description,
             resources=resources,
             language="english",
         )
+
         agent = Agent(
             settings.ANTHROPIC_MODEL,
             instructions=system_prompt,
@@ -166,18 +136,11 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
                 message_history=history_messages if history_messages else None,  # type: ignore
             )
 
-            # Add the user message and response to the history
-            messages_history.append(
-                {
-                    "role": "user",
-                    "content": user_message,
-                }
-            )
-            messages_history.append(
-                {
-                    "role": "assistant",
-                    "content": result.output,
-                }
+            messages_history.extend(
+                [
+                    {"role": "user", "content": user_message},
+                    {"role": "assistant", "content": result.output},
+                ]
             )
 
             # Save the updated history to the JSON prompt
@@ -188,6 +151,5 @@ class PromptFormView(LoginRequiredMixin, PromptParentMixin, FormView):
             # In case of error, continue anyway to not block the user
             # The error could be logged here if necessary
             logger.error("Something goes wrong: %s", err, exc_info=True)
-            pass
 
         return super().form_valid(form)

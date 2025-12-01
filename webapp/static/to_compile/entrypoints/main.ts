@@ -1,19 +1,14 @@
 import { Application } from "@hotwired/stimulus"
 import * as Turbo from "@hotwired/turbo"
 
-import ChatController from "../controllers/chat"
-import ChooseCriterionController from "../controllers/choose-criterion"
-
 declare global {
   interface Window {
     stimulus: Application
   }
 }
 
+// Let's keep Stimulus even if we don't use it yet
 window.stimulus = Application.start()
 
-window.stimulus.register("choose-criterion", ChooseCriterionController)
-window.stimulus.register("chat", ChatController)
-
-// Turbo Drive est désactivé, mais Turbo Frames fonctionne toujours
+// Turbo Drive is disabled, but Turbo Frames still works
 Turbo.session.drive = false

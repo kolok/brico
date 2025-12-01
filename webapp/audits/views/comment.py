@@ -1,34 +1,16 @@
 from audits.forms import CommentForm
-from audits.models.audit import (
-    ProjectAudit,
-    ProjectAuditCriterion,
-    ProjectAuditCriterionComment,
-)
+from audits.models.audit import ProjectAuditCriterion, ProjectAuditCriterionComment
+from audits.views.mixin import CriteriaChildrenMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from organization.models.organization import Project
 
 
-class CommentParentMixin(View):
-    def _get_project(self) -> Project:
-        return get_object_or_404(Project, slug=self.kwargs.get("project_slug"))
-
-    def _get_audit(self) -> ProjectAudit:
-        return get_object_or_404(ProjectAudit, id=self.kwargs.get("audit_id"))
-
-    def _get_criterion(self) -> ProjectAuditCriterion:
-        criterion_id = self.kwargs.get("criterion_id")
-        return get_object_or_404(ProjectAuditCriterion, id=criterion_id)
-
-
-# Comment views
-class CommentListView(LoginRequiredMixin, CommentParentMixin, TemplateView):
+class CommentListView(LoginRequiredMixin, CriteriaChildrenMixin, TemplateView):
     """Display the list of comments for a criterion."""
 
     template_name = "audits/comments_list.html"
@@ -46,7 +28,7 @@ class CommentListView(LoginRequiredMixin, CommentParentMixin, TemplateView):
         return context
 
 
-class CommentCreateView(LoginRequiredMixin, CommentParentMixin, CreateView):
+class CommentCreateView(LoginRequiredMixin, CriteriaChildrenMixin, CreateView):
     """Create a new comment."""
 
     model = ProjectAuditCriterionComment
@@ -77,7 +59,7 @@ class CommentCreateView(LoginRequiredMixin, CommentParentMixin, CreateView):
         )
 
 
-class CommentUpdateView(LoginRequiredMixin, CommentParentMixin, UpdateView):
+class CommentUpdateView(LoginRequiredMixin, CriteriaChildrenMixin, UpdateView):
     """Update an existing comment."""
 
     model = ProjectAuditCriterionComment
@@ -118,7 +100,7 @@ class CommentUpdateView(LoginRequiredMixin, CommentParentMixin, UpdateView):
         )
 
 
-class CommentDeleteView(LoginRequiredMixin, CommentParentMixin, DeleteView):
+class CommentDeleteView(LoginRequiredMixin, CriteriaChildrenMixin, DeleteView):
     """Delete a comment."""
 
     model = ProjectAuditCriterionComment
@@ -148,7 +130,7 @@ class CommentFormCancelView(LoginRequiredMixin, TemplateView):
     template_name = "audits/comment_form_empty.html"
 
 
-class CommentFragmentView(LoginRequiredMixin, CommentParentMixin, TemplateView):
+class CommentFragmentView(LoginRequiredMixin, CriteriaChildrenMixin, TemplateView):
     """Re-display a comment in its Turbo Frame."""
 
     template_name = "audits/comment_item.html"

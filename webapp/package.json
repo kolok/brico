@@ -29,14 +29,11 @@
     "semi": false
   },
   "dependencies": {
-    "dompurify": "^3.2.3",
-    "marked": "^15.0.4"
   },
   "devDependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo": "^8.0.20",
     "@parcel/transformer-inline-string": "^2.16.1",
-    "@types/dompurify": "^3.2.0",
     "@types/jest": "^30.0.0",
     "@types/leaflet": "^1.9.16",
     "@types/lodash": "^4.17.21",
@@ -50,6 +47,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-promise": "^7.2.1",
     "eslint": "^9.39.1",
+    "marked": "^15.0.4",
     "parcel": "^2.16.1",
     "postcss-nesting": "^13.0.1",
     "postcss": "^8.5.6",

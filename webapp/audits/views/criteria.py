@@ -1,12 +1,11 @@
-from audits.models.audit import ProjectAudit, ProjectAuditCriterion
+from audits.models.audit import ProjectAuditCriterion
+from audits.views.mixin import AuditChildrenMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
-from organization.models.organization import Project
 
 
-class CriterionDetailView(LoginRequiredMixin, DetailView):
-    """Affiche les détails d'une critère."""
+class CriterionDetailView(LoginRequiredMixin, AuditChildrenMixin, DetailView):
+    """Display the details of a criterion."""
 
     model = ProjectAuditCriterion
     template_name = "audits/criterion_detail.html"
@@ -22,9 +21,3 @@ class CriterionDetailView(LoginRequiredMixin, DetailView):
         context["audit"] = self._get_audit()
         context["session_id"] = self.request.GET.get("session_id")
         return context
-
-    def _get_project(self):
-        return get_object_or_404(Project, slug=self.kwargs.get("project_slug"))
-
-    def _get_audit(self):
-        return get_object_or_404(ProjectAudit, id=self.kwargs.get("audit_id"))

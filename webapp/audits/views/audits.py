@@ -1,5 +1,6 @@
 from audits.forms import NewAuditForm
 from audits.models.audit import ProjectAudit, ProjectAuditCriterion
+from audits.views.mixin import ProjectChildrenMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
@@ -10,7 +11,7 @@ from django.views.generic.edit import FormView
 from organization.models.organization import Project
 
 
-class AuditDetailView(LoginRequiredMixin, DetailView):
+class AuditDetailView(LoginRequiredMixin, ProjectChildrenMixin, DetailView):
     """Display audit details."""
 
     model = ProjectAudit
@@ -21,9 +22,6 @@ class AuditDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["project"] = self._get_project()
         return context
-
-    def _get_project(self) -> Project:
-        return get_object_or_404(Project, slug=self.kwargs.get("project_slug"))
 
 
 class NewAuditView(LoginRequiredMixin, FormView):
