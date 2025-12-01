@@ -1,0 +1,23 @@
+{% extends 'layout/base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Audit Detail - Brico" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1>{% translate "Audit Detail" %}</h1>
+    <p>{{ audit.audit_library.name }}</p>
+    <p>{{ audit.audit_library.description }}</p>
+    <h2>{% translate "Criteria" %}</h2>
+    <ul>
+        {% for criterion in audit.project_audit_criteria.all %}
+            <li>
+                {{ criterion.criterion.name }}
+                <a href="{% url 'audits:criterion_detail' project.slug audit.id criterion.id %}">edit</a>
+            </li>
+        {% empty %}
+            <li>{% translate "No criteria yet." %}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock content %}

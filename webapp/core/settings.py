@@ -231,3 +231,8 @@ REST_AUTH = {
 # ------------------------
 IMPORT_EXPORT_TMP_STORAGE_CLASS = "import_export.tmp_storages.MediaStorage"
 IMPORT_EXPORT_FORMATS = [CSV, XLSX, XLS]
+
+# Anthropic AI settings
+# ----------------------
+ANTHROPIC_API_KEY = env.str("ANTHROPIC_API_KEY", default="")
+ANTHROPIC_MODEL = env.str("ANTHROPIC_MODEL", default="anthropic:claude-sonnet-4-0")

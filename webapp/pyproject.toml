@@ -25,6 +25,7 @@ dependencies = [
     "pydantic-ai-examples>=1.16.0",
     "django-import-export[xls,xlsx]>=4.3.14",
     "django-extensions>=4.1",
+    "markdown>=3.7",
 ]
 
 [dependency-groups]

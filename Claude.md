@@ -1,77 +1,79 @@
-## Brico – Notes projet
+## Brico – Project Notes
 
-### Vue d’ensemble
+### Overview
 
-- Deux applications : `webapp/` (Django) et `mobileapp/` (Flutter).
-- Services communs : base PostgreSQL via `docker-compose.yml` (`docker compose up -d`).
-- Chaque sous-projet possède son `Makefile` avec les tâches de dev/build/test.
+- Two applications: `webapp/` (Django) and `mobileapp/` (Flutter).
+- Shared services: PostgreSQL database via `docker-compose.yml` (`docker compose up -d`).
+- Each subproject has its own `Makefile` with dev/build/test tasks.
+- Documentation is available in `docs/`
 
 ### Webapp (`webapp/`)
 
-- **Backend** : Django 5 + Django REST Framework, auth via `django-allauth` / `dj-rest-auth`.
-- **Gestion Python** : `uv` (Python ≥ 3.12). `make init-dev` configure l’environnement, `make sync` installe les deps, `make migrate` applique les migrations.
-- **Exécution** : `make run` (Honcho + `Procfile.dev`), `make run-all` lance Docker puis l’appli.
-- **Tests & qualité** : `make test` (pytest), `make lint` (ruff), `make format` (black).
-- **i18n** : `make makemessages` et `make compilemessages`, fichiers dans `locale/fr/LC_MESSAGES/`.
+- Backend: Django 5 + Django REST Framework, auth via `django-allauth` / `dj-rest-auth`.
+- Python management: `uv` (Python ≥ 3.12). `make init-dev` sets up the environment, `make sync` installs dependencies, `make migrate` applies migrations.
+- Running: `make run` (Honcho + `Procfile.dev`), `make run-all` launches Docker then the app.
+- Tests & quality: `make test` (pytest), `make lint` (ruff), `make format` (black).
+- i18n: `make makemessages` and `make compilemessages`, files in `locale/fr/LC_MESSAGES/`.
 
-#### Frontend associé
+#### Associated Frontend
 
-- **Bundler** : Parcel (scripts `npm run build/watch/lint` dans `package.json`).
-- **Langages** : TypeScript + CSS/Tailwind. Entrées principales dans `static/to_compile/entrypoints/` (`main.ts`, `main.css`).
-- **Organisation des assets** :
-  - `static/to_compile/` : code à transpiler (TS/CSS).
-  - `static/to_collect/` : assets copiés tels quels.
-  - `static/compiled/` : sortie Parcel, nettoyée par `make clean`.
-- **Hotwire** : utilisation de Stimulus + Turbo Frames.
+- Bundler: Parcel (`npm run build/watch/lint` scripts in `package.json`).
+- Languages: TypeScript + CSS/Tailwind. Main entrypoints in `static/to_compile/entrypoints/` (`main.ts`, `main.css`).
+- Asset organization:
+  - `static/to_compile/`: code to transpile (TS/CSS).
+  - `static/to_collect/`: assets copied as-is.
+  - `static/compiled/`: Parcel output, cleaned by `make clean`.
+- Hotwire: uses Stimulus + Turbo Frames.
 
 ### Mobile (`mobileapp/`)
 
-- **Stack** : Flutter (SDK ≥ 3.3.1), projet multi-plateforme (Android/iOS/Web/Desktop).
-- **Installation** : `flutter pub get` (ou `make install`).
-- **Exécution** : `flutter run` (`make run`), `make hot-reload` pour le mode debug.
-- **Qualité** : `make analyze`, `make format`, `make test`, `make lint`.
-- **Builds** : cibles dédiées (`make build-android[-apk|-aab]`, `make build-ios`, `make build-web`, `make build-all`).
+- Stack: Flutter (SDK ≥ 3.3.1), multi-platform project (Android/iOS/Web/Desktop).
+- Installation: `flutter pub get` (or `make install`).
+- Running: `flutter run` (`make run`), `make hot-reload` for debug mode.
+- Quality: `make analyze`, `make format`, `make test`, `make lint`.
+- Builds: dedicated targets (`make build-android[-apk|-aab]`, `make build-ios`, `make build-web`, `make build-all`).
 
-### Standards de code
+### Code Standards
 
-- **Python** : PEP 8, type hints requis, docstrings pour les fonctions publiques.
-- **TypeScript** : ESLint + Prettier, nommage camelCase.
-- **Flutter** : conventions Dart officielles, widgets immutables préférés.
+- Python: PEP 8, type hints required, docstrings for public functions.
+- TypeScript: ESLint + Prettier, camelCase naming.
+- Flutter: official Dart conventions, prefer immutable widgets.
+- Language: the application and documentation are all in English
 
-### Exigences de test
+### Testing Requirements
 
-- Couverture minimale : 80% pour webapp/backend.
-- Tests obligatoires : nouvelles features, corrections de bugs.
-- CI doit passer avant merge (lint + tests).
+- Minimum coverage: 80% for webapp/backend.
+- Mandatory tests: new features, bug fixes.
+- CI must pass before merge (lint + tests).
 
-### Workflow PR
+### PR Workflow
 
-- Template : voir `.github/pull_request_template.md`.
-- Auto-review obligatoire avant demande de review.
-- Commits : messages explicites en français ou anglais.
-- Pas de force-push sur les branches partagées.
+- Template: see `.github/pull_request_template.md`.
+- Self-review required before requesting review.
+- Commits: explicit messages in French or English.
+- No force-push on shared branches.
 
-### Décisions d'architecture
+### Architecture Decisions
 
-- Auth centralisée via django-allauth (pas de JWT custom).
-- Frontend : Hotwire/Turbo (pas de SPA React/Vue).
-- Mobile : Flutter pour multi-plateforme (pas de natif).
-- API : REST via DRF (pas de GraphQL actuellement).
+- Auth centralized via django-allauth (no custom JWT).
+- Frontend: Hotwire/Turbo (no React/Vue SPA).
+- Mobile: Flutter for multi-platform (no native).
+- API: REST via DRF (no GraphQL currently).
 
-### Points d'attention
+### Points of Attention
 
-- Ne pas committer `static/compiled/` (généré par Parcel).
-- Toujours run migrations après pull de `main`.
-- Mobile : vérifier compatibilité Android API 21+ et iOS 12+.
-- i18n : `make compilemessages` après modification des `.po`.
+- Do not commit `static/compiled/` (generated by Parcel).
+- Always run migrations after pulling `main`.
+- Mobile: ensure compatibility Android API 21+ and iOS 12+.
+- i18n: `make compilemessages` after modifying `.po`.
 
 ### Configuration
 
-- Variables d'env de la webapp : voir `webapp/.env.template` (ne jamais committer `.env`).
-- Secrets sensibles : utiliser les GitHub Secrets pour CI.
+- Webapp env vars: see `webapp/.env.template` (never commit `.env`).
+- Sensitive secrets: use GitHub Secrets for CI.
 
-### Références rapides
+### Quick References
 
-- Root README : instructions Docker communes.
-- `webapp/README.md` : onboarding UV/Django + gestion des traductions.
-- `mobileapp/README.md` : prérequis Flutter & commandes de base.
+- Root README: shared Docker instructions.
+- `webapp/README.md`: UV/Django onboarding + translation management.
+- `mobileapp/README.md`: Flutter prerequisites & basic commands.

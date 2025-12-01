@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Brico 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-05 08:04+0000\n"
+"POT-Creation-Date: 2025-12-01 07:08+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -15,6 +15,30 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: audits/views/audits.py:60
+msgid "Audit created successfully"
+msgstr "Audit créé avec succès"
+
+#: audits/views/audits.py:67
+msgid "Audit deleted successfully"
+msgstr "Audit supprimé avec succès"
+
+#: audits/views/comment.py:66
+msgid "Comment created successfully"
+msgstr "Commentaire créé avec succès"
+
+#: audits/views/comment.py:95
+msgid "Comment updated successfully"
+msgstr "Commentaire mis à jour avec succès"
+
+#: core/user_registration_serializer.py:19
+msgid "Passwords do not match."
+msgstr "Les mots de passe ne correspondent pas."
+
+#: core/user_registration_serializer.py:23
+msgid "Email addresses do not match."
+msgstr "Les adresses e-mail ne correspondent pas."
 
 #: templates/account/login.html:5 templates/account/login.html:10
 #: templates/account/login.html:37 templates/layout/base.html:19
@@ -119,6 +143,165 @@ msgstr ""
 "Vous avez déjà un compte ? Alors veuillez <a href=\"%(login_url)s\">vous "
 "connecter</a>."
 
+#: templates/audits/audit_detail.html:4
+msgid "Audit Detail - Brico"
+msgstr "Détail de l'audit - Brico"
+
+#: templates/audits/audit_detail.html:8
+msgid "Audit Detail"
+msgstr "Détail de l'audit"
+
+#: templates/audits/audit_detail.html:11
+msgid "Criteria"
+msgstr "Critères"
+
+#: templates/audits/audit_detail.html:19
+msgid "No criteria yet."
+msgstr "Aucun critère pour le moment."
+
+#: templates/audits/comment_confirm_delete.html:6
+msgid "Delete Comment"
+msgstr "Supprimer le commentaire"
+
+#: templates/audits/comment_confirm_delete.html:10
+msgid ""
+"Are you sure you want to delete this comment? This action cannot be undone."
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer ce commentaire ? Cette action est "
+"irréversible."
+
+#: templates/audits/comment_confirm_delete.html:25
+#: templates/audits/comment_item.html:20
+msgid "Delete"
+msgstr "Supprimer"
+
+#: templates/audits/comment_confirm_delete.html:30
+#: templates/audits/comment_form.html:22 templates/audits/comment_form.html:48
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/audits/comment_form.html:7
+msgid "Edit Comment"
+msgstr "Modifier le commentaire"
+
+#: templates/audits/comment_form.html:17
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: templates/audits/comment_form.html:32
+msgid "New Comment"
+msgstr "Nouveau commentaire"
+
+#: templates/audits/comment_form.html:43
+msgid "Create"
+msgstr "Créer"
+
+#: templates/audits/comment_item.html:15
+msgid "Edit"
+msgstr "Modifier"
+
+#: templates/audits/comments_list.html:6
+msgid "Comments"
+msgstr "Commentaires"
+
+#: templates/audits/comments_list.html:10
+msgid "Add Comment"
+msgstr "Ajouter un commentaire"
+
+#: templates/audits/comments_list.html:21
+msgid "No comments yet."
+msgstr "Aucun commentaire pour le moment."
+
+#: templates/audits/components/prompt_form.html:9
+msgid "Send"
+msgstr "Envoyer"
+
+#: templates/audits/criterion_detail.html:4
+msgid "Criterion Detail - Brico"
+msgstr "Détail du critère - Brico"
+
+#: templates/audits/criterion_detail.html:10
+msgid "Status:"
+msgstr "Statut :"
+
+#: templates/audits/criterion_detail.html:14
+msgid "Loading comments..."
+msgstr "Chargement des commentaires..."
+
+#: templates/audits/criterion_detail.html:18
+msgid "Discussion with AI"
+msgstr "Discussion avec l'IA"
+
+#: templates/audits/criterion_detail.html:21
+msgid "Loading prompts..."
+msgstr "Chargement des invites..."
+
+#: templates/audits/criterion_detail.html:25
+msgid "Prompts history"
+msgstr "Historique des invites"
+
+#: templates/audits/criterion_detail.html:30
+msgid "No prompts yet."
+msgstr "Aucune invite pour le moment."
+
+#: templates/audits/new_audit.html:4
+msgid "New Audit - Brico"
+msgstr "Nouvel audit - Brico"
+
+#: templates/audits/new_audit.html:8
+msgid "New Audit"
+msgstr "Nouvel audit"
+
+#: templates/audits/new_audit.html:12
+msgid "Create Audit"
+msgstr "Créer un audit"
+
+#: templates/audits/project_detail.html:4
+msgid "Project Detail - Brico"
+msgstr "Détail du projet - Brico"
+
+#: templates/audits/project_detail.html:8
+msgid "Project Detail"
+msgstr "Détail du projet"
+
+#: templates/audits/project_detail.html:11
+msgid "Resources"
+msgstr "resources"
+
+#: templates/audits/project_detail.html:16
+msgid "No resources yet."
+msgstr "Aucune ressource pour le moment."
+
+#: templates/audits/project_detail.html:19
+msgid "Audits"
+msgstr "Audits"
+
+#: templates/audits/project_detail.html:27
+msgid "No audits yet."
+msgstr "Aucun audit pour le moment."
+
+#: templates/audits/project_detail.html:30
+msgid "Start Audit"
+msgstr "Démarrer un audit"
+
+#: templates/audits/project_list.html:4
+msgid "My Projects - Brico"
+msgstr "Mes projets - Brico"
+
+#: templates/audits/project_list.html:8
+msgid "My Projects"
+msgstr "Mes projets"
+
+#: templates/audits/project_list.html:13
+msgid "No projects yet."
+msgstr "Aucun projet pour le moment."
+
+#: templates/audits/prompt.html:30
+msgid "No messages yet. Start a conversation by asking a question below."
+msgstr ""
+"Aucun message pour le moment. Commencez une conversation en posant une "
+"question ci-dessous."
+
 #: templates/index.html:7
 msgid "Welcome to Brico"
 msgstr "Bienvenu sur Brico"
@@ -126,6 +309,14 @@ msgstr "Bienvenu sur Brico"
 #: templates/index.html:11
 msgid "Quality assurance and security, in collaborative mode and IA driven"
 msgstr "Assurance qualité et sécurité, en mode collaboratif et guidé par l'IA"
+
+#: templates/index.html:14
+msgid "My projects"
+msgstr "Mes projets"
+
+#: templates/index.html:15
+msgid "Projects"
+msgstr "Projets"
 
 #: templates/layout/base.html:16
 msgid "Hello"
@@ -135,11 +326,11 @@ msgstr "Bonjour"
 msgid "Sign Out"
 msgstr "Se déconnecter"
 
-#: templates/layout/base.html:26
+#: templates/layout/base.html:27
 msgid "Brico"
 msgstr "Brico"
 
-#: templates/layout/base.html:31
+#: templates/layout/base.html:34
 msgid "Legal Mentions"
 msgstr "Mentions légales"
 

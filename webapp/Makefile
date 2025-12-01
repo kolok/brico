@@ -48,10 +48,6 @@ init-dev:
 sync:
 	uv sync
 
-.PHONY: migrate
-migrate:
-	$(MANAGE_PY) migrate
-
 .PHONY: run
 run:
 	$(UV_RUN) honcho start -f Procfile.dev

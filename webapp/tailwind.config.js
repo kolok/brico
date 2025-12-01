@@ -17,4 +17,5 @@ module.exports = {
       "blue-600": "#2563eb",
     },
   },
+  plugins: [require("tailwindcss-animate")],
 }
