@@ -10,7 +10,7 @@
     <p>{{ audit.audit_library.description }}</p>
     <h2>{% translate "Criteria" %}</h2>
     <ul>
-        {% for criterion in audit.criteria.all %}
+        {% for criterion in audit.project_audit_criteria.all %}
             <li>
                 {{ criterion.criterion.name }}
                 <a href="{% url 'audits:criterion_detail' project.slug audit.id criterion.id %}">edit</a>

@@ -20,7 +20,7 @@ def template_content():
 
 
 class TestLoadSystemPrompt:
-    """Tests unitaires for the load_system_prompt function."""
+    """Unit tests for the load_system_prompt function."""
 
     def test_load_system_prompt_replaces_all_placeholders(self, template_content):
         """Test that all placeholders are correctly replaced."""

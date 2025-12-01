@@ -86,10 +86,10 @@ class ProjectAuditCriterion(TimestampedModel, models.Model):
 
     id = models.AutoField(primary_key=True)
     project_audit = models.ForeignKey(
-        ProjectAudit, on_delete=models.CASCADE, related_name="criteria"
+        ProjectAudit, on_delete=models.CASCADE, related_name="project_audit_criteria"
     )
     criterion = models.ForeignKey(
-        Criterion, on_delete=models.CASCADE, related_name="project_audits"
+        Criterion, on_delete=models.CASCADE, related_name="project_audit_criteria"
     )
     status = models.CharField(
         max_length=255,

@@ -1,9 +1,26 @@
 import pytest
-from audits.models.audit import AuditLibrary, Criterion, Tag
-from audits.tests.factories import AuditLibraryFactory, CriterionFactory, TagFactory
+from audits.models.audit import (
+    AuditLibrary,
+    Criterion,
+    ProjectAudit,
+    ProjectAuditCriterion,
+    ProjectAuditCriterionComment,
+    ProjectAuditCriterionPrompt,
+    Tag,
+)
+from audits.tests.factories import (
+    AuditLibraryFactory,
+    CriterionFactory,
+    ProjectAuditCriterionCommentFactory,
+    ProjectAuditCriterionFactory,
+    ProjectAuditCriterionPromptFactory,
+    ProjectAuditFactory,
+    TagFactory,
+    UserFactory,
+)
 from django.db import IntegrityError
 from organization.models.organization import Organization
-from organization.tests.factories import OrganizationFactory
+from organization.tests.factories import OrganizationFactory, ProjectFactory
 
 
 @pytest.fixture
@@ -234,3 +251,379 @@ class TestTag:
     def test_str_representation(self):
         tag = TagFactory(name="Tag Test")
         assert str(tag) == "Tag Test"
+
+
+@pytest.fixture
+def project(organization):
+    return ProjectFactory(organization=organization)
+
+
+@pytest.fixture
+def project_audit(project, audit_library):
+    return ProjectAuditFactory(project=project, audit_library=audit_library)
+
+
+@pytest.mark.django_db
+class TestProjectAudit:
+
+    def test_project_foreign_key(self, project, audit_library):
+        project_audit = ProjectAuditFactory(
+            project=project, audit_library=audit_library
+        )
+
+        assert project_audit.project == project
+        assert project_audit in project.audits.all()
+
+    def test_audit_library_foreign_key(self, project, audit_library):
+        project_audit = ProjectAuditFactory(
+            project=project, audit_library=audit_library
+        )
+
+        assert project_audit.audit_library == audit_library
+        assert project_audit in audit_library.projects.all()
+
+    def test_cascade_delete_project(self, project, audit_library):
+        project_audit = ProjectAuditFactory(
+            project=project, audit_library=audit_library
+        )
+        project_audit_id = project_audit.id
+
+        project.delete()
+
+        assert not ProjectAudit.objects.filter(id=project_audit_id).exists()
+
+    def test_cascade_delete_audit_library(self, project, audit_library):
+        project_audit = ProjectAuditFactory(
+            project=project, audit_library=audit_library
+        )
+        project_audit_id = project_audit.id
+
+        audit_library.delete()
+
+        assert not ProjectAudit.objects.filter(id=project_audit_id).exists()
+
+    def test_project_audits_relation(self, project, audit_library):
+        project_audit1 = ProjectAuditFactory(
+            project=project, audit_library=audit_library
+        )
+        audit_library2 = AuditLibraryFactory(organization=project.organization)
+        project_audit2 = ProjectAuditFactory(
+            project=project, audit_library=audit_library2
+        )
+
+        assert project_audit1 in project.audits.all()
+        assert project_audit2 in project.audits.all()
+        assert project.audits.count() == 2
+
+    def test_audit_library_projects_relation(self, project, audit_library):
+        project1 = ProjectFactory(organization=project.organization)
+        project_audit1 = ProjectAuditFactory(
+            project=project, audit_library=audit_library
+        )
+        project_audit2 = ProjectAuditFactory(
+            project=project1, audit_library=audit_library
+        )
+
+        assert project_audit1 in audit_library.projects.all()
+        assert project_audit2 in audit_library.projects.all()
+        assert audit_library.projects.count() == 2
+
+
+@pytest.fixture
+def project_audit_criterion(project_audit, criterion):
+    return ProjectAuditCriterionFactory(
+        project_audit=project_audit, criterion=criterion
+    )
+
+
+@pytest.mark.django_db
+class TestProjectAuditCriterion:
+
+    def test_project_audit_foreign_key(self, project_audit, criterion):
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit=project_audit, criterion=criterion
+        )
+
+        assert project_audit_criterion.project_audit == project_audit
+        assert project_audit_criterion in project_audit.project_audit_criteria.all()
+
+    def test_criterion_foreign_key(self, project_audit, criterion):
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit=project_audit, criterion=criterion
+        )
+
+        assert project_audit_criterion.criterion == criterion
+        assert project_audit_criterion in criterion.project_audit_criteria.all()
+
+    def test_status_default_value(self, project_audit, criterion):
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit=project_audit, criterion=criterion
+        )
+
+        assert (
+            project_audit_criterion.status
+            == ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET
+        )
+
+    def test_status_choices(self, project_audit, criterion):
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criterion,
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+
+        assert (
+            project_audit_criterion.status
+            == ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT
+        )
+
+        project_audit_criterion.status = (
+            ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_COMPLIANT
+        )
+        project_audit_criterion.save()
+
+        assert (
+            project_audit_criterion.status
+            == ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_COMPLIANT
+        )
+
+    def test_cascade_delete_project_audit(self, project_audit, criterion):
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit=project_audit, criterion=criterion
+        )
+        project_audit_criterion_id = project_audit_criterion.id
+
+        project_audit.delete()
+
+        assert not ProjectAuditCriterion.objects.filter(
+            id=project_audit_criterion_id
+        ).exists()
+
+    def test_cascade_delete_criterion(self, project_audit, criterion):
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit=project_audit, criterion=criterion
+        )
+        project_audit_criterion_id = project_audit_criterion.id
+
+        criterion.delete()
+
+        assert not ProjectAuditCriterion.objects.filter(
+            id=project_audit_criterion_id
+        ).exists()
+
+    def test_project_audit_criteria_relation(self, project_audit, audit_library):
+        criterion1 = CriterionFactory(
+            audit_library=audit_library, public_id="CRI-001", name="Criterion 1"
+        )
+        criterion2 = CriterionFactory(
+            audit_library=audit_library, public_id="CRI-002", name="Criterion 2"
+        )
+        project_audit_criterion1 = ProjectAuditCriterionFactory(
+            project_audit=project_audit, criterion=criterion1
+        )
+        project_audit_criterion2 = ProjectAuditCriterionFactory(
+            project_audit=project_audit, criterion=criterion2
+        )
+
+        assert project_audit_criterion1 in project_audit.project_audit_criteria.all()
+        assert project_audit_criterion2 in project_audit.project_audit_criteria.all()
+        assert project_audit.project_audit_criteria.count() == 2
+
+    def test_criterion_project_audits_relation(self, project, audit_library, criterion):
+        project1 = ProjectFactory(organization=project.organization)
+        project_audit1 = ProjectAuditFactory(
+            project=project, audit_library=audit_library
+        )
+        project_audit2 = ProjectAuditFactory(
+            project=project1, audit_library=audit_library
+        )
+        project_audit_criterion1 = ProjectAuditCriterionFactory(
+            project_audit=project_audit1, criterion=criterion
+        )
+        project_audit_criterion2 = ProjectAuditCriterionFactory(
+            project_audit=project_audit2, criterion=criterion
+        )
+
+        assert project_audit_criterion1 in criterion.project_audit_criteria.all()
+        assert project_audit_criterion2 in criterion.project_audit_criteria.all()
+        assert criterion.project_audit_criteria.count() == 2
+
+
+@pytest.mark.django_db
+class TestProjectAuditCriterionComment:
+
+    def test_user_foreign_key(self, project_audit_criterion):
+        user = UserFactory()
+        comment = ProjectAuditCriterionCommentFactory(
+            user=user, project_audit_criterion=project_audit_criterion
+        )
+
+        assert comment.user == user
+        assert comment in user.project_audit_criterion_comments.all()
+
+    def test_project_audit_criterion_foreign_key(self, project_audit_criterion):
+        user = UserFactory()
+        comment = ProjectAuditCriterionCommentFactory(
+            user=user, project_audit_criterion=project_audit_criterion
+        )
+
+        assert comment.project_audit_criterion == project_audit_criterion
+        assert comment in project_audit_criterion.comments.all()
+
+    def test_comment_default_empty(self, project_audit_criterion):
+        user = UserFactory()
+        comment = ProjectAuditCriterionCommentFactory(
+            user=user, project_audit_criterion=project_audit_criterion, comment=""
+        )
+
+        assert comment.comment == ""
+
+    def test_comment_text(self, project_audit_criterion):
+        user = UserFactory()
+        comment_text = "This is a test comment"
+        comment = ProjectAuditCriterionCommentFactory(
+            user=user,
+            project_audit_criterion=project_audit_criterion,
+            comment=comment_text,
+        )
+
+        assert comment.comment == comment_text
+
+    def test_cascade_delete_user(self, project_audit_criterion):
+        user = UserFactory()
+        comment = ProjectAuditCriterionCommentFactory(
+            user=user, project_audit_criterion=project_audit_criterion
+        )
+        comment_id = comment.id
+
+        user.delete()
+
+        assert not ProjectAuditCriterionComment.objects.filter(id=comment_id).exists()
+
+    def test_cascade_delete_project_audit_criterion(self, project_audit_criterion):
+        user = UserFactory()
+        comment = ProjectAuditCriterionCommentFactory(
+            user=user, project_audit_criterion=project_audit_criterion
+        )
+        comment_id = comment.id
+
+        project_audit_criterion.delete()
+
+        assert not ProjectAuditCriterionComment.objects.filter(id=comment_id).exists()
+
+    def test_user_comments_relation(self, project_audit_criterion):
+        user = UserFactory()
+        comment1 = ProjectAuditCriterionCommentFactory(
+            user=user, project_audit_criterion=project_audit_criterion
+        )
+        criterion2 = CriterionFactory(
+            audit_library=project_audit_criterion.project_audit.audit_library,
+            public_id="CRI-002",
+        )
+        project_audit_criterion2 = ProjectAuditCriterionFactory(
+            project_audit=project_audit_criterion.project_audit, criterion=criterion2
+        )
+        comment2 = ProjectAuditCriterionCommentFactory(
+            user=user, project_audit_criterion=project_audit_criterion2
+        )
+
+        assert comment1 in user.project_audit_criterion_comments.all()
+        assert comment2 in user.project_audit_criterion_comments.all()
+        assert user.project_audit_criterion_comments.count() == 2
+
+    def test_project_audit_criterion_comments_relation(self, project_audit_criterion):
+        user1 = UserFactory()
+        user2 = UserFactory()
+        comment1 = ProjectAuditCriterionCommentFactory(
+            user=user1, project_audit_criterion=project_audit_criterion
+        )
+        comment2 = ProjectAuditCriterionCommentFactory(
+            user=user2, project_audit_criterion=project_audit_criterion
+        )
+
+        assert comment1 in project_audit_criterion.comments.all()
+        assert comment2 in project_audit_criterion.comments.all()
+        assert project_audit_criterion.comments.count() == 2
+
+
+@pytest.mark.django_db
+class TestProjectAuditCriterionPrompt:
+
+    def test_project_audit_criterion_foreign_key(self, project_audit_criterion):
+        prompt = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion
+        )
+
+        assert prompt.project_audit_criterion == project_audit_criterion
+        assert prompt in project_audit_criterion.prompts.all()
+
+    def test_session_id_generation(self, project_audit_criterion):
+        prompt = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion
+        )
+
+        assert prompt.session_id is not None
+
+    def test_session_id_uniqueness(self, project_audit_criterion):
+        prompt1 = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion
+        )
+        prompt2 = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion
+        )
+
+        assert prompt1.session_id != prompt2.session_id
+
+    def test_name_default(self, project_audit_criterion):
+        prompt = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion, name="Prompt"
+        )
+
+        assert prompt.name == "Prompt"
+
+    def test_prompt_json_default(self, project_audit_criterion):
+        prompt = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion
+        )
+
+        assert isinstance(prompt.prompt, dict)
+
+    def test_prompt_json_content(self, project_audit_criterion):
+        prompt_data = {"messages": [{"role": "user", "content": "Test"}]}
+        prompt = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion, prompt=prompt_data
+        )
+
+        assert prompt.prompt == prompt_data
+        assert prompt.prompt["messages"][0]["content"] == "Test"
+
+    def test_cascade_delete_project_audit_criterion(self, project_audit_criterion):
+        prompt = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion
+        )
+        prompt_id = prompt.id
+
+        project_audit_criterion.delete()
+
+        assert not ProjectAuditCriterionPrompt.objects.filter(id=prompt_id).exists()
+
+    def test_project_audit_criterion_prompts_relation(self, project_audit_criterion):
+        prompt1 = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion
+        )
+        prompt2 = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion
+        )
+
+        assert prompt1 in project_audit_criterion.prompts.all()
+        assert prompt2 in project_audit_criterion.prompts.all()
+        assert project_audit_criterion.prompts.count() == 2
+
+    def test_str_representation(self, project_audit_criterion):
+        prompt = ProjectAuditCriterionPromptFactory(
+            project_audit_criterion=project_audit_criterion, name="Test Prompt"
+        )
+
+        str_repr = str(prompt)
+        assert "Test Prompt" in str_repr
+        assert prompt.created_at.strftime("%Y-%m-%d") in str_repr

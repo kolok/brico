@@ -23,4 +23,6 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.prefetch_related("resources", "audits", "audits__criteria")
+        return queryset.prefetch_related(
+            "resources", "audits", "audits__project_audit_criteria"
+        )
