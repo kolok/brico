@@ -8,6 +8,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "04:00" # UTC
+    cooldown:
+      default-days: 7
   - package-ecosystem: "npm"
     directory: "/webapp/"
     schedule:
@@ -25,9 +27,13 @@ updates:
       eslint:
         patterns:
           - "*eslint*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "06:00" # UTC
+    cooldown:
+      default-days: 7
