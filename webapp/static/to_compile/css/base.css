@@ -1,14 +1,93 @@
 body {
-  @apply font-sans;
+  @apply font-sans bg-bg_content text-content;
 }
 
+/* HEADERS */
+header {
+  @apply w-full bg-bg_layout shadow px-8;
+}
+
+header nav {
+  @apply flex h-16 items-center justify-between;
+}
+
+header .header-title {
+  @apply text-2xl font-bold;
+}
+
+header .header-title-link {
+  @apply flex items-center gap-2;
+}
+
+header .header-subtitle {
+  @apply text-sm italic;
+}
+/* MAIN */
+main {
+  @apply flex-1 flex;
+}
+
+main .main-layout {
+  @apply flex-1 lg:min-h-[calc(100vh-8rem)] mx-auto flex flex-col lg:flex-row w-full;
+}
+
+main .main-layout aside {
+  @apply w-full lg:w-64 bg-bg_layout p-4 pl-8 shadow-sm lg:shadow-none shrink-0;
+}
+
+main .main-layout aside nav {
+  @apply space-y-2 flex flex-col;
+}
+
+main .main-layout aside nav a.active {
+  @apply font-bold;
+}
+
+main .content {
+  @apply p-8;
+}
+
+/* FOOTERS */
+footer {
+  @apply w-full bg-bg_layout px-8 flex min-h-16 items-center justify-between;
+}
+
+/* CARDS */
 .card {
   @apply bg-white rounded-lg shadow-md p-8;
 }
 
+/* BUTTONS */
 button {
   @apply py-2 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-md border bg-primary text-white;
 }
+
+/* H tags */
+h1 {
+  @apply text-2xl font-bold mb-2;
+}
+h2 {
+  @apply text-xl font-semibold mb-1;
+}
+h3 {
+  @apply text-lg font-semibold mb-1;
+}
+
+/* LINKS */
+a {
+  @apply text-link hover:text-hover_link active:text-active_link underline;
+}
+
+aside nav a,
+.header-left a {
+  @apply no-underline text-nav_link hover:text-nav_hover_link;
+}
+aside nav a.active,
+.header-left a.active {
+  @apply text-nav_active_link;
+}
+
+/* CSS below : To be checked */
 
 label {
   @apply block text-sm font-semibold mb-2 text-dark;

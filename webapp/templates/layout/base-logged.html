@@ -1,0 +1,24 @@
+{% extends 'layout/base.html' %}
+
+{% load i18n static %}
+
+
+{% block main %}
+    <div class="main-layout">
+        <aside>
+            {% block sidepanel %}
+                <nav>
+                    <a href="{% url 'dashboard' %}" {% if request.active_nav.dashboard %}class="active"{% endif %}>
+                        {% translate "Dashboard" %}
+                    </a>
+                    <a href="{% url 'audits:project_list' %}" {% if request.active_nav.projects %}class="active"{% endif %}>
+                        {% translate "Projects" %}
+                    </a>
+                </nav>
+            {% endblock sidepanel %}
+        </aside>
+        <section class="content">
+            {% block content %}{% endblock %}
+        </section>
+    </div>
+{% endblock main %}

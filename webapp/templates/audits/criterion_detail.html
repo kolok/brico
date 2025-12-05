@@ -1,10 +1,10 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/base-logged.html' %}
 {% load i18n %}
 
 {% block title %}{% translate "Criterion Detail - Brico" %}{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-8">
+<div>
     <h1>{{ criterion.criterion.name }}</h1>
     <p>{{ criterion.criterion.description }}</p>
     <p>{% translate "Status:" %} {{ criterion.get_status_display }}</p>

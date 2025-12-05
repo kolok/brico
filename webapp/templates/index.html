@@ -10,10 +10,15 @@
 
     <p>{% translate "Quality assurance and security, in collaborative mode and IA driven" %}</p>
 
-    {% if user.is_authenticated %}
-        <h2>{% translate "My projects" %}</h2>
-        <a href="{% url 'audits:project_list' %}">{% translate "Projects" %}</a>
-    {% else %}
-        TODO : affichage de la page hors connexion
-    {% endif %}
+    <div class="mt-8">
+        <p>{% translate "Please sign in to access your dashboard." %}</p>
+        <div class="mt-4 space-x-4">
+            <a href="{% url 'account_login' %}" class="inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition">
+                {% translate "Sign In" %}
+            </a>
+            <a href="{% url 'account_signup' %}" class="inline-block rounded bg-white px-4 py-2 text-blue-600 border border-blue-600 hover:bg-blue-50 transition">
+                {% translate "Sign Up" %}
+            </a>
+        </div>
+    </div>
 {% endblock content %}

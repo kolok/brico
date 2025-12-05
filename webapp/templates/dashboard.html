@@ -1,0 +1,22 @@
+{% extends 'layout/base-logged.html' %}
+
+{% load i18n %}
+
+{% block title %}{% translate "Dashboard" %} - Brico{% endblock %}
+
+{% block content %}
+    <h1>{% translate "Dashboard" %}</h1>
+
+    {% include "components/messages.html" %}
+
+    <section>
+        <h2>{% translate "My projects" %}</h2>
+        <a href="{% url 'audits:project_list' %}">
+            {% translate "View all projects" %}
+        </a>
+        <h2>Something else…</h2>
+        <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+        </p>
+    </section>
+{% endblock content %}

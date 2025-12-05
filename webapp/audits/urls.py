@@ -11,12 +11,10 @@ from audits.views.criteria import CriterionDetailView
 from audits.views.projects import ProjectDetailView, ProjectListView
 from audits.views.prompt import PromptFormView
 from django.urls import path
-from django.views.generic import TemplateView
 
 app_name = "audits"
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="index.html"), name="index"),
     # Projects URLs
     path("projects/", ProjectListView.as_view(), name="project_list"),
     path("projects/<slug:slug>/", ProjectDetailView.as_view(), name="project_detail"),

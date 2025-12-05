@@ -73,6 +73,7 @@ MIDDLEWARE = [
     "django.middleware.locale.LocaleMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "core.middleware.ActiveNavMiddleware",
 ]
 
 # Configuration django-allauth
