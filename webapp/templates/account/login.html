@@ -6,7 +6,6 @@
 {% endblock title %}
 
 {% block content %}
-
   <h2>{% translate "Sign In" %}</h2>
 
   {% include "components/messages.html" %}
@@ -16,10 +15,10 @@
   {% if socialaccount_providers %}
   <p>{% translate "Sign in with:" %}</p>
 
-  <div>
+  <div class="w-full flex justify-center py-1">
     {% for provider in socialaccount_providers %}
-      <a href="{% provider_login_url provider.id %}" class="socialaccount_provider {{ provider.id }}">
-        <button type="button">{% translate "Sign in with" %} {{ provider.name }}</button>
+      <a href="{% provider_login_url provider.id %}" class="my-1 btn btn-primary socialaccount_provider {{ provider.id }}">
+        {% translate "Sign in with" %} {{ provider.name }}
       </a>
     {% endfor %}
   </div>
@@ -32,10 +31,11 @@
     {% csrf_token %}
     {{ form.as_p }}
     {% if redirect_field_value %}
-    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
     {% endif %}
-    <button type="submit">{% translate "Sign In" %}</button>
-    <a href="{% url 'account_reset_password' %}">{% translate "Forgot Password?" %}</a>
+    <div class="w-full flex justify-center py-2">
+      <button type="submit" class="btn btn-primary">{% translate "Sign In" %}</button>
+    </div>
   </form>
 
   <p>{% blocktranslate %}If you have not created an account yet, then please

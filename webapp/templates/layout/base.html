@@ -1,39 +1,60 @@
 {% load i18n static %}
 
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Brico{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'main.css' %}">
     </head>
-    <body class="w-full flex flex-col items-center bg-info/5">
+    <body class="min-h-screen flex flex-col m-0">
         {% block headers %}
-            <header class="w-full">
-                <nav class="flex justify-end">
-                    {% if user.is_authenticated %}
-                        <p>{% translate "Hello" %} {{ user.username }}</p>
-                        <a href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
-                    {% else %}
-                        <a href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
-                        <a href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
-                    {% endif %}
+            <header>
+                <nav>
+                    <div class="header-left">
+                        <a href="/" class="header-title-link">
+                            <div class="header-logo">
+                                🤩
+                            </div>
+                            <div class="header-title">
+                                Brico
+                            </div>
+                        </a>
+                        <div class="header-subtitle">
+                            {% translate "Quality assurance and security, in collaborative mode and IA driven" %}
+                        </div>
+                    </div>
+                    <div class="header-subtitle">
+                        <!-- Center content if needed-->
+                    </div>
+                    <div class="header-right">
+                        <div class="flex items-center gap-4 text-sm font-medium">
+                            {% if user.is_authenticated %}
+                                <p>{% translate "Hello" %} {{ user.username|title }}</p>
+                                <a class="btn btn-secondary" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
+                            {% else %}
+                                <a class="btn btn-primary" href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
+                                <a class="btn btn-secondary" href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
+                            {% endif %}
+                        </div>
+                    </div>
                 </nav>
             </header>
         {% endblock headers %}
-        {% block main %}
-            <main>
-                <h1>{% translate "Brico" %}</h1>
-                {% block content %}{% endblock %}
-            </main>
-        {% endblock main %}
+        <main>
+            {% block main %}
+                <div class="content">
+                    {% block content %}{% endblock %}
+                </div>
+            {% endblock main %}
+        </main>
 
-        {% block footers %}
-            <footer>
-                <a href="">{% translate "Legal Mentions" %}</a>
-            </footer>
-        {% endblock footers %}
+        <footer>
+            {% block footers %}
+                <a href="#">{% translate "Legal Mentions" %}</a>
+            {% endblock footers %}
+        </footer>
         <script type="module" src="{% static 'main.js' %}"></script>
     </body>
 </html>

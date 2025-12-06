@@ -2,12 +2,10 @@
 {% load i18n static %}
 
 {% block main %}
-    <div class="flex flex-col w-full overflow-hidden relative min-h-screen radial-gradient items-center justify-center g-0 px-4">
-        <div class="justify-center items-center w-full card lg:flex max-w-md">
-            <div class=" w-full card-body">
-                {% block content %}
-                {% endblock content %}
-            </div>
+    <div class="content-center">
+        <div class="card">
+            {% block content %}
+            {% endblock content %}
         </div>
     </div>
 {% endblock main %}

@@ -10,24 +10,27 @@
 
   {% include "components/messages.html" %}
 
+  <p>{% blocktranslate %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktranslate %}</p>
+
+  <p class="text-center">{% translate "Or" %}</p>
+
   {% get_providers as socialaccount_providers %}
 
   {% if socialaccount_providers %}
   <p>{% translate "Sign up with:" %}</p>
 
-  <div>
+  <div class="w-full flex justify-center py-1">
     {% for provider in socialaccount_providers %}
-      <a href="{% provider_login_url provider.id process='signup' %}" class="socialaccount_provider {{ provider.id }}">
-        <button type="button">{% translate "Sign up with" %} {{ provider.name }}</button>
+      <a href="{% provider_login_url provider.id process='signup' %}" class="my-1 btn btn-primary socialaccount_provider {{ provider.id }}">
+        {% translate "Sign up with" %} {{ provider.name }}
       </a>
     {% endfor %}
   </div>
 
-  <p>{% translate "Or" %}</p>
+  <p class="text-center">{% translate "Or" %}</p>
 
   {% endif %}
 
-  <p>{% blocktranslate %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktranslate %}</p>
 
   <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
     {% csrf_token %}
@@ -35,7 +38,9 @@
     {% if redirect_field_value %}
     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
     {% endif %}
-    <button type="submit">{% translate "Sign Up" %} &raquo;</button>
+    <div class="w-full flex justify-center py-2">
+      <button type="submit" class="btn btn-primary">{% translate "Sign Up" %} &raquo;</button>
+    </div>
   </form>
 
 {% endblock content %}
