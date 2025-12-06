@@ -5,7 +5,7 @@
         <div class="flex justify-between items-center mb-4">
             <h2>{% translate "Comments" %}</h2>
             <a href="{% url 'audits:comment_create' project.slug audit.id criterion.id %}"
-               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition"
+               class="btn btn-primary"
                data-turbo-frame="comment_form_frame">
                 {% translate "Add Comment" %}
             </a>

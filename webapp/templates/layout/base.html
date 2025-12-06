@@ -31,11 +31,11 @@
                     <div class="header-right">
                         <div class="flex items-center gap-4 text-sm font-medium">
                             {% if user.is_authenticated %}
-                                <p class="hidden sm:block">{% translate "Hello" %} {{ user.username|title }}</p>
-                                <a class="hover:text-blue-100 transition" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
+                                <p>{% translate "Hello" %} {{ user.username|title }}</p>
+                                <a class="btn btn-secondary" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
                             {% else %}
-                                <a class="hover:text-blue-100 transition" href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
-                                <a class="rounded bg-white px-3 py-1 text-blue-600 shadow hover:bg-blue-50 transition" href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
+                                <a class="btn btn-primary" href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
+                                <a class="btn btn-secondary" href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
                             {% endif %}
                         </div>
                     </div>

@@ -47,6 +47,10 @@ main .content {
   @apply p-8;
 }
 
+main .content-center {
+  @apply w-full flex-1 flex justify-center items-center p-4;
+}
+
 /* FOOTERS */
 footer {
   @apply w-full bg-bg_layout px-8 flex min-h-16 items-center justify-between;
@@ -54,12 +58,25 @@ footer {
 
 /* CARDS */
 .card {
-  @apply bg-white rounded-lg shadow-md p-8;
+  @apply bg-white rounded-lg shadow-md p-8 flex flex-col max-w-md;
 }
 
 /* BUTTONS */
-button {
-  @apply py-2 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-md border bg-primary text-white;
+/* button {
+  @apply my-2 py-2 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-md border bg-primary text-white;
+} */
+
+button,
+.btn {
+  @apply inline-flex items-center gap-x-2 text-sm font-semibold rounded-md border no-underline py-2 px-4;
+}
+
+.btn-primary {
+  @apply bg-primary text-primary_text border-border hover:bg-primary_hover hover:text-primary_hover_text transition;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary_text border border-border hover:bg-secondary_hover hover:text-secondary_hover_text transition;
 }
 
 /* H tags */
@@ -87,12 +104,21 @@ aside nav a.active,
   @apply text-nav_active_link;
 }
 
-/* CSS below : To be checked */
+/* FORMS & INPUTS */
 
 label {
-  @apply block text-sm font-semibold mb-2 text-dark;
+  @apply block text-sm font-semibold mb-1 mt-2;
 }
 
 input {
-  @apply py-3 px-4 block border-gray-200 rounded-md text-sm focus:border-blue-600 focus:ring-0;
+  @apply py-3 px-4 block border border-border rounded-md text-sm focus:border-blue-600 focus:ring-0;
+}
+
+.helptext {
+  @apply text-sm mb-1;
+}
+
+/* SIGNUP & LOGIN */
+.signup ul li {
+  @apply text-sm;
 }
