@@ -26,6 +26,8 @@ module.exports = {
       secondary_hover: "#EDF5FB",
       secondary_text: "#424242",
       secondary_hover_text: "#212121",
+      odd: "#E8F0F9",
+      even: "#E4EBF9",
       info: "#000091",
       black: "black",
       white: "white",

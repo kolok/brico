@@ -8,7 +8,7 @@ from audits.views.comment import (
     CommentUpdateView,
 )
 from audits.views.criteria import CriterionDetailView
-from audits.views.projects import ProjectDetailView, ProjectListView
+from audits.views.projects import ProjectDetailView, ProjectFormView, ProjectListView
 from audits.views.prompt import PromptFormView
 from django.urls import path
 
@@ -17,6 +17,7 @@ app_name = "audits"
 urlpatterns = [
     # Projects URLs
     path("projects/", ProjectListView.as_view(), name="project_list"),
+    path("projects/new/", ProjectFormView.as_view(), name="project_form"),
     path("projects/<slug:slug>/", ProjectDetailView.as_view(), name="project_detail"),
     # Audits URLs
     path(

@@ -2,6 +2,7 @@ import uuid
 
 from audits.models.audit import AuditLibrary, ProjectAuditCriterionComment
 from django import forms
+from organization.models.organization import Project
 
 
 class NewAuditForm(forms.Form):
@@ -32,3 +33,13 @@ class CommentForm(forms.ModelForm):
 class PromptForm(forms.Form):
     message = forms.CharField(required=True)
     session_id = forms.UUIDField(widget=forms.HiddenInput(), initial=uuid.uuid4())
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ["name", "description"]
+        labels = {
+            "name": "",
+            "description": "",
+        }
