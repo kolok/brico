@@ -42,12 +42,20 @@ class TagFactory(factory.django.DjangoModelFactory):
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
+        # factory_boy is deprecating the implicit save-after-post_generation behavior.
+        # We opt out of the automatic save and save explicitly in our post_generation
+        # hook to keep password persistence stable across versions.
+        skip_postgeneration_save = True
 
     username = Faker("user_name")
     email = Faker("email")
-    password = factory.PostGenerationMethodCall(
-        "set_password", "password"
-    )  # pragma: allowlist secret
+
+    @factory.post_generation
+    def password(self, create, extracted, **kwargs):
+        raw_password = extracted or "password"  # pragma: allowlist secret
+        self.set_password(raw_password)
+        if create:
+            self.save(update_fields=["password"])
 
 
 class ProjectAuditFactory(factory.django.DjangoModelFactory):

@@ -1,0 +1,15 @@
+{% extends 'layout/base-logged.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "New Project - Brico" %}{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{% translate "New Project" %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">{% translate "Create Project" %}</button>
+    </form>
+</div>
+{% endblock content %}

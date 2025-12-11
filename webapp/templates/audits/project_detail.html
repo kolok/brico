@@ -1,12 +1,11 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/base-logged.html' %}
 {% load i18n %}
 
 {% block title %}{% translate "Project Detail - Brico" %}{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-8">
-    <h1>{% translate "Project Detail" %}</h1>
-    <p>{{ project.name }}</p>
+<div>
+    <h1>{{ project.name }}</h1>
     <p>{{ project.description }}</p>
     <h2>{% translate "Resources" %}</h2>
     <ul>
@@ -27,6 +26,6 @@
             <li>{% translate "No audits yet." %}</li>
         {% endfor %}
     </ul>
-    <a href="{% url 'audits:new_audit' project.slug %}" class="btn btn-primary">{% translate "Start Audit" %}</a>
+    <a class="btn btn-primary" href="{% url 'audits:new_audit' project.slug %}">{% translate "Start Audit" %}</a>
 </div>
 {% endblock content %}

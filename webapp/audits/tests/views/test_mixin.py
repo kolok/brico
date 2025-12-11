@@ -12,20 +12,20 @@ from organization.tests.factories import ProjectFactory
 User = get_user_model()
 
 
-class TestView(ProjectChildrenMixin):
-    """Test view that uses ProjectChildrenMixin."""
+class FakeView(ProjectChildrenMixin):
+    """Fake view that uses ProjectChildrenMixin."""
 
     pass
 
 
-class TestAuditView(AuditChildrenMixin):
-    """Test view that uses AuditChildrenMixin."""
+class FakeAuditView(AuditChildrenMixin):
+    """Fake view that uses AuditChildrenMixin."""
 
     pass
 
 
-class TestCriteriaView(CriteriaChildrenMixin):
-    """Test view that uses CriteriaChildrenMixin."""
+class FakeCriteriaView(CriteriaChildrenMixin):
+    """Fake view that uses CriteriaChildrenMixin."""
 
     pass
 
@@ -36,7 +36,7 @@ class TestProjectChildrenMixin:
 
     def test_get_project_returns_correct_project(self):
         project = ProjectFactory()
-        view = TestView()
+        view = FakeView()
         view.kwargs = {"project_slug": project.slug}
 
         result = view._get_project()
@@ -45,14 +45,14 @@ class TestProjectChildrenMixin:
         assert result.slug == project.slug
 
     def test_get_project_raises_404_for_invalid_slug(self):
-        view = TestView()
+        view = FakeView()
         view.kwargs = {"project_slug": "non-existent-slug"}
 
         with pytest.raises(Http404):
             view._get_project()
 
     def test_get_project_with_missing_slug(self):
-        view = TestView()
+        view = FakeView()
         view.kwargs = {}
 
         with pytest.raises(Http404):
@@ -66,7 +66,7 @@ class TestAuditChildrenMixin:
     def test_get_audit_returns_correct_audit(self):
         project = ProjectFactory()
         audit = ProjectAuditFactory(project=project)
-        view = TestAuditView()
+        view = FakeAuditView()
         view.kwargs = {"project_slug": project.slug, "audit_id": audit.id}
 
         result = view._get_audit()
@@ -76,7 +76,7 @@ class TestAuditChildrenMixin:
 
     def test_get_audit_raises_404_for_invalid_id(self):
         project = ProjectFactory()
-        view = TestAuditView()
+        view = FakeAuditView()
         view.kwargs = {"project_slug": project.slug, "audit_id": 99999}
 
         with pytest.raises(Http404):
@@ -84,7 +84,7 @@ class TestAuditChildrenMixin:
 
     def test_get_audit_with_missing_id(self):
         project = ProjectFactory()
-        view = TestAuditView()
+        view = FakeAuditView()
         view.kwargs = {"project_slug": project.slug}
 
         with pytest.raises(Http404):
@@ -93,7 +93,7 @@ class TestAuditChildrenMixin:
     def test_get_project_inherited_from_parent(self):
         project = ProjectFactory()
         audit = ProjectAuditFactory(project=project)
-        view = TestAuditView()
+        view = FakeAuditView()
         view.kwargs = {"project_slug": project.slug, "audit_id": audit.id}
 
         # AuditChildrenMixin should inherit _get_project from ProjectChildrenMixin
@@ -108,7 +108,7 @@ class TestCriteriaChildrenMixin:
 
     def test_get_criterion_returns_correct_criterion(self):
         project_audit_criterion = ProjectAuditCriterionFactory()
-        view = TestCriteriaView()
+        view = FakeCriteriaView()
         view.kwargs = {
             "project_slug": project_audit_criterion.project_audit.project.slug,
             "audit_id": project_audit_criterion.project_audit.id,
@@ -123,7 +123,7 @@ class TestCriteriaChildrenMixin:
     def test_get_criterion_raises_404_for_invalid_id(self):
         project = ProjectFactory()
         audit = ProjectAuditFactory(project=project)
-        view = TestCriteriaView()
+        view = FakeCriteriaView()
         view.kwargs = {
             "project_slug": project.slug,
             "audit_id": audit.id,
@@ -136,7 +136,7 @@ class TestCriteriaChildrenMixin:
     def test_get_criterion_with_missing_id(self):
         project = ProjectFactory()
         audit = ProjectAuditFactory(project=project)
-        view = TestCriteriaView()
+        view = FakeCriteriaView()
         view.kwargs = {"project_slug": project.slug, "audit_id": audit.id}
 
         with pytest.raises(Http404):
@@ -144,7 +144,7 @@ class TestCriteriaChildrenMixin:
 
     def test_get_audit_inherited_from_parent(self):
         project_audit_criterion = ProjectAuditCriterionFactory()
-        view = TestCriteriaView()
+        view = FakeCriteriaView()
         view.kwargs = {
             "project_slug": project_audit_criterion.project_audit.project.slug,
             "audit_id": project_audit_criterion.project_audit.id,
@@ -158,7 +158,7 @@ class TestCriteriaChildrenMixin:
 
     def test_get_project_inherited_from_grandparent(self):
         project_audit_criterion = ProjectAuditCriterionFactory()
-        view = TestCriteriaView()
+        view = FakeCriteriaView()
         view.kwargs = {
             "project_slug": project_audit_criterion.project_audit.project.slug,
             "audit_id": project_audit_criterion.project_audit.id,
