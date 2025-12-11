@@ -26,6 +26,6 @@
             <li>{% translate "No audits yet." %}</li>
         {% endfor %}
     </ul>
-    <a href="{% url 'audits:new_audit' project.slug %}">{% translate "Start Audit" %}</a>
+    <a class="btn btn-primary" href="{% url 'audits:new_audit' project.slug %}">{% translate "Start Audit" %}</a>
 </div>
 {% endblock content %}

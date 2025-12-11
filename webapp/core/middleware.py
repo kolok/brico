@@ -15,9 +15,9 @@ class ActiveNavMiddleware:
     def __call__(self, request):
         active_nav = {}
 
-        if "audits/projects" in request.path:
+        if request.path.startswith("/audits/projects"):
             active_nav["projects"] = True
-        if "dashboard" in request.path:
+        if request.path.startswith("/dashboard"):
             active_nav["dashboard"] = True
 
         request.active_nav = active_nav

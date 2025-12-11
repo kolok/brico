@@ -2,7 +2,8 @@ import pytest
 from audits.tests.factories import ProjectAuditFactory
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from organization.tests.factories import ProjectFactory
+from organization.models.organization import Organization, Project
+from organization.tests.factories import OrganizationFactory, ProjectFactory
 
 User = get_user_model()
 
@@ -44,6 +45,44 @@ class TestProjectListView:
 
         assert response.status_code == 200
         assert list(response.context["projects"]) == []
+
+    def test_project_list_view_search_filters_by_name(self, client, login_user):
+        project1 = ProjectFactory(name="Hello World")
+        project2 = ProjectFactory(name="Some other project")
+        project3 = ProjectFactory(name="HELLO again")
+
+        url = reverse("audits:project_list")
+        response = client.get(url, data={"search": "hello"})
+
+        assert response.status_code == 200
+        projects = list(response.context["projects"])
+        assert project1 in projects
+        assert project3 in projects
+        assert project2 not in projects
+
+    def test_project_list_view_search_strips_spaces(self, client, login_user):
+        project = ProjectFactory(name="Unique Project Name")
+        ProjectFactory(name="Another Project")
+
+        url = reverse("audits:project_list")
+        response = client.get(url, data={"search": "   Unique Project   "})
+
+        assert response.status_code == 200
+        projects = list(response.context["projects"])
+        assert projects == [project]
+
+    def test_project_list_view_search_allows_special_characters(
+        self, client, login_user
+    ):
+        project = ProjectFactory(name="Sécurité & Qualité (2025)")
+        ProjectFactory(name="Totally different")
+
+        url = reverse("audits:project_list")
+        response = client.get(url, data={"search": "sécurité & qualité"})
+
+        assert response.status_code == 200
+        projects = list(response.context["projects"])
+        assert projects == [project]
 
 
 @pytest.mark.django_db
@@ -88,3 +127,52 @@ class TestProjectDetailView:
         response = client.get(url)
 
         assert response.status_code == 404
+
+
+@pytest.mark.django_db
+class TestProjectFormView:
+    """Test the project creation form view."""
+
+    def test_login_required_get(self, client):
+        response = client.get(reverse("audits:project_form"))
+        assert response.status_code == 302
+        assert reverse("account_login") in response.url
+
+    def test_login_required_post(self, client):
+        response = client.post(
+            reverse("audits:project_form"),
+            data={"name": "Test project", "description": "Some description"},
+        )
+        assert response.status_code == 302
+        assert reverse("account_login") in response.url
+
+    def test_create_project_ok_and_redirects_to_detail(self, client, login_user):
+        Organization.objects.all().delete()
+        org = OrganizationFactory(name="My Org")
+
+        response = client.post(
+            reverse("audits:project_form"),
+            data={"name": "My Project", "description": "Desc"},
+        )
+
+        assert response.status_code == 302
+        project = Project.objects.get(name="My Project")
+        assert project.organization == org
+        assert response.url == reverse(
+            "audits:project_detail", kwargs={"slug": project.slug}
+        )
+
+    def test_create_project_without_organization_shows_clear_error(
+        self, client, login_user
+    ):
+        Organization.objects.all().delete()
+
+        response = client.post(
+            reverse("audits:project_form"),
+            data={"name": "My Project", "description": "Desc"},
+        )
+
+        assert response.status_code == 200
+        assert Project.objects.filter(name="My Project").count() == 0
+        form = response.context["form"]
+        assert "No organization is configured" in str(form.non_field_errors())
