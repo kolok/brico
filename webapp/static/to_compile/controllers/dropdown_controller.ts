@@ -8,23 +8,41 @@ export default class extends Controller {
 
   private currentIndex: number = -1
   private menuItems: HTMLElement[] = []
+  // Store bound method references to ensure removeEventListener works correctly
+  private boundHandleClickOutside?: (event: MouseEvent) => void
+  private boundHandleToggleKeydown?: (event: KeyboardEvent) => void
+  private boundHandleMenuKeydown?: (event: KeyboardEvent) => void
 
   connect() {
+    // Initialize bound method references if not already set
+    if (!this.boundHandleClickOutside) {
+      this.boundHandleClickOutside = this.handleClickOutside.bind(this)
+    }
+    if (!this.boundHandleToggleKeydown) {
+      this.boundHandleToggleKeydown = this.handleToggleKeydown.bind(this)
+    }
+    if (!this.boundHandleMenuKeydown) {
+      this.boundHandleMenuKeydown = this.handleMenuKeydown.bind(this)
+    }
+
     // Close the dropdown if clicked elsewhere
-    document.addEventListener("click", this.handleClickOutside.bind(this))
+    document.addEventListener("click", this.boundHandleClickOutside!)
     // Handle keyboard events
-    this.toggleTarget.addEventListener("keydown", this.handleToggleKeydown.bind(this))
-    this.menuTarget.addEventListener("keydown", this.handleMenuKeydown.bind(this))
+    this.toggleTarget.addEventListener("keydown", this.boundHandleToggleKeydown!)
+    this.menuTarget.addEventListener("keydown", this.boundHandleMenuKeydown!)
     this.updateMenuItems()
   }
 
   disconnect() {
-    document.removeEventListener("click", this.handleClickOutside.bind(this))
-    this.toggleTarget.removeEventListener(
-      "keydown",
-      this.handleToggleKeydown.bind(this),
-    )
-    this.menuTarget.removeEventListener("keydown", this.handleMenuKeydown.bind(this))
+    if (this.boundHandleClickOutside) {
+      document.removeEventListener("click", this.boundHandleClickOutside)
+    }
+    if (this.boundHandleToggleKeydown) {
+      this.toggleTarget.removeEventListener("keydown", this.boundHandleToggleKeydown)
+    }
+    if (this.boundHandleMenuKeydown) {
+      this.menuTarget.removeEventListener("keydown", this.boundHandleMenuKeydown)
+    }
   }
 
   toggle() {
