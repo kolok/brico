@@ -36,25 +36,20 @@ class OrganizationMiddleware:
     Middleware pour gérer l'organisation courante de l'utilisateur en session.
     """
 
-    memberships = None
-
-    def get_memberships(self, user):
-        if self.memberships is None:
-            self.memberships = OrganizationMember.objects.filter(
-                user=user
-            ).select_related("organization")
-        return self.memberships
-
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
+        memberships = None
+
         if request.user.is_authenticated:
 
             # Manage user organizations
             if not request.session.get(ORGANIZATIONS_SESSION_KEY, []):
                 # Get all organizations of the user
-                memberships = self.get_memberships(request.user)
+                memberships = OrganizationMember.objects.filter(
+                    user=request.user
+                ).select_related("organization")
 
                 # Store user organizations in session
                 request.session[ORGANIZATIONS_SESSION_KEY] = [
@@ -67,7 +62,10 @@ class OrganizationMiddleware:
                 ORGANIZATIONS_SESSION_KEY
             ) and not request.session.get(CURRENT_ORGANIZATION_SESSION_KEY):
                 # Get all organizations of the user to search for the default
-                memberships = self.get_memberships(request.user)
+                if memberships is None:
+                    memberships = OrganizationMember.objects.filter(
+                        user=request.user
+                    ).select_related("organization")
 
                 # Search for the default organization
                 default_membership = memberships.filter(is_default=True).first()
