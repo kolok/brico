@@ -45,7 +45,7 @@ class OrganizationMiddleware:
 
             # Manage user organizations
             if not request.session.get(ORGANIZATIONS_SESSION_KEY, []):
-                # Récupérer toutes les organisations de l'utilisateur
+                # Get all organizations of the user
                 memberships = OrganizationMember.objects.filter(
                     user=request.user
                 ).select_related("organization")
@@ -57,9 +57,14 @@ class OrganizationMiddleware:
                 ]
 
             # Manage current organization from request
-            if request.session[ORGANIZATIONS_SESSION_KEY] and not request.session.get(
-                ORGANIZATION_ID_SESSION_KEY
-            ):
+            if request.session.get(
+                ORGANIZATIONS_SESSION_KEY
+            ) and not request.session.get(ORGANIZATION_ID_SESSION_KEY):
+                # Get all organizations of the user to search for the default
+                memberships = OrganizationMember.objects.filter(
+                    user=request.user
+                ).select_related("organization")
+
                 # Search for the default organization
                 default_membership = memberships.filter(is_default=True).first()
                 if default_membership:
@@ -68,9 +73,10 @@ class OrganizationMiddleware:
                         default_membership.organization.name,
                     )
                 else:
-                    request.session[ORGANIZATION_ID_SESSION_KEY] = request.session[
-                        "user_organizations"
-                    ][0]
+                    # Use first organization from session
+                    organizations = request.session[ORGANIZATIONS_SESSION_KEY]
+                    if organizations:
+                        request.session[ORGANIZATION_ID_SESSION_KEY] = organizations[0]
 
         response = self.get_response(request)
         return response
