@@ -73,6 +73,7 @@ MIDDLEWARE = [
     "django.middleware.locale.LocaleMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "core.middleware.OrganizationMiddleware",
     "core.middleware.ActiveNavMiddleware",
 ]
 
@@ -102,6 +103,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "core.context_processors.organization_context",
             ],
         },
     },

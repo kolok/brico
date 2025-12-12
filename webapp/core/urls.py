@@ -11,6 +11,10 @@ urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("audits/", include(("audits.urls", "audits"), namespace="audits")),
+    path(
+        "organizations/",
+        include(("organization.urls", "organization"), namespace="organization"),
+    ),
     # Auth interface
     path("accounts/", include("allauth.urls")),
     # Include the API endpoints

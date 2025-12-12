@@ -2,6 +2,11 @@
 Custom Middleware
 """
 
+from organization.models import OrganizationMember
+
+ORGANIZATION_ID_SESSION_KEY = "current_organization_id"
+ORGANIZATIONS_SESSION_KEY = "user_organizations"
+
 
 class ActiveNavMiddleware:
     """
@@ -21,6 +26,51 @@ class ActiveNavMiddleware:
             active_nav["dashboard"] = True
 
         request.active_nav = active_nav
+
+        response = self.get_response(request)
+        return response
+
+
+class OrganizationMiddleware:
+    """
+    Middleware pour gérer l'organisation courante de l'utilisateur en session.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+
+        if request.user.is_authenticated:
+
+            # Manage user organizations
+            if not request.session.get(ORGANIZATIONS_SESSION_KEY, []):
+                # Récupérer toutes les organisations de l'utilisateur
+                memberships = OrganizationMember.objects.filter(
+                    user=request.user
+                ).select_related("organization")
+
+                # Store user organizations in session
+                request.session[ORGANIZATIONS_SESSION_KEY] = [
+                    (membership.organization.id, membership.organization.name)
+                    for membership in memberships
+                ]
+
+            # Manage current organization from request
+            if request.session[ORGANIZATIONS_SESSION_KEY] and not request.session.get(
+                ORGANIZATION_ID_SESSION_KEY
+            ):
+                # Search for the default organization
+                default_membership = memberships.filter(is_default=True).first()
+                if default_membership:
+                    request.session[ORGANIZATION_ID_SESSION_KEY] = (
+                        default_membership.organization.id,
+                        default_membership.organization.name,
+                    )
+                else:
+                    request.session[ORGANIZATION_ID_SESSION_KEY] = request.session[
+                        "user_organizations"
+                    ][0]
 
         response = self.get_response(request)
         return response
