@@ -1,5 +1,6 @@
 import pytest
 from audits.tests.factories import ProjectAuditFactory
+from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from organization.models.organization import Organization, Project
@@ -19,15 +20,37 @@ def login_user(client):
 class TestProjectListView:
     """Test the project list view."""
 
+    @pytest.fixture
+    def organization(self, client):
+        organization = OrganizationFactory()
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+        return organization
+
     def test_login_required(self, client):
         response = client.get(reverse("audits:project_list"))
         assert response.status_code == 302
         assert reverse("account_login") in response.url
 
-    def test_project_list_view_displays_all_projects(self, client, login_user):
-        project1 = ProjectFactory()
-        project2 = ProjectFactory()
-        project3 = ProjectFactory()
+    def test_project_list_view_doesnt_display_projects_from_other_organizations(
+        self, client, login_user, organization
+    ):
+        other_organization = OrganizationFactory()
+        project = ProjectFactory(organization=other_organization)
+
+        url = reverse("audits:project_list")
+        response = client.get(url)
+        assert response.status_code == 200
+        projects = list(response.context["projects"])
+        assert project not in projects
+
+    def test_project_list_view_displays_all_projects(
+        self, client, login_user, organization
+    ):
+        project1 = ProjectFactory(organization=organization)
+        project2 = ProjectFactory(organization=organization)
+        project3 = ProjectFactory(organization=organization)
 
         url = reverse("audits:project_list")
         response = client.get(url)
@@ -46,10 +69,12 @@ class TestProjectListView:
         assert response.status_code == 200
         assert list(response.context["projects"]) == []
 
-    def test_project_list_view_search_filters_by_name(self, client, login_user):
-        project1 = ProjectFactory(name="Hello World")
-        project2 = ProjectFactory(name="Some other project")
-        project3 = ProjectFactory(name="HELLO again")
+    def test_project_list_view_search_filters_by_name(
+        self, client, login_user, organization
+    ):
+        project1 = ProjectFactory(name="Hello World", organization=organization)
+        project2 = ProjectFactory(name="Some other project", organization=organization)
+        project3 = ProjectFactory(name="HELLO again", organization=organization)
 
         url = reverse("audits:project_list")
         response = client.get(url, data={"search": "hello"})
@@ -60,9 +85,11 @@ class TestProjectListView:
         assert project3 in projects
         assert project2 not in projects
 
-    def test_project_list_view_search_strips_spaces(self, client, login_user):
-        project = ProjectFactory(name="Unique Project Name")
-        ProjectFactory(name="Another Project")
+    def test_project_list_view_search_strips_spaces(
+        self, client, login_user, organization
+    ):
+        project = ProjectFactory(name="Unique Project Name", organization=organization)
+        ProjectFactory(name="Another Project", organization=organization)
 
         url = reverse("audits:project_list")
         response = client.get(url, data={"search": "   Unique Project   "})
@@ -72,10 +99,12 @@ class TestProjectListView:
         assert projects == [project]
 
     def test_project_list_view_search_allows_special_characters(
-        self, client, login_user
+        self, client, login_user, organization
     ):
-        project = ProjectFactory(name="Sécurité & Qualité (2025)")
-        ProjectFactory(name="Totally different")
+        project = ProjectFactory(
+            name="Sécurité & Qualité (2025)", organization=organization
+        )
+        ProjectFactory(name="Totally different", organization=organization)
 
         url = reverse("audits:project_list")
         response = client.get(url, data={"search": "sécurité & qualité"})

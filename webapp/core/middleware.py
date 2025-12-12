@@ -4,7 +4,7 @@ Custom Middleware
 
 from organization.models import OrganizationMember
 
-ORGANIZATION_ID_SESSION_KEY = "current_organization_id"
+CURRENT_ORGANIZATION_SESSION_KEY = "current_organization"
 ORGANIZATIONS_SESSION_KEY = "user_organizations"
 
 
@@ -59,7 +59,7 @@ class OrganizationMiddleware:
             # Manage current organization from request
             if request.session.get(
                 ORGANIZATIONS_SESSION_KEY
-            ) and not request.session.get(ORGANIZATION_ID_SESSION_KEY):
+            ) and not request.session.get(CURRENT_ORGANIZATION_SESSION_KEY):
                 # Get all organizations of the user to search for the default
                 memberships = OrganizationMember.objects.filter(
                     user=request.user
@@ -68,7 +68,7 @@ class OrganizationMiddleware:
                 # Search for the default organization
                 default_membership = memberships.filter(is_default=True).first()
                 if default_membership:
-                    request.session[ORGANIZATION_ID_SESSION_KEY] = (
+                    request.session[CURRENT_ORGANIZATION_SESSION_KEY] = (
                         default_membership.organization.id,
                         default_membership.organization.name,
                     )
@@ -76,7 +76,9 @@ class OrganizationMiddleware:
                     # Use first organization from session
                     organizations = request.session[ORGANIZATIONS_SESSION_KEY]
                     if organizations:
-                        request.session[ORGANIZATION_ID_SESSION_KEY] = organizations[0]
+                        request.session[CURRENT_ORGANIZATION_SESSION_KEY] = (
+                            organizations[0]
+                        )
 
         response = self.get_response(request)
         return response

@@ -1,6 +1,6 @@
 import pytest
 from core.middleware import (
-    ORGANIZATION_ID_SESSION_KEY,
+    CURRENT_ORGANIZATION_SESSION_KEY,
     ORGANIZATIONS_SESSION_KEY,
     ActiveNavMiddleware,
     OrganizationMiddleware,
@@ -109,7 +109,7 @@ class TestOrganizationMiddleware:
         middleware = OrganizationMiddleware(lambda request: None)
         middleware(request)
 
-        assert request.session[ORGANIZATION_ID_SESSION_KEY] == (org1.id, org1.name)
+        assert request.session[CURRENT_ORGANIZATION_SESSION_KEY] == (org1.id, org1.name)
 
     def test_sets_first_organization_when_no_default(self, rf):
         """Test that first organization is set when no default exists."""
@@ -128,7 +128,7 @@ class TestOrganizationMiddleware:
 
         # Should use first organization from the list
         organizations = request.session[ORGANIZATIONS_SESSION_KEY]
-        assert request.session[ORGANIZATION_ID_SESSION_KEY] == organizations[0]
+        assert request.session[CURRENT_ORGANIZATION_SESSION_KEY] == organizations[0]
 
     def test_does_not_set_current_organization_if_already_set(self, rf):
         """Test that current organization is not changed if already set."""
@@ -141,14 +141,17 @@ class TestOrganizationMiddleware:
         request = rf.get("/")
         request.user = user
         request.session = {
-            ORGANIZATION_ID_SESSION_KEY: (999, "Existing Org"),
+            CURRENT_ORGANIZATION_SESSION_KEY: (999, "Existing Org"),
         }
 
         middleware = OrganizationMiddleware(lambda request: None)
         middleware(request)
 
         # Should keep existing current organization
-        assert request.session[ORGANIZATION_ID_SESSION_KEY] == (999, "Existing Org")
+        assert request.session[CURRENT_ORGANIZATION_SESSION_KEY] == (
+            999,
+            "Existing Org",
+        )
 
     def test_does_not_process_for_unauthenticated_user(self, rf):
         """Test that middleware does not process for unauthenticated users."""
@@ -162,7 +165,7 @@ class TestOrganizationMiddleware:
         middleware(request)
 
         assert ORGANIZATIONS_SESSION_KEY not in request.session
-        assert ORGANIZATION_ID_SESSION_KEY not in request.session
+        assert CURRENT_ORGANIZATION_SESSION_KEY not in request.session
 
     def test_handles_user_with_no_organizations(self, rf):
         """Test that middleware handles users with no organizations."""
@@ -176,4 +179,4 @@ class TestOrganizationMiddleware:
         middleware(request)
 
         assert request.session[ORGANIZATIONS_SESSION_KEY] == []
-        assert ORGANIZATION_ID_SESSION_KEY not in request.session
+        assert CURRENT_ORGANIZATION_SESSION_KEY not in request.session

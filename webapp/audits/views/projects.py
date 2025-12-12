@@ -1,4 +1,5 @@
 from audits.forms import ProjectForm
+from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
@@ -15,7 +16,10 @@ class ProjectListView(LoginRequiredMixin, ListView):
     context_object_name = "projects"
 
     def get_queryset(self):
-        queryset = Project.objects.all()
+        organization_id = self.request.session.get(
+            CURRENT_ORGANIZATION_SESSION_KEY, [None]
+        )[0]
+        queryset = Project.objects.filter(organization=organization_id)
         search_query = self.request.GET.get("search", "").strip()
         if search_query:
             queryset = queryset.filter(name__icontains=search_query)

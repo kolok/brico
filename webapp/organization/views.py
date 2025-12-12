@@ -2,7 +2,7 @@
 Views for organization management.
 """
 
-from core.middleware import ORGANIZATION_ID_SESSION_KEY, ORGANIZATIONS_SESSION_KEY
+from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY, ORGANIZATIONS_SESSION_KEY
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
@@ -40,7 +40,7 @@ class OrganizationCreateView(LoginRequiredMixin, CreateView):
             )
 
             # Set this organization as current in the session
-            self.request.session[ORGANIZATION_ID_SESSION_KEY] = (
+            self.request.session[CURRENT_ORGANIZATION_SESSION_KEY] = (
                 organization.id,
                 organization.name,
             )
@@ -75,7 +75,7 @@ class OrganizationSwitchView(LoginRequiredMixin, RedirectView):
                     memberships__user=self.request.user,
                 )
                 # Update session
-                self.request.session[ORGANIZATION_ID_SESSION_KEY] = (
+                self.request.session[CURRENT_ORGANIZATION_SESSION_KEY] = (
                     organization.id,
                     organization.name,
                 )

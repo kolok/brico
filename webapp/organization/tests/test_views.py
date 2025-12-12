@@ -1,5 +1,5 @@
 import pytest
-from core.middleware import ORGANIZATION_ID_SESSION_KEY
+from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.messages import get_messages
 from django.urls import reverse
 from organization.models import Organization, OrganizationMember
@@ -110,7 +110,7 @@ class TestOrganizationCreateView:
         org = Organization.objects.get(name="New Organization")
         session = client.session
         # Django serializes tuples as lists in sessions
-        session_value = session[ORGANIZATION_ID_SESSION_KEY]
+        session_value = session[CURRENT_ORGANIZATION_SESSION_KEY]
         assert session_value == [org.id, org.name] or session_value == (
             org.id,
             org.name,
@@ -164,7 +164,7 @@ class TestOrganizationSwitchView:
 
         session = client.session
         # Django serializes tuples as lists in sessions
-        session_value = session[ORGANIZATION_ID_SESSION_KEY]
+        session_value = session[CURRENT_ORGANIZATION_SESSION_KEY]
         assert session_value == [org2.id, org2.name] or session_value == (
             org2.id,
             org2.name,

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Brico 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-08 07:28+0000\n"
+"POT-Creation-Date: 2025-12-12 09:39+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -32,6 +32,10 @@ msgstr "Commentaire créé avec succès"
 msgid "Comment updated successfully"
 msgstr "Commentaire mis à jour avec succès"
 
+#: audits/views/projects.py:60
+msgid "No organization is configured. Please contact an administrator."
+msgstr "Aucune organisation n'est configurée. Veuillez contacter un administrateur."
+
 #: core/user_registration_serializer.py:19
 msgid "Passwords do not match."
 msgstr "Les mots de passe ne correspondent pas."
@@ -40,9 +44,39 @@ msgstr "Les mots de passe ne correspondent pas."
 msgid "Email addresses do not match."
 msgstr "Les adresses e-mail ne correspondent pas."
 
+#: organization/models/organization.py:13
+msgid "Name"
+msgstr "Nom"
+
+#: organization/models/organization.py:17
+msgid "Description"
+msgstr "Description"
+
+#: organization/models/organization.py:39
+msgid "Default organization for the user"
+msgstr "Organisation par défaut pour l'utilisateur"
+
+#: organization/models/organization.py:58
+msgid "default"
+msgstr "par défaut"
+
+#: organization/views.py:52
+#, python-brace-format
+msgid "Organization \"{organization_name}\" created successfully."
+msgstr "Organisation \"{organization_name}\" créée avec succès."
+
+#: organization/views.py:85
+#, python-brace-format
+msgid "Organization \"{organization_name}\" selected."
+msgstr "Organisation \"{organization_name}\" sélectionnée."
+
+#: organization/views.py:93
+msgid "You do not have access to this organization."
+msgstr "Vous n'avez pas accès à cette organisation."
+
 #: templates/account/login.html:5 templates/account/login.html:9
 #: templates/account/login.html:37 templates/index.html:17
-#: templates/layout/base.html:37 templates/socialaccount/login.html:5
+#: templates/layout/base.html:38 templates/socialaccount/login.html:5
 msgid "Sign In"
 msgstr "Se connecter"
 
@@ -120,7 +154,7 @@ msgid "Signup"
 msgstr "Inscription"
 
 #: templates/account/signup.html:9 templates/account/signup.html:42
-#: templates/index.html:20 templates/layout/base.html:38
+#: templates/index.html:20 templates/layout/base.html:39
 msgid "Sign Up"
 msgstr "S'inscrire"
 
@@ -378,13 +412,41 @@ msgstr "Projets"
 msgid "Hello"
 msgstr "Bonjour"
 
-#: templates/layout/base.html:35
+#: templates/layout/base.html:36
 msgid "Sign Out"
 msgstr "Se déconnecter"
 
-#: templates/layout/base.html:55
+#: templates/layout/base.html:56
 msgid "Legal Mentions"
 msgstr "Mentions légales"
+
+#: templates/organization/components/dropdown_choose_organization.html:14
+msgid "Select Organization"
+msgstr "Sélectionner une organisation"
+
+#: templates/organization/components/dropdown_choose_organization.html:34
+#: templates/organization/organization_create.html:5
+#: templates/organization/organization_create.html:28
+msgid "Create Organization"
+msgstr "Créer une organisation"
+
+#: templates/organization/organization_create.html:9
+msgid "Create Your Organization"
+msgstr "Créez votre organisation"
+
+#: templates/organization/organization_create.html:15
+msgid ""
+"Welcome! To get started, please create your first organization. An "
+"organization helps you organize your projects and collaborate with your team."
+msgstr ""
+"Bienvenue ! Pour commencer, veuillez créer votre première organisation. Une "
+"organisation vous aide à organiser vos projets et à collaborer avec votre équipe."
+
+#: templates/organization/organization_create.html:19
+#, fuzzy
+#| msgid "Create a new project to start auditing your resources."
+msgid "Create a new organization to organize your projects."
+msgstr "Créez un nouveau projet pour commencer à auditer vos ressources."
 
 #: templates/socialaccount/authentication_error.html:5
 msgid "Social Network Login Failure"

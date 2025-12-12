@@ -1,6 +1,6 @@
 import pytest
 from core.context_processors import organization_context
-from core.middleware import ORGANIZATION_ID_SESSION_KEY, ORGANIZATIONS_SESSION_KEY
+from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY, ORGANIZATIONS_SESSION_KEY
 
 
 @pytest.mark.django_db
@@ -29,7 +29,7 @@ class TestOrganizationContext:
         """Test that current organization is returned from session."""
         request = rf.get("/")
         request.session = {
-            ORGANIZATION_ID_SESSION_KEY: (1, "Current Org"),
+            CURRENT_ORGANIZATION_SESSION_KEY: (1, "Current Org"),
         }
 
         context = organization_context(request)
@@ -50,7 +50,7 @@ class TestOrganizationContext:
         request = rf.get("/")
         request.session = {
             ORGANIZATIONS_SESSION_KEY: [(1, "Org 1"), (2, "Org 2")],
-            ORGANIZATION_ID_SESSION_KEY: (1, "Org 1"),
+            CURRENT_ORGANIZATION_SESSION_KEY: (1, "Org 1"),
         }
 
         context = organization_context(request)
