@@ -1,0 +1,17 @@
+/* FORMS & INPUTS */
+
+label {
+  @apply block text-sm font-semibold mb-1 mt-2;
+}
+
+input {
+  @apply py-3 px-4 block border border-border rounded-md text-sm focus:border-primary focus:ring-0;
+}
+
+textarea {
+  @apply py-3 px-4 block border border-border rounded-md text-sm focus:border-primary focus:ring-0;
+}
+
+.helptext {
+  @apply text-sm mb-1;
+}

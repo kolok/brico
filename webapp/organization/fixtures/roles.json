@@ -1,0 +1,26 @@
+[
+  {
+    "model": "organization.role",
+    "pk": 1,
+    "fields": {
+      "name": "administrator",
+      "description": "Full access to all organization resources"
+    }
+  },
+  {
+    "model": "organization.role",
+    "pk": 2,
+    "fields": {
+      "name": "writer",
+      "description": "Can create, edit and delete resources"
+    }
+  },
+  {
+    "model": "organization.role",
+    "pk": 3,
+    "fields": {
+      "name": "reader",
+      "description": "Read-only access to resources"
+    }
+  }
+]

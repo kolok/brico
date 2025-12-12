@@ -2,6 +2,7 @@
 Views for core application.
 """
 
+from core.middleware import ORGANIZATIONS_SESSION_KEY
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
@@ -23,3 +24,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     """View for the dashboard page (authenticated users only)."""
 
     template_name = "dashboard.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Redirect to organization creation if user has no organizations."""
+        # First, let LoginRequiredMixin handle authentication check
+        # This will redirect unauthenticated users to login
+        if not request.user.is_authenticated:
+            return super().dispatch(request, *args, **kwargs)
+        # Only check organizations if user is authenticated
+        if not request.session.get(ORGANIZATIONS_SESSION_KEY, []):
+            return redirect("organization:create")
+        return super().dispatch(request, *args, **kwargs)

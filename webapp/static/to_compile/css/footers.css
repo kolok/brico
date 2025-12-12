@@ -1,0 +1,4 @@
+/* FOOTERS */
+footer {
+  @apply w-full bg-bg_layout px-8 flex min-h-16 items-center justify-between;
+}

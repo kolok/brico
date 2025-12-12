@@ -1,0 +1,32 @@
+{% extends "layout/center_base.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% translate "Create Organization" %} - Brico
+{% endblock title %}
+
+{% block content %}
+    <h2>{% translate "Create Your Organization" %}</h2>
+
+    {% include "components/messages.html" %}
+
+    {% if not user_organizations %}
+        <p>
+            {% translate "Welcome! To get started, please create your first organization. An organization helps you organize your projects and collaborate with your team." %}
+        </p>
+    {% else %}
+        <p>
+            {% translate "Create a new organization to organize your projects." %}
+        </p>
+    {% endif %}
+
+    <form method="post" class="organization-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="w-full flex justify-center py-2">
+            <button type="submit" class="btn btn-primary">
+                {% translate "Create Organization" %} &raquo;
+            </button>
+        </div>
+    </form>
+{% endblock content %}

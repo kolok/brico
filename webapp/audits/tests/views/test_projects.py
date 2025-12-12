@@ -1,9 +1,15 @@
 import pytest
 from audits.tests.factories import ProjectAuditFactory
+from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from organization.models.organization import Organization, Project
-from organization.tests.factories import OrganizationFactory, ProjectFactory
+from organization.tests.factories import (
+    OrganizationFactory,
+    OrganizationMemberFactory,
+    ProjectFactory,
+    RoleFactory,
+)
 
 User = get_user_model()
 
@@ -15,6 +21,39 @@ def login_user(client):
     return user
 
 
+@pytest.fixture
+def organization(client, login_user):
+    """Create organization and add login_user as a member with reader role."""
+    organization = OrganizationFactory()
+    # Create reader role for viewing projects
+    reader_role = RoleFactory(name='reader', description='Read-only access')
+    OrganizationMemberFactory(
+        user=login_user,
+        organization=organization,
+        role=reader_role
+    )
+    session = client.session
+    session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+    session.save()
+    return organization
+
+
+@pytest.fixture
+def organization_with_write_access(client, login_user):
+    """Create organization and add login_user as a member with writer role."""
+    organization = OrganizationFactory()
+    writer_role = RoleFactory(name='writer', description='Can write')
+    OrganizationMemberFactory(
+        user=login_user,
+        organization=organization,
+        role=writer_role
+    )
+    session = client.session
+    session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+    session.save()
+    return organization
+
+
 @pytest.mark.django_db
 class TestProjectListView:
     """Test the project list view."""
@@ -24,10 +63,24 @@ class TestProjectListView:
         assert response.status_code == 302
         assert reverse("account_login") in response.url
 
-    def test_project_list_view_displays_all_projects(self, client, login_user):
-        project1 = ProjectFactory()
-        project2 = ProjectFactory()
-        project3 = ProjectFactory()
+    def test_project_list_view_doesnt_display_projects_from_other_organizations(
+        self, client, login_user, organization
+    ):
+        other_organization = OrganizationFactory()
+        project = ProjectFactory(organization=other_organization)
+
+        url = reverse("audits:project_list")
+        response = client.get(url)
+        assert response.status_code == 200
+        projects = list(response.context["projects"])
+        assert project not in projects
+
+    def test_project_list_view_displays_all_projects(
+        self, client, login_user, organization
+    ):
+        project1 = ProjectFactory(organization=organization)
+        project2 = ProjectFactory(organization=organization)
+        project3 = ProjectFactory(organization=organization)
 
         url = reverse("audits:project_list")
         response = client.get(url)
@@ -46,10 +99,12 @@ class TestProjectListView:
         assert response.status_code == 200
         assert list(response.context["projects"]) == []
 
-    def test_project_list_view_search_filters_by_name(self, client, login_user):
-        project1 = ProjectFactory(name="Hello World")
-        project2 = ProjectFactory(name="Some other project")
-        project3 = ProjectFactory(name="HELLO again")
+    def test_project_list_view_search_filters_by_name(
+        self, client, login_user, organization
+    ):
+        project1 = ProjectFactory(name="Hello World", organization=organization)
+        project2 = ProjectFactory(name="Some other project", organization=organization)
+        project3 = ProjectFactory(name="HELLO again", organization=organization)
 
         url = reverse("audits:project_list")
         response = client.get(url, data={"search": "hello"})
@@ -60,9 +115,11 @@ class TestProjectListView:
         assert project3 in projects
         assert project2 not in projects
 
-    def test_project_list_view_search_strips_spaces(self, client, login_user):
-        project = ProjectFactory(name="Unique Project Name")
-        ProjectFactory(name="Another Project")
+    def test_project_list_view_search_strips_spaces(
+        self, client, login_user, organization
+    ):
+        project = ProjectFactory(name="Unique Project Name", organization=organization)
+        ProjectFactory(name="Another Project", organization=organization)
 
         url = reverse("audits:project_list")
         response = client.get(url, data={"search": "   Unique Project   "})
@@ -72,10 +129,12 @@ class TestProjectListView:
         assert projects == [project]
 
     def test_project_list_view_search_allows_special_characters(
-        self, client, login_user
+        self, client, login_user, organization
     ):
-        project = ProjectFactory(name="Sécurité & Qualité (2025)")
-        ProjectFactory(name="Totally different")
+        project = ProjectFactory(
+            name="Sécurité & Qualité (2025)", organization=organization
+        )
+        ProjectFactory(name="Totally different", organization=organization)
 
         url = reverse("audits:project_list")
         response = client.get(url, data={"search": "sécurité & qualité"})
@@ -146,10 +205,9 @@ class TestProjectFormView:
         assert response.status_code == 302
         assert reverse("account_login") in response.url
 
-    def test_create_project_ok_and_redirects_to_detail(self, client, login_user):
-        Organization.objects.all().delete()
-        org = OrganizationFactory(name="My Org")
-
+    def test_create_project_ok_and_redirects_to_detail(
+        self, client, organization_with_write_access
+    ):
         response = client.post(
             reverse("audits:project_form"),
             data={"name": "My Project", "description": "Desc"},
@@ -157,22 +215,20 @@ class TestProjectFormView:
 
         assert response.status_code == 302
         project = Project.objects.get(name="My Project")
-        assert project.organization == org
+        assert project.organization == organization_with_write_access
         assert response.url == reverse(
             "audits:project_detail", kwargs={"slug": project.slug}
         )
 
-    def test_create_project_without_organization_shows_clear_error(
-        self, client, login_user
+    def test_create_project_without_write_permission_raises_error(
+        self, client, organization
     ):
-        Organization.objects.all().delete()
-
+        # organization fixture gives only read permission
         response = client.post(
             reverse("audits:project_form"),
             data={"name": "My Project", "description": "Desc"},
         )
 
-        assert response.status_code == 200
+        # Should get a 403 Forbidden due to lack of write permissions
+        assert response.status_code == 403
         assert Project.objects.filter(name="My Project").count() == 0
-        form = response.context["form"]
-        assert "No organization is configured" in str(form.non_field_errors())
