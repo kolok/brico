@@ -4,7 +4,12 @@ from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from organization.models.organization import Organization, Project
-from organization.tests.factories import OrganizationFactory, ProjectFactory
+from organization.tests.factories import (
+    OrganizationFactory,
+    OrganizationMemberFactory,
+    ProjectFactory,
+    RoleFactory,
+)
 
 User = get_user_model()
 
@@ -17,8 +22,32 @@ def login_user(client):
 
 
 @pytest.fixture
-def organization(client):
+def organization(client, login_user):
+    """Create organization and add login_user as a member with reader role."""
     organization = OrganizationFactory()
+    # Create reader role for viewing projects
+    reader_role = RoleFactory(name='reader', description='Read-only access')
+    OrganizationMemberFactory(
+        user=login_user,
+        organization=organization,
+        role=reader_role
+    )
+    session = client.session
+    session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+    session.save()
+    return organization
+
+
+@pytest.fixture
+def organization_with_write_access(client, login_user):
+    """Create organization and add login_user as a member with writer role."""
+    organization = OrganizationFactory()
+    writer_role = RoleFactory(name='writer', description='Can write')
+    OrganizationMemberFactory(
+        user=login_user,
+        organization=organization,
+        role=writer_role
+    )
     session = client.session
     session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
     session.save()
@@ -177,7 +206,7 @@ class TestProjectFormView:
         assert reverse("account_login") in response.url
 
     def test_create_project_ok_and_redirects_to_detail(
-        self, client, login_user, organization
+        self, client, organization_with_write_access
     ):
         response = client.post(
             reverse("audits:project_form"),
@@ -186,22 +215,20 @@ class TestProjectFormView:
 
         assert response.status_code == 302
         project = Project.objects.get(name="My Project")
-        assert project.organization == organization
+        assert project.organization == organization_with_write_access
         assert response.url == reverse(
             "audits:project_detail", kwargs={"slug": project.slug}
         )
 
-    def test_create_project_without_organization_shows_clear_error(
-        self, client, login_user
+    def test_create_project_without_write_permission_raises_error(
+        self, client, organization
     ):
-        Organization.objects.all().delete()
-
+        # organization fixture gives only read permission
         response = client.post(
             reverse("audits:project_form"),
             data={"name": "My Project", "description": "Desc"},
         )
 
-        assert response.status_code == 200
+        # Should get a 403 Forbidden due to lack of write permissions
+        assert response.status_code == 403
         assert Project.objects.filter(name="My Project").count() == 0
-        form = response.context["form"]
-        assert "No organization is configured" in str(form.non_field_errors())

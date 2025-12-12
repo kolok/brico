@@ -2,10 +2,11 @@ import pytest
 from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.messages import get_messages
 from django.urls import reverse
-from organization.models import Organization, OrganizationMember
+from organization.models import Organization, OrganizationMember, Role
 from organization.tests.factories import (
     OrganizationFactory,
     OrganizationMemberFactory,
+    RoleFactory,
     UserFactory,
 )
 
@@ -31,7 +32,7 @@ class TestOrganizationCreateView:
         assert response.status_code == 200
 
     def test_creates_organization_and_membership(self, client):
-        """Test that creating an organization also creates a membership."""
+        """Test that creating an organization also creates a membership with administrator role."""
         user = UserFactory()
         client.login(
             username=user.username, password="password"  # pragma: allowlist secret
@@ -49,12 +50,13 @@ class TestOrganizationCreateView:
         org = Organization.objects.get(name="New Organization")
         assert org.description == "Test description"
 
-        # Check membership was created
+        # Check membership was created with administrator role
         membership = OrganizationMember.objects.get(user=user, organization=org)
         assert membership.is_default is True
+        assert membership.role.name == 'administrator'
 
     def test_sets_first_organization_as_default(self, client):
-        """Test that the first organization is set as default."""
+        """Test that the first organization is set as default with administrator role."""
         user = UserFactory()
         client.login(
             username=user.username, password="password"  # pragma: allowlist secret
@@ -71,6 +73,7 @@ class TestOrganizationCreateView:
             user=user, organization__name="First Organization"
         )
         assert membership.is_default is True
+        assert membership.role.name == 'administrator'
 
     def test_sets_subsequent_organizations_as_non_default(self, client):
         """Test that subsequent organizations are not set as default."""

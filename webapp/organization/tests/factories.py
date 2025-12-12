@@ -7,9 +7,19 @@ from organization.models.organization import (
     OrganizationMember,
     Project,
     Resource,
+    Role,
 )
 
 User = get_user_model()
+
+
+class RoleFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Role
+        django_get_or_create = ("name",)
+
+    name = "administrator"
+    description = "Full access to all organization resources"
 
 
 class OrganizationFactory(factory.django.DjangoModelFactory):
@@ -41,6 +51,7 @@ class OrganizationMemberFactory(factory.django.DjangoModelFactory):
 
     user = factory.SubFactory(UserFactory)
     organization = factory.SubFactory(OrganizationFactory)
+    role = factory.SubFactory(RoleFactory)
     is_default = False
 
 

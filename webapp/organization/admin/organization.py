@@ -6,6 +6,7 @@ from organization.models.organization import (
     OrganizationMember,
     Project,
     Resource,
+    Role,
 )
 
 User = get_user_model()
@@ -17,6 +18,8 @@ class OrganizationMemberInline(admin.TabularInline):
     fk_name = "organization"
     verbose_name = "Organization's User"
     verbose_name_plural = "Organization's Users"
+    fields = ('user', 'role', 'is_default', 'created_at')
+    readonly_fields = ('created_at',)
 
 
 class UserOrganizationMemberInline(admin.TabularInline):
@@ -25,6 +28,8 @@ class UserOrganizationMemberInline(admin.TabularInline):
     fk_name = "user"
     verbose_name = "User's Organization"
     verbose_name_plural = "User's Organizations"
+    fields = ('organization', 'role', 'is_default', 'created_at')
+    readonly_fields = ('created_at',)
 
 
 @admin.register(Organization)
@@ -54,6 +59,13 @@ try:
     admin.site.unregister(User)
 except admin.sites.NotRegistered:
     pass
+
+
+@admin.register(Role)
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+    filter_horizontal = ('permissions',)
+    search_fields = ('name', 'description')
 
 
 @admin.register(User)

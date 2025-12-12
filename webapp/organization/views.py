@@ -9,7 +9,7 @@ from django.db import transaction
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, RedirectView
-from organization.models import Organization, OrganizationMember
+from organization.models import Organization, OrganizationMember, Role
 
 
 class OrganizationCreateView(LoginRequiredMixin, CreateView):
@@ -21,9 +21,9 @@ class OrganizationCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("dashboard")
 
     def form_valid(self, form):
-        """Associate the created organization to the user and set it as current."""
+        """Associate the created organization to the user with administrator role."""
         with transaction.atomic():
-            # Créer l'organisation
+            # Create the organization
             organization = form.save()
 
             # Check if it is the first organization of the user
@@ -31,11 +31,17 @@ class OrganizationCreateView(LoginRequiredMixin, CreateView):
                 user=self.request.user
             ).exists()
 
-            # Create relationship with the user
-            # TODO: manage permission level : admin, writer, reader
+            # Get or create administrator role
+            admin_role, _ = Role.objects.get_or_create(
+                name='administrator',
+                defaults={'description': 'Full access to all organization resources'}
+            )
+
+            # Create relationship with the user as administrator
             OrganizationMember.objects.create(
                 user=self.request.user,
                 organization=organization,
+                role=admin_role,
                 is_default=is_first_org,
             )
 
