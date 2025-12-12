@@ -9,7 +9,7 @@
                 aria-expanded="false"
                 aria-haspopup="true">
             {% if current_organization %}
-                {{ current_organization.1 }}
+                {{ current_organization.1|escape }}
             {% else %}
                 {% translate "Select Organization" %}
             {% endif %}
@@ -20,7 +20,8 @@
             {% for org in user_organizations %}
                 <a href="{% url 'organization:switch' organization_id=org.0 %}"
                 class="dropdown-item {% if current_organization and current_organization.0 == org.0 %}active{% endif %}"
-                role="menuitem">
+                role="menuitem"
+                tabindex="-1">
                     {{ org.1 }}
                     {% if current_organization and current_organization.0 == org.0 %}
                         <span class="dropdown-item-checkmark">✓</span>
@@ -30,7 +31,8 @@
             <hr>
             <a href="{% url 'organization:create' %}"
             class="dropdown-item-create"
-            role="menuitem">
+            role="menuitem"
+            tabindex="-1">
                 + {% translate "Create Organization" %}
             </a>
         </div>

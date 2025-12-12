@@ -16,17 +16,18 @@ def login_user(client):
     return user
 
 
+@pytest.fixture
+def organization(client):
+    organization = OrganizationFactory()
+    session = client.session
+    session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+    session.save()
+    return organization
+
+
 @pytest.mark.django_db
 class TestProjectListView:
     """Test the project list view."""
-
-    @pytest.fixture
-    def organization(self, client):
-        organization = OrganizationFactory()
-        session = client.session
-        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
-        session.save()
-        return organization
 
     def test_login_required(self, client):
         response = client.get(reverse("audits:project_list"))
@@ -175,10 +176,9 @@ class TestProjectFormView:
         assert response.status_code == 302
         assert reverse("account_login") in response.url
 
-    def test_create_project_ok_and_redirects_to_detail(self, client, login_user):
-        Organization.objects.all().delete()
-        org = OrganizationFactory(name="My Org")
-
+    def test_create_project_ok_and_redirects_to_detail(
+        self, client, login_user, organization
+    ):
         response = client.post(
             reverse("audits:project_form"),
             data={"name": "My Project", "description": "Desc"},
@@ -186,7 +186,7 @@ class TestProjectFormView:
 
         assert response.status_code == 302
         project = Project.objects.get(name="My Project")
-        assert project.organization == org
+        assert project.organization == organization
         assert response.url == reverse(
             "audits:project_detail", kwargs={"slug": project.slug}
         )

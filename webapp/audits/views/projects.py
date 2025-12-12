@@ -53,7 +53,10 @@ class ProjectFormView(LoginRequiredMixin, FormView):
     def form_valid(self, form: ProjectForm) -> HttpResponse:
         project = form.save(commit=False)
         # TODO: get the organization from the session
-        organization = Organization.objects.first()
+        organization_id = self.request.session.get(
+            CURRENT_ORGANIZATION_SESSION_KEY, [None]
+        )[0]
+        organization = Organization.objects.filter(id=organization_id).first()
         if organization is None:
             form.add_error(
                 None,

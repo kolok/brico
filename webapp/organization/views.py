@@ -45,7 +45,7 @@ class OrganizationCreateView(LoginRequiredMixin, CreateView):
                 organization.name,
             )
             # Will force to compute again the organizations in the session
-            del self.request.session[ORGANIZATIONS_SESSION_KEY]
+            self.request.session.pop(ORGANIZATIONS_SESSION_KEY)
 
         messages.success(
             self.request,
