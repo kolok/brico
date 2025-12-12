@@ -1,7 +1,7 @@
 {% load i18n %}
 
 {% if user_organizations %}
-    <div class="relative" data-controller="dropdown">
+    <div class="dropdown-menu-wrapper" data-controller="dropdown">
         <button type="button"
                 class="btn btn-secondary"
                 data-dropdown-target="toggle"
@@ -15,26 +15,24 @@
             {% endif %}
             <span class="ml-2">▼</span>
         </button>
-        <div class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
-            data-dropdown-target="menu">
-            <div class="py-1" role="menu" aria-orientation="vertical">
-                {% for org in user_organizations %}
-                    <a href="{% url 'organization:switch' organization_id=org.0 %}"
-                    class="block px-4 py-2 text-sm {% if current_organization and current_organization.0 == org.0 %}bg-gray-100 font-semibold{% else %}text-gray-700 hover:bg-gray-50{% endif %}"
-                    role="menuitem">
-                        {{ org.1 }}
-                        {% if current_organization and current_organization.0 == org.0 %}
-                            <span class="ml-2">✓</span>
-                        {% endif %}
-                    </a>
-                {% endfor %}
-                <div class="border-t border-gray-200 my-1"></div>
-                <a href="{% url 'organization:create' %}"
-                class="block px-4 py-2 text-sm text-primary hover:bg-gray-50"
+        <div class="dropdown-menu hidden"
+            data-dropdown-target="menu" role="menu" aria-orientation="vertical">
+            {% for org in user_organizations %}
+                <a href="{% url 'organization:switch' organization_id=org.0 %}"
+                class="dropdown-item {% if current_organization and current_organization.0 == org.0 %}active{% endif %}"
                 role="menuitem">
-                    + {% translate "Create Organization" %}
+                    {{ org.1 }}
+                    {% if current_organization and current_organization.0 == org.0 %}
+                        <span class="dropdown-item-checkmark">✓</span>
+                    {% endif %}
                 </a>
-            </div>
+            {% endfor %}
+            <hr>
+            <a href="{% url 'organization:create' %}"
+            class="dropdown-item-create"
+            role="menuitem">
+                + {% translate "Create Organization" %}
+            </a>
         </div>
     </div>
 {% endif %}

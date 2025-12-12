@@ -1,0 +1,4 @@
+/* CARDS */
+.card {
+  @apply bg-white rounded-lg shadow-md p-8 flex flex-col max-w-md;
+}
