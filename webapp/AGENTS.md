@@ -19,6 +19,7 @@ This file applies to **`webapp/` only**.
 ## Specific Agent Notes
 
 - **Tests** : `./env.AGENTS.md`
+- **Templates** : `./templates.AGENTS.md`
 
 ## Default workflow (follow this)
 
