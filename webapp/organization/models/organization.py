@@ -1,5 +1,6 @@
 from core.models.mixin import TimestampedModel
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
@@ -34,6 +35,12 @@ class OrganizationMember(TimestampedModel, models.Model):
     )
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="memberships"
+    )
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.PROTECT,
+        related_name="organization_members",
+        help_text=_("Role group (administrator, writer, reader)"),
     )
     is_default = models.BooleanField(
         default=False, help_text=_("Default organization for the user")

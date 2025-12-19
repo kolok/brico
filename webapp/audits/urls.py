@@ -1,4 +1,3 @@
-from audits.views.audits import AuditDetailView, NewAuditView, delete_audit
 from audits.views.comment import (
     CommentCreateView,
     CommentDeleteView,
@@ -8,7 +7,12 @@ from audits.views.comment import (
     CommentUpdateView,
 )
 from audits.views.criteria import CriterionDetailView
-from audits.views.projects import ProjectDetailView, ProjectFormView, ProjectListView
+from audits.views.project import ProjectDetailView, ProjectFormView, ProjectListView
+from audits.views.projectaudit import (
+    DeleteProjectAuditView,
+    NewProjectAuditView,
+    ProjectAuditDetailView,
+)
 from audits.views.prompt import PromptFormView
 from django.urls import path
 
@@ -22,17 +26,17 @@ urlpatterns = [
     # Audits URLs
     path(
         "projects/<str:project_slug>/audits/<int:pk>/",
-        AuditDetailView.as_view(),
-        name="audit_detail",
+        ProjectAuditDetailView.as_view(),
+        name="projectaudit_detail",
     ),
     path(
         "projects/<slug:project_slug>/audits/new/",
-        NewAuditView.as_view(),
-        name="new_audit",
+        NewProjectAuditView.as_view(),
+        name="new_projectaudit",
     ),
     path(
         "projects/<str:project_slug>/audits/<int:pk>/delete/",
-        delete_audit,
+        DeleteProjectAuditView.as_view(),
         name="audit_delete",
     ),
     # Criteria URLs

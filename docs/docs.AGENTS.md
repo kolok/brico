@@ -8,7 +8,8 @@ This file applies to **`docs/` only**.
 
 - Sphinx config and sources: `sources/`
 - Output build directory: `_build/` (generated)
-- How-to content: `how-to/`
+- How-to content: `sources/how-to/`
+- References content: `sources/references/`
 
 ## Default workflow (follow this)
 
@@ -26,14 +27,18 @@ This file applies to **`docs/` only**.
 
 ## Writing & structure guidelines
 
-- Prefer **task-oriented** docs:
+- When referencing code paths, use backticks.
+- Keep examples copy/paste friendly.
+- In `How to` section, prefer **task-oriented** docs:
   - What you’re trying to do
   - Preconditions
   - Steps
   - Expected result
   - Troubleshooting
-- When referencing code paths, use backticks.
-- Keep examples copy/paste friendly.
+- In `References` section, prefer **detailed explaination** docs:
+  - Which part is concern
+  - Pattern to follow description
+  - Example
 
 ## Repo hygiene
 

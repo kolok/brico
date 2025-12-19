@@ -1,5 +1,6 @@
 import factory
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from factory import fuzzy
 from factory.faker import Faker
 from organization.models.organization import (
@@ -35,12 +36,21 @@ class UserFactory(factory.django.DjangoModelFactory):
             self.save(update_fields=["password"])
 
 
+class GroupFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Group
+        django_get_or_create = ("name",)
+
+    name = "reader"
+
+
 class OrganizationMemberFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = OrganizationMember
 
     user = factory.SubFactory(UserFactory)
     organization = factory.SubFactory(OrganizationFactory)
+    group = factory.SubFactory(GroupFactory)
     is_default = False
 
 

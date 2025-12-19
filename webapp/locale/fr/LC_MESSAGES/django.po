@@ -174,19 +174,19 @@ msgstr "S'inscrire avec :"
 msgid "Sign up with"
 msgstr "S'inscrire avec"
 
-#: templates/audits/audit_detail.html:4
+#: templates/audits/projectaudit_detail.html:4
 msgid "Audit Detail - Brico"
 msgstr "Détail de l'audit - Brico"
 
-#: templates/audits/audit_detail.html:8
+#: templates/audits/projectaudit_detail.html:8
 msgid "Audit Detail"
 msgstr "Détail de l'audit"
 
-#: templates/audits/audit_detail.html:11
+#: templates/audits/projectaudit_detail.html:11
 msgid "Criteria"
 msgstr "Critères"
 
-#: templates/audits/audit_detail.html:19
+#: templates/audits/projectaudit_detail.html:19
 msgid "No criteria yet."
 msgstr "Aucun critère pour le moment."
 
@@ -275,15 +275,15 @@ msgstr "Historique des invites"
 msgid "No prompts yet."
 msgstr "Aucune invite pour le moment."
 
-#: templates/audits/new_audit.html:4
+#: templates/audits/new_projectaudit.html:4
 msgid "New Audit - Brico"
 msgstr "Nouvel audit - Brico"
 
-#: templates/audits/new_audit.html:8
+#: templates/audits/new_projectaudit.html:8
 msgid "New Audit"
 msgstr "Nouvel audit"
 
-#: templates/audits/new_audit.html:12
+#: templates/audits/new_projectaudit.html:12
 msgid "Create Audit"
 msgstr "Créer un audit"
 

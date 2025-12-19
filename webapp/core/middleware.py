@@ -43,7 +43,6 @@ class OrganizationMiddleware:
         memberships = None
 
         if request.user.is_authenticated:
-
             # Manage user organizations
             if not request.session.get(ORGANIZATIONS_SESSION_KEY, []):
                 # Get all organizations of the user
