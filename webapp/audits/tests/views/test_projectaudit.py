@@ -238,7 +238,7 @@ class TestNewProjectAuditView:
     def test_login_required(self, client):
         """Test that login is required to create audit."""
         response = client.get(
-            reverse("audits:new_projectaudit", kwargs={"project_slug": "test"})
+            reverse("audits:projectaudit_new", kwargs={"project_slug": "test"})
         )
         assert response.status_code == 302
         assert reverse("account_login") in response.url
@@ -254,7 +254,7 @@ class TestNewProjectAuditView:
         # No organization in session
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
         response = client.post(
@@ -266,7 +266,7 @@ class TestNewProjectAuditView:
 
         assert response.status_code == 403
 
-    def test_new_projectaudit_view_creates_audit_and_criteria(
+    def test_projectaudit_new_view_creates_audit_and_criteria(
         self, client, admin_group
     ):
         """Test that new projectaudit view creates audit and criteria."""
@@ -286,7 +286,7 @@ class TestNewProjectAuditView:
         session.save()
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
 
@@ -325,7 +325,7 @@ class TestNewProjectAuditView:
 class TestNewProjectAuditViewPermissions:
     """Test permissions for new project audit view."""
 
-    def test_reader_can_view_new_projectaudit_form_but_cannot_submit(
+    def test_reader_can_view_projectaudit_new_form_but_cannot_submit(
         self, client, reader_group
     ):
         """Test that reader can view new project audit form but cannot submit it."""
@@ -343,7 +343,7 @@ class TestNewProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
         # Reader can view the form (GET uses view_projectaudit permission)
@@ -359,7 +359,7 @@ class TestNewProjectAuditViewPermissions:
         )
         assert response.status_code == 403
 
-    def test_writer_can_view_new_projectaudit_form(self, client, writer_group):
+    def test_writer_can_view_projectaudit_new_form(self, client, writer_group):
         """Test that writer can view new project audit form."""
         user = UserFactory()
         organization = OrganizationFactory()
@@ -374,7 +374,7 @@ class TestNewProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
         response = client.get(url)
@@ -383,7 +383,7 @@ class TestNewProjectAuditViewPermissions:
         assert "project" in response.context
         assert response.context["project"] == project
 
-    def test_admin_can_view_new_projectaudit_form(self, client, admin_group):
+    def test_admin_can_view_projectaudit_new_form(self, client, admin_group):
         """Test that administrator can view new project audit form."""
         user = UserFactory()
         organization = OrganizationFactory()
@@ -398,7 +398,7 @@ class TestNewProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
         response = client.get(url)
@@ -407,7 +407,7 @@ class TestNewProjectAuditViewPermissions:
         assert "project" in response.context
         assert response.context["project"] == project
 
-    def test_non_member_cannot_view_new_projectaudit_form(self, client):
+    def test_non_member_cannot_view_projectaudit_new_form(self, client):
         """Test that non-member cannot view new project audit form."""
         user = UserFactory()
         organization = OrganizationFactory()
@@ -419,7 +419,7 @@ class TestNewProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
         response = client.get(url)
@@ -442,7 +442,7 @@ class TestNewProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
 
@@ -471,7 +471,7 @@ class TestNewProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
 
@@ -504,7 +504,7 @@ class TestNewProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
 
@@ -534,7 +534,7 @@ class TestNewProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:new_projectaudit",
+            "audits:projectaudit_new",
             kwargs={"project_slug": project.slug},
         )
 
@@ -555,7 +555,9 @@ class TestDeleteProjectAuditView:
     def test_login_required(self, client):
         """Test that login is required to delete audit."""
         response = client.get(
-            reverse("audits:audit_delete", kwargs={"project_slug": "test", "pk": 1})
+            reverse(
+                "audits:projectaudit_delete", kwargs={"project_slug": "test", "pk": 1}
+            )
         )
         assert response.status_code == 302
         assert reverse("account_login") in response.url
@@ -571,14 +573,16 @@ class TestDeleteProjectAuditView:
         # No organization in session
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         response = client.post(url)
 
         assert response.status_code == 403
 
-    def test_delete_audit_deletes_instance_and_redirects(self, client, admin_group):
+    def test_delete_projectaudit_deletes_instance_and_redirects(
+        self, client, admin_group
+    ):
         """Test that delete audit deletes instance and redirects."""
         user = UserFactory()
         organization = OrganizationFactory()
@@ -594,7 +598,7 @@ class TestDeleteProjectAuditView:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
 
@@ -637,7 +641,7 @@ class TestDeleteProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         # Reader can view the confirmation page (GET uses view_projectaudit permission)
@@ -666,7 +670,7 @@ class TestDeleteProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         response = client.get(url)
@@ -692,7 +696,7 @@ class TestDeleteProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         response = client.get(url)
@@ -715,7 +719,7 @@ class TestDeleteProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         response = client.get(url)
@@ -738,7 +742,7 @@ class TestDeleteProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         response = client.post(url)
@@ -763,7 +767,7 @@ class TestDeleteProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         response = client.post(url, follow=True)
@@ -787,7 +791,7 @@ class TestDeleteProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         response = client.post(url, follow=True)
@@ -808,7 +812,7 @@ class TestDeleteProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         response = client.post(url)
@@ -839,7 +843,7 @@ class TestDeleteProjectAuditViewPermissions:
         session.save()
 
         url = reverse(
-            "audits:audit_delete",
+            "audits:projectaudit_delete",
             kwargs={"project_slug": project.slug, "pk": audit.pk},
         )
         response = client.post(url)

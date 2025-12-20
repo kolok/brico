@@ -6,13 +6,13 @@ from audits.views.comment import (
     CommentListView,
     CommentUpdateView,
 )
-from audits.views.criteria import CriterionDetailView
 from audits.views.project import ProjectDetailView, ProjectFormView, ProjectListView
 from audits.views.projectaudit import (
     DeleteProjectAuditView,
     NewProjectAuditView,
     ProjectAuditDetailView,
 )
+from audits.views.projectauditcriterion import CriterionDetailView
 from audits.views.prompt import PromptFormView
 from django.urls import path
 
@@ -20,76 +20,76 @@ app_name = "audits"
 
 urlpatterns = [
     # Projects URLs
-    path("projects/", ProjectListView.as_view(), name="project_list"),
-    path("projects/new/", ProjectFormView.as_view(), name="project_form"),
-    path("projects/<slug:slug>/", ProjectDetailView.as_view(), name="project_detail"),
-    # Audits URLs
+    path("project/", ProjectListView.as_view(), name="project_list"),
+    path("project/new/", ProjectFormView.as_view(), name="project_form"),
+    path("project/<slug:slug>/", ProjectDetailView.as_view(), name="project_detail"),
+    # ProjectAudits URLs
     path(
-        "projects/<str:project_slug>/audits/<int:pk>/",
+        "project/<str:project_slug>/audit/<int:pk>/",
         ProjectAuditDetailView.as_view(),
         name="projectaudit_detail",
     ),
     path(
-        "projects/<slug:project_slug>/audits/new/",
+        "project/<slug:project_slug>/audit/new/",
         NewProjectAuditView.as_view(),
-        name="new_projectaudit",
+        name="projectaudit_new",
     ),
     path(
-        "projects/<str:project_slug>/audits/<int:pk>/delete/",
+        "project/<str:project_slug>/audit/<int:pk>/delete/",
         DeleteProjectAuditView.as_view(),
-        name="audit_delete",
+        name="projectaudit_delete",
     ),
     # Criteria URLs
     path(
-        "projects/<str:project_slug>/audits/<int:audit_id>/criteria/<int:pk>/",
+        "project/<str:project_slug>/audit/<int:audit_id>/criterion/<int:pk>/",
         CriterionDetailView.as_view(),
-        name="criterion_detail",
+        name="projectauditcriterion_detail",
     ),
     # Comments URLs
     path(
         (
-            "projects/<str:project_slug>/audits/<int:audit_id>/"
-            "criteria/<int:criterion_id>/comments/"
+            "project/<str:project_slug>/audit/<int:audit_id>/"
+            "criterion/<int:criterion_id>/comments/"
         ),
         CommentListView.as_view(),
         name="comments_list",
     ),
     path(
         (
-            "projects/<str:project_slug>/audits/<int:audit_id>/"
-            "criteria/<int:criterion_id>/comments/new/"
+            "project/<str:project_slug>/audit/<int:audit_id>/"
+            "criterion/<int:criterion_id>/comments/new/"
         ),
         CommentCreateView.as_view(),
         name="comment_create",
     ),
     path(
         (
-            "projects/<str:project_slug>/audits/<int:audit_id>/"
-            "criteria/<int:criterion_id>/comments/<int:pk>/edit/"
+            "project/<str:project_slug>/audit/<int:audit_id>/"
+            "criterion/<int:criterion_id>/comments/<int:pk>/edit/"
         ),
         CommentUpdateView.as_view(),
         name="comment_update",
     ),
     path(
         (
-            "projects/<str:project_slug>/audits/<int:audit_id>/"
-            "criteria/<int:criterion_id>/comments/<int:pk>/delete/"
+            "project/<str:project_slug>/audit/<int:audit_id>/"
+            "criterion/<int:criterion_id>/comments/<int:pk>/delete/"
         ),
         CommentDeleteView.as_view(),
         name="comment_delete",
     ),
     path(
         (
-            "projects/<str:project_slug>/audits/<int:audit_id>/"
-            "criteria/<int:criterion_id>/comments/cancel/"
+            "project/<str:project_slug>/audit/<int:audit_id>/"
+            "criterion/<int:criterion_id>/comments/cancel/"
         ),
         CommentFormCancelView.as_view(),
         name="comment_form_cancel",
     ),
     path(
         (
-            "projects/<str:project_slug>/audits/<int:audit_id>/"
-            "criteria/<int:criterion_id>/comments/<int:pk>/fragment/"
+            "project/<str:project_slug>/audit/<int:audit_id>/"
+            "criterion/<int:criterion_id>/comments/<int:pk>/fragment/"
         ),
         CommentFragmentView.as_view(),
         name="comment_fragment",
@@ -97,8 +97,8 @@ urlpatterns = [
     # Prompts URLs
     path(
         (
-            "projects/<str:project_slug>/audits/<int:audit_id>/"
-            "criteria/<int:criterion_id>/prompts/"
+            "project/<str:project_slug>/audit/<int:audit_id>/"
+            "criterion/<int:criterion_id>/prompts/"
         ),
         PromptFormView.as_view(),
         name="prompt",

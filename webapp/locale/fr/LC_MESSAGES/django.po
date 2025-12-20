@@ -247,43 +247,43 @@ msgstr "Aucun commentaire pour le moment."
 msgid "Send"
 msgstr "Envoyer"
 
-#: templates/audits/criterion_detail.html:4
+#: templates/audits/projectauditcriterion_detail.html:4
 msgid "Criterion Detail - Brico"
 msgstr "Détail du critère - Brico"
 
-#: templates/audits/criterion_detail.html:10
+#: templates/audits/projectauditcriterion_detail.html:10
 msgid "Status:"
 msgstr "Statut :"
 
-#: templates/audits/criterion_detail.html:14
+#: templates/audits/projectauditcriterion_detail.html:14
 msgid "Loading comments..."
 msgstr "Chargement des commentaires..."
 
-#: templates/audits/criterion_detail.html:18
+#: templates/audits/projectauditcriterion_detail.html:18
 msgid "Discussion with AI"
 msgstr "Discussion avec l'IA"
 
-#: templates/audits/criterion_detail.html:21
+#: templates/audits/projectauditcriterion_detail.html:21
 msgid "Loading prompts..."
 msgstr "Chargement des invites..."
 
-#: templates/audits/criterion_detail.html:25
+#: templates/audits/projectauditcriterion_detail.html:25
 msgid "Prompts history"
 msgstr "Historique des invites"
 
-#: templates/audits/criterion_detail.html:30
+#: templates/audits/projectauditcriterion_detail.html:30
 msgid "No prompts yet."
 msgstr "Aucune invite pour le moment."
 
-#: templates/audits/new_projectaudit.html:4
+#: templates/audits/projectaudit_new.html:4
 msgid "New Audit - Brico"
 msgstr "Nouvel audit - Brico"
 
-#: templates/audits/new_projectaudit.html:8
+#: templates/audits/projectaudit_new.html:8
 msgid "New Audit"
 msgstr "Nouvel audit"
 
-#: templates/audits/new_projectaudit.html:12
+#: templates/audits/projectaudit_new.html:12
 msgid "Create Audit"
 msgstr "Créer un audit"
 
