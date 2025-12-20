@@ -292,7 +292,7 @@ class TestCriterionDetailViewPermissions:
 
         assert response.status_code == 403
 
-    def test_cannot_view_criterion_from_different_organization(
+    def test_cannot_view_projectauditcriterion_from_different_organization(
         self, client, admin_group
     ):
         """Test that user cannot view criterion from different organization."""

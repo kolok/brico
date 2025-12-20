@@ -16,7 +16,7 @@
 
         <div class="space-y-4 mt-4">
             {% for comment in comments %}
-                {% include "audits/comment_item.html" with comment=comment project=project audit=audit criterion=criterion %}
+                {% include "audits/comment/item.html" with comment=comment project=project audit=audit criterion=criterion %}
             {% empty %}
                 <p class="text-gray-500 italic">{% translate "No comments yet." %}</p>
             {% endfor %}

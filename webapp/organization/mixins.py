@@ -49,9 +49,12 @@ class OrganizationPermissionMixin:
             return f"view_{model_name}"
         elif method in ("POST", "PUT", "PATCH"):
             # Check if it's create or update
-            if hasattr(self, "get_object") and self.get_object():
-                return f"change_{model_name}"
-            return f"add_{model_name}"
+            try:
+                if hasattr(self, "get_object") and self.get_object():
+                    return f"change_{model_name}"
+                return f"add_{model_name}"
+            except AttributeError:
+                return f"add_{model_name}"
         elif method == "DELETE":
             return f"delete_{model_name}"
         else:
@@ -65,29 +68,25 @@ class OrganizationPermissionMixin:
         )[0]
         if self.current_organization_id is None:
             raise PermissionDenied("No organization selected")
-        permission_codename = self._get_permission_codename(request.method)
 
         if hasattr(self, "get_object"):
-            if self.get_object():
+            try:
+                if self.get_object():
 
-                # Get the organization ID from the object
-                # And check the object belongs to the current organization
-                # FIXME : make it a specific method in Permission ?
-                object_organization_id = self._get_object_organization_id()
-                if object_organization_id != self.current_organization_id:
-                    raise PermissionDenied(
-                        "Object does not belong to current organization"
-                    )
-
-                # Check permission based on HTTP method
-                permission_codename = self._get_permission_codename(request.method)
-                check_organization_permission(
-                    request.user, self.current_organization_id, permission_codename
-                )
-        else:
-            check_organization_permission(
-                request.user, self.current_organization_id, permission_codename
-            )
+                    # Get the organization ID from the object
+                    # And check the object belongs to the current organization
+                    # FIXME : make it a specific method in Permission ?
+                    object_organization_id = self._get_object_organization_id()
+                    if object_organization_id != self.current_organization_id:
+                        raise PermissionDenied(
+                            "Object does not belong to current organization"
+                        )
+            except AttributeError:
+                pass
+        permission_codename = self._get_permission_codename(request.method)
+        check_organization_permission(
+            request.user, self.current_organization_id, permission_codename
+        )
 
         return super().dispatch(request, *args, **kwargs)
 

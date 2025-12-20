@@ -3,17 +3,46 @@ from audits.models.audit import ProjectAuditCriterion, ProjectAuditCriterionComm
 from audits.views.mixin import CriteriaChildrenMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from organization.mixins import OrganizationPermissionMixin
 
 
-class CommentListView(LoginRequiredMixin, CriteriaChildrenMixin, TemplateView):
+class CommentPermissionMixin(OrganizationPermissionMixin):
+    """Mixin to check comment permissions."""
+
+    model = ProjectAuditCriterionComment
+
+    def _get_queryset_with_organization_filter(
+        self, queryset: QuerySet[ProjectAuditCriterionComment]
+    ) -> QuerySet[ProjectAuditCriterionComment]:
+        return queryset.prefetch_related(
+            "project_audit_criterion__project_audit__project"
+        ).filter(
+            project_audit_criterion__project_audit__project__organization_id=self.current_organization_id
+        )
+
+    def _get_object_organization_id(self) -> int:
+        """Get object organization ID."""
+        if object := self.get_object():
+            if not isinstance(object, ProjectAuditCriterionComment):
+                raise PermissionDenied(
+                    "Object is not a project audit criterion comment"
+                )
+        return object.project_audit_criterion.project_audit.project.organization_id
+
+
+class CommentListView(
+    LoginRequiredMixin, CriteriaChildrenMixin, CommentPermissionMixin, TemplateView
+):
     """Display the list of comments for a criterion."""
 
-    template_name = "audits/comments_list.html"
+    template_name = "audits/comment/list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -28,12 +57,14 @@ class CommentListView(LoginRequiredMixin, CriteriaChildrenMixin, TemplateView):
         return context
 
 
-class CommentCreateView(LoginRequiredMixin, CriteriaChildrenMixin, CreateView):
+class CommentCreateView(
+    LoginRequiredMixin, CriteriaChildrenMixin, CommentPermissionMixin, CreateView
+):
     """Create a new comment."""
 
     model = ProjectAuditCriterionComment
     form_class = CommentForm
-    template_name = "audits/comment_form.html"
+    template_name = "audits/comment/form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -59,12 +90,14 @@ class CommentCreateView(LoginRequiredMixin, CriteriaChildrenMixin, CreateView):
         )
 
 
-class CommentUpdateView(LoginRequiredMixin, CriteriaChildrenMixin, UpdateView):
+class CommentUpdateView(
+    LoginRequiredMixin, CriteriaChildrenMixin, CommentPermissionMixin, UpdateView
+):
     """Update an existing comment."""
 
     model = ProjectAuditCriterionComment
     form_class = CommentForm
-    template_name = "audits/comment_form.html"
+    template_name = "audits/comment/form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -100,11 +133,13 @@ class CommentUpdateView(LoginRequiredMixin, CriteriaChildrenMixin, UpdateView):
         )
 
 
-class CommentDeleteView(LoginRequiredMixin, CriteriaChildrenMixin, DeleteView):
+class CommentDeleteView(
+    LoginRequiredMixin, CriteriaChildrenMixin, CommentPermissionMixin, DeleteView
+):
     """Delete a comment."""
 
     model = ProjectAuditCriterionComment
-    template_name = "audits/comment_confirm_delete.html"
+    template_name = "audits/comment/confirm_delete.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -124,16 +159,18 @@ class CommentDeleteView(LoginRequiredMixin, CriteriaChildrenMixin, DeleteView):
         )
 
 
-class CommentFormCancelView(LoginRequiredMixin, TemplateView):
+class CommentFormCancelView(LoginRequiredMixin, CommentPermissionMixin, TemplateView):
     """Empty the comment form."""
 
-    template_name = "audits/comment_form_empty.html"
+    template_name = "audits/comment/form_empty.html"
 
 
-class CommentFragmentView(LoginRequiredMixin, CriteriaChildrenMixin, TemplateView):
+class CommentFragmentView(
+    LoginRequiredMixin, CriteriaChildrenMixin, CommentPermissionMixin, TemplateView
+):
     """Re-display a comment in its Turbo Frame."""
 
-    template_name = "audits/comment_item.html"
+    template_name = "audits/comment/item.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
