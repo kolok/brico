@@ -1,5 +1,5 @@
 from audits.forms import CommentForm
-from audits.models.audit import ProjectAuditCriterion, ProjectAuditCriterionComment
+from audits.models.audit import Comment, ProjectAuditCriterion
 from audits.views.mixin import CriteriaChildrenMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -16,11 +16,11 @@ from organization.mixins import OrganizationPermissionMixin
 class CommentPermissionMixin(OrganizationPermissionMixin):
     """Mixin to check comment permissions."""
 
-    model = ProjectAuditCriterionComment
+    model = Comment
 
     def _get_queryset_with_organization_filter(
-        self, queryset: QuerySet[ProjectAuditCriterionComment]
-    ) -> QuerySet[ProjectAuditCriterionComment]:
+        self, queryset: QuerySet[Comment]
+    ) -> QuerySet[Comment]:
         return queryset.prefetch_related(
             "project_audit_criterion__project_audit__project"
         ).filter(
@@ -30,7 +30,7 @@ class CommentPermissionMixin(OrganizationPermissionMixin):
     def _get_object_organization_id(self) -> int:
         """Get object organization ID."""
         if object := self.get_object():
-            if not isinstance(object, ProjectAuditCriterionComment):
+            if not isinstance(object, Comment):
                 raise PermissionDenied(
                     "Object is not a project audit criterion comment"
                 )
@@ -62,7 +62,7 @@ class CommentCreateView(
 ):
     """Create a new comment."""
 
-    model = ProjectAuditCriterionComment
+    model = Comment
     form_class = CommentForm
     template_name = "audits/comment/form.html"
 
@@ -95,7 +95,7 @@ class CommentUpdateView(
 ):
     """Update an existing comment."""
 
-    model = ProjectAuditCriterionComment
+    model = Comment
     form_class = CommentForm
     template_name = "audits/comment/form.html"
 
@@ -138,7 +138,7 @@ class CommentDeleteView(
 ):
     """Delete a comment."""
 
-    model = ProjectAuditCriterionComment
+    model = Comment
     template_name = "audits/comment/confirm_delete.html"
 
     def get_context_data(self, **kwargs):
@@ -178,7 +178,7 @@ class CommentFragmentView(
         context["audit"] = self._get_audit()
         context["criterion"] = self._get_criterion()
         context["comment"] = get_object_or_404(
-            ProjectAuditCriterionComment,
+            Comment,
             id=self.kwargs.get("pk"),
             project_audit_criterion=self._get_criterion(),
         )

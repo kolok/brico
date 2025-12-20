@@ -2,10 +2,10 @@ import uuid
 
 import pytest
 from audits.forms import CommentForm, NewAuditForm, PromptForm
-from audits.models.audit import ProjectAuditCriterionComment
+from audits.models.audit import Comment
 from audits.tests.factories import (
     AuditLibraryFactory,
-    ProjectAuditCriterionCommentFactory,
+    CommentFactory,
     ProjectAuditCriterionFactory,
 )
 from django.contrib.auth import get_user_model
@@ -76,7 +76,7 @@ class TestCommentForm:
         user = User.objects.create_user(username="testuser", password="password")
         form = CommentForm(
             data={"comment": "New comment"},
-            instance=ProjectAuditCriterionComment(
+            instance=Comment(
                 project_audit_criterion=project_audit_criterion, user=user
             ),
         )
@@ -88,7 +88,7 @@ class TestCommentForm:
 
     def test_form_save_updates_existing_instance(self):
         """Test that the form save updates an existing instance."""
-        comment = ProjectAuditCriterionCommentFactory(comment="Old comment")
+        comment = CommentFactory(comment="Old comment")
         form = CommentForm(data={"comment": "New comment"}, instance=comment)
         assert form.is_valid()
         updated_comment = form.save()

@@ -1,9 +1,6 @@
 import pytest
-from audits.models.audit import ProjectAuditCriterionComment
-from audits.tests.factories import (
-    ProjectAuditCriterionCommentFactory,
-    ProjectAuditCriterionFactory,
-)
+from audits.models.audit import Comment
+from audits.tests.factories import CommentFactory, ProjectAuditCriterionFactory
 from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -104,12 +101,8 @@ class TestCommentListView:
         )
 
         # Create some comments
-        comment1 = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
-        comment2 = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment1 = CommentFactory(project_audit_criterion=project_audit_criterion)
+        comment2 = CommentFactory(project_audit_criterion=project_audit_criterion)
 
         client.force_login(user)
         session = client.session
@@ -400,7 +393,7 @@ class TestCommentCreateView:
         assert response.status_code == 200
 
         # Verify comment was created
-        comment = ProjectAuditCriterionComment.objects.get(
+        comment = Comment.objects.get(
             project_audit_criterion=project_audit_criterion, user=user
         )
         assert comment.comment == comment_text
@@ -545,9 +538,7 @@ class TestCommentUpdateView:
     """Test the comment update view."""
 
     def test_login_required(self, client, project_audit_criterion):
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
         response = client.get(
             reverse(
                 "audits:comment_update",
@@ -565,9 +556,7 @@ class TestCommentUpdateView:
     def test_organization_required(self, client, project_audit_criterion):
         """Test that organization selection is required."""
         user = UserFactory()
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
         client.force_login(user)
         # No organization in session
 
@@ -593,7 +582,7 @@ class TestCommentUpdateView:
         OrganizationMemberFactory(
             user=user, organization=organization, group=admin_group
         )
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             project_audit_criterion=project_audit_criterion, user=user
         )
 
@@ -630,7 +619,7 @@ class TestCommentUpdateView:
         OrganizationMemberFactory(
             user=user, organization=organization, group=admin_group
         )
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             project_audit_criterion=project_audit_criterion,
             user=user,
             comment="Original comment",
@@ -685,7 +674,7 @@ class TestCommentUpdateView:
         OrganizationMemberFactory(
             user=user, organization=organization, group=admin_group
         )
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             project_audit_criterion=project_audit_criterion,
             user=user,
             comment="Original comment",
@@ -752,9 +741,7 @@ class TestCommentUpdateViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization
         )
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
 
         client.force_login(user)
         session = client.session
@@ -788,7 +775,7 @@ class TestCommentUpdateViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization
         )
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             project_audit_criterion=project_audit_criterion, user=user
         )
 
@@ -820,7 +807,7 @@ class TestCommentUpdateViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization
         )
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             project_audit_criterion=project_audit_criterion, user=user
         )
 
@@ -849,9 +836,7 @@ class TestCommentUpdateViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization
         )
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
 
         client.force_login(user)
         session = client.session
@@ -884,9 +869,7 @@ class TestCommentUpdateViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization2
         )
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
 
         client.force_login(user)
         session = client.session
@@ -915,9 +898,7 @@ class TestCommentDeleteView:
     """Test the comment delete view."""
 
     def test_login_required(self, client, project_audit_criterion):
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
         response = client.get(
             reverse(
                 "audits:comment_delete",
@@ -935,9 +916,7 @@ class TestCommentDeleteView:
     def test_organization_required(self, client, project_audit_criterion):
         """Test that organization selection is required."""
         user = UserFactory()
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
         client.force_login(user)
         # No organization in session
 
@@ -963,7 +942,7 @@ class TestCommentDeleteView:
         OrganizationMemberFactory(
             user=user, organization=organization, group=admin_group
         )
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             project_audit_criterion=project_audit_criterion, user=user
         )
 
@@ -1000,7 +979,7 @@ class TestCommentDeleteView:
         OrganizationMemberFactory(
             user=user, organization=organization, group=admin_group
         )
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             project_audit_criterion=project_audit_criterion, user=user
         )
         comment_id = comment.id
@@ -1025,7 +1004,7 @@ class TestCommentDeleteView:
         assert response.status_code == 200
 
         # Verify comment was deleted
-        assert not ProjectAuditCriterionComment.objects.filter(pk=comment_id).exists()
+        assert not Comment.objects.filter(pk=comment_id).exists()
 
         # Verify redirect to comments list
         assert response.redirect_chain
@@ -1058,9 +1037,7 @@ class TestCommentDeleteViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization
         )
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
 
         client.force_login(user)
         session = client.session
@@ -1094,7 +1071,7 @@ class TestCommentDeleteViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization
         )
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             project_audit_criterion=project_audit_criterion, user=user
         )
         comment_id = comment.id
@@ -1121,7 +1098,7 @@ class TestCommentDeleteViewPermissions:
         response = client.post(url, follow=True)
         assert response.status_code == 200
         # Verify comment was deleted
-        assert not ProjectAuditCriterionComment.objects.filter(pk=comment_id).exists()
+        assert not Comment.objects.filter(pk=comment_id).exists()
 
     def test_admin_can_delete_comment(self, client, admin_group):
         """Test that administrator can delete comment."""
@@ -1133,7 +1110,7 @@ class TestCommentDeleteViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization
         )
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             project_audit_criterion=project_audit_criterion, user=user
         )
 
@@ -1162,9 +1139,7 @@ class TestCommentDeleteViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization
         )
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
 
         client.force_login(user)
         session = client.session
@@ -1197,9 +1172,7 @@ class TestCommentDeleteViewPermissions:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization2
         )
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
 
         client.force_login(user)
         session = client.session
@@ -1292,9 +1265,7 @@ class TestCommentFragmentView:
     """Test the comment fragment view."""
 
     def test_login_required(self, client, project_audit_criterion):
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
         response = client.get(
             reverse(
                 "audits:comment_fragment",
@@ -1312,9 +1283,7 @@ class TestCommentFragmentView:
     def test_organization_required(self, client, project_audit_criterion):
         """Test that organization selection is required."""
         user = UserFactory()
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
         client.force_login(user)
         # No organization in session
 
@@ -1340,9 +1309,7 @@ class TestCommentFragmentView:
         OrganizationMemberFactory(
             user=user, organization=organization, group=admin_group
         )
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
 
         client.force_login(user)
         session = client.session
@@ -1381,9 +1348,7 @@ class TestCommentFragmentView:
         project_audit_criterion = ProjectAuditCriterionFactory(
             project_audit__project__organization=organization2
         )
-        comment = ProjectAuditCriterionCommentFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        comment = CommentFactory(project_audit_criterion=project_audit_criterion)
 
         client.force_login(user)
         session = client.session

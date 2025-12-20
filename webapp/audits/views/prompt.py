@@ -3,12 +3,14 @@ import uuid
 from pathlib import Path
 
 from audits.forms import PromptForm
-from audits.models.audit import ProjectAuditCriterionPrompt
+from audits.models.audit import Prompt
 from audits.views.mixin import CriteriaChildrenMixin
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.views.generic import FormView
+from organization.mixins import OrganizationPermissionMixin
 from pydantic_ai import Agent
 
 logger = logging.getLogger(__name__)
@@ -31,9 +33,26 @@ def load_system_prompt(
     )
 
 
-class PromptFormView(LoginRequiredMixin, CriteriaChildrenMixin, FormView):
+class PromptFormView(
+    LoginRequiredMixin, CriteriaChildrenMixin, OrganizationPermissionMixin, FormView
+):
     form_class = PromptForm
+    model = Prompt
     template_name = "audits/prompt.html"
+
+    def _get_queryset_with_organization_filter(
+        self, queryset: QuerySet[Prompt]
+    ) -> QuerySet[Prompt]:
+        return queryset.prefetch_related(
+            "project_audit_criterion__project_audit__project"
+        ).filter(
+            project_audit_criterion__project_audit__project__organization_id=self.current_organization_id
+        )
+
+    def _get_object_organization_id(self) -> int:
+        return (
+            self.get_object().project_audit_criterion.project_audit.project.organization_id
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -45,7 +64,7 @@ class PromptFormView(LoginRequiredMixin, CriteriaChildrenMixin, FormView):
         if session_id:
             try:
                 context["session_id"] = uuid.UUID(session_id)
-                prompt = ProjectAuditCriterionPrompt.objects.get(session_id=session_id)
+                prompt = Prompt.objects.get(session_id=session_id)
                 context["prompt"] = prompt
             except (ValueError, TypeError):
                 context["session_id"] = uuid.uuid4()
@@ -93,11 +112,11 @@ class PromptFormView(LoginRequiredMixin, CriteriaChildrenMixin, FormView):
 
         message = form.cleaned_data.get("message", "").strip()
         name = message if message else "Prompt"
-        max_name_length = ProjectAuditCriterionPrompt._meta.get_field("name").max_length
+        max_name_length = Prompt._meta.get_field("name").max_length
         if len(name) > max_name_length:
             name = name[: max_name_length - 1] + "…"
 
-        prompt, _ = ProjectAuditCriterionPrompt.objects.get_or_create(
+        prompt, _ = Prompt.objects.get_or_create(
             session_id=session_id,
             project_audit_criterion=self._get_criterion(),
             defaults={"name": name},
