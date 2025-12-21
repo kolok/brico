@@ -24,17 +24,32 @@ class CommentPermissionMixin(OrganizationPermissionMixin):
         return queryset.prefetch_related(
             "project_audit_criterion__project_audit__project"
         ).filter(
-            project_audit_criterion__project_audit__project__organization_id=self.current_organization_id
+            project_audit_criterion__project_audit__project__organization_id=(
+                self.current_organization_id
+            )
         )
 
     def _get_object_organization_id(self) -> int:
         """Get object organization ID."""
-        if object := self.get_object():
-            if not isinstance(object, Comment):
-                raise PermissionDenied(
-                    "Object is not a project audit criterion comment"
-                )
-        return object.project_audit_criterion.project_audit.project.organization_id
+        if not hasattr(self, "get_object"):
+            raise PermissionDenied("Object not found")
+        obj = self.get_object()  # type: ignore[misc]
+        if obj:
+            project = obj.project_audit_criterion.project_audit.project
+            return project.organization_id
+        raise PermissionDenied("Object not found")
+
+    def _get_criterion_filtered(self) -> ProjectAuditCriterion:
+        """Get criterion filtered by organization."""
+        criterion_id = self.kwargs.get("criterion_id")  # type: ignore[attr-defined]
+        return get_object_or_404(
+            ProjectAuditCriterion.objects.prefetch_related(
+                "project_audit__project"
+            ).filter(
+                project_audit__project__organization_id=self.current_organization_id
+            ),
+            id=criterion_id,
+        )
 
 
 class CommentListView(
@@ -44,16 +59,23 @@ class CommentListView(
 
     template_name = "audits/comment/list.html"
 
+    def get_object(self):
+        """Get the criterion filtered by organization."""
+        return self._get_criterion_filtered()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        criterion_id = self.kwargs.get("criterion_id")
-        criterion = get_object_or_404(ProjectAuditCriterion, id=criterion_id)
+        criterion = self.get_object()
         context["criterion"] = criterion
         context["audit"] = self._get_audit()
         context["project"] = self._get_project()
-        context["comments"] = (
-            criterion.comments.all().select_related("user").order_by("-created_at")
-        )
+        # Filter comments by organization using the mixin's filter method
+        comments_queryset = Comment.objects.filter(
+            project_audit_criterion=criterion
+        ).select_related("user")
+        context["comments"] = self._get_queryset_with_organization_filter(
+            comments_queryset
+        ).order_by("-created_at")
         return context
 
 
@@ -66,26 +88,35 @@ class CommentCreateView(
     form_class = CommentForm
     template_name = "audits/comment/form.html"
 
+    def get_object(self):
+        """Return None for CreateView, but ensure criterion is filtered."""
+        # This method is called by the mixin's dispatch to check permissions
+        # For CreateView, we need to verify the criterion belongs to the organization
+        self._get_criterion_filtered()
+        return None  # CreateView doesn't have an object
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["project"] = self._get_project()
-        context["audit"] = self._get_audit()
-        context["criterion"] = self._get_criterion()
+        criterion = self._get_criterion_filtered()
+        context["project"] = criterion.project_audit.project
+        context["audit"] = criterion.project_audit
+        context["criterion"] = criterion
         return context
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.project_audit_criterion = self._get_criterion()
+        form.instance.project_audit_criterion = self._get_criterion_filtered()
         messages.success(self.request, _("Comment created successfully"))
         return super().form_valid(form)
 
     def get_success_url(self):
+        criterion = self._get_criterion_filtered()
         return reverse_lazy(
             "audits:comments_list",
             kwargs={
-                "project_slug": self._get_project().slug,
-                "audit_id": self._get_audit().id,
-                "criterion_id": self._get_criterion().id,
+                "project_slug": criterion.project_audit.project.slug,
+                "audit_id": criterion.project_audit.id,
+                "criterion_id": criterion.id,
             },
         )
 
@@ -101,9 +132,13 @@ class CommentUpdateView(
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["criterion"] = self._get_criterion()
-        context["audit"] = self._get_audit()
-        context["project"] = self._get_project()
+        # get_object() already filters by organization via get_queryset()
+        comment = self.get_object()
+        assert isinstance(comment, Comment)
+        criterion = comment.project_audit_criterion
+        context["criterion"] = criterion
+        context["audit"] = criterion.project_audit
+        context["project"] = criterion.project_audit.project
         return context
 
     def form_valid(self, form):
@@ -112,23 +147,28 @@ class CommentUpdateView(
         obj = getattr(self, "object", None)
 
         if obj and self.request.headers.get("Turbo-Frame"):
+            assert isinstance(obj, Comment)
+            criterion = obj.project_audit_criterion
             return redirect(
                 "audits:comment_fragment",
-                project_slug=self._get_project().slug,
-                audit_id=self._get_audit().id,
-                criterion_id=self._get_criterion().id,
+                project_slug=criterion.project_audit.project.slug,
+                audit_id=criterion.project_audit.id,
+                criterion_id=criterion.id,
                 pk=obj.id,
             )
 
         return response
 
     def get_success_url(self):
+        comment = self.get_object()
+        assert isinstance(comment, Comment)
+        criterion = comment.project_audit_criterion
         return reverse_lazy(
             "audits:comments_list",
             kwargs={
-                "project_slug": self._get_project().slug,
-                "audit_id": self._get_audit().id,
-                "criterion_id": self._get_criterion().id,
+                "project_slug": criterion.project_audit.project.slug,
+                "audit_id": criterion.project_audit.id,
+                "criterion_id": criterion.id,
             },
         )
 
@@ -143,18 +183,25 @@ class CommentDeleteView(
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["criterion"] = self._get_criterion()
-        context["audit"] = self._get_audit()
-        context["project"] = self._get_project()
+        # get_object() already filters by organization via get_queryset()
+        comment = self.get_object()
+        assert isinstance(comment, Comment)
+        criterion = comment.project_audit_criterion
+        context["criterion"] = criterion
+        context["audit"] = criterion.project_audit
+        context["project"] = criterion.project_audit.project
         return context
 
     def get_success_url(self):
+        comment = self.get_object()
+        assert isinstance(comment, Comment)
+        criterion = comment.project_audit_criterion
         return reverse_lazy(
             "audits:comments_list",
             kwargs={
-                "project_slug": self._get_project().slug,
-                "audit_id": self._get_audit().id,
-                "criterion_id": self._get_criterion().id,
+                "project_slug": criterion.project_audit.project.slug,
+                "audit_id": criterion.project_audit.id,
+                "criterion_id": criterion.id,
             },
         )
 
@@ -172,14 +219,24 @@ class CommentFragmentView(
 
     template_name = "audits/comment/item.html"
 
+    def get_object(self):
+        """Get the comment filtered by organization."""
+        comment_id = self.kwargs.get("pk")
+        # Filter criterion by organization first
+        criterion = self._get_criterion_filtered()
+        # Filter comment by organization
+        queryset = Comment.objects.filter(
+            id=comment_id, project_audit_criterion=criterion
+        )
+        return get_object_or_404(self._get_queryset_with_organization_filter(queryset))
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["project"] = self._get_project()
-        context["audit"] = self._get_audit()
-        context["criterion"] = self._get_criterion()
-        context["comment"] = get_object_or_404(
-            Comment,
-            id=self.kwargs.get("pk"),
-            project_audit_criterion=self._get_criterion(),
-        )
+        comment = self.get_object()
+        assert isinstance(comment, Comment)
+        criterion = comment.project_audit_criterion
+        context["project"] = criterion.project_audit.project
+        context["audit"] = criterion.project_audit
+        context["criterion"] = criterion
+        context["comment"] = comment
         return context

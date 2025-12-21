@@ -7,6 +7,7 @@ from abc import abstractmethod
 from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
+from django.views.generic import DeleteView
 from organization.permissions import check_organization_permission
 
 
@@ -45,6 +46,12 @@ class OrganizationPermissionMixin:
             Permission codename
         """
         model_name = self.model._meta.model_name
+
+        # DeleteView use case : Django DeleteView use POST method to delete an object
+        if isinstance(self, DeleteView):
+            return f"delete_{model_name}"
+
+        # Other cases
         if method == "GET":
             return f"view_{model_name}"
         elif method in ("POST", "PUT", "PATCH"):
@@ -71,18 +78,17 @@ class OrganizationPermissionMixin:
 
         if hasattr(self, "get_object"):
             try:
-                if self.get_object():
-
+                object = self.get_object()
+                if object is not None:
                     # Get the organization ID from the object
                     # And check the object belongs to the current organization
-                    # FIXME : make it a specific method in Permission ?
                     object_organization_id = self._get_object_organization_id()
                     if object_organization_id != self.current_organization_id:
                         raise PermissionDenied(
                             "Object does not belong to current organization"
                         )
             except AttributeError:
-                pass
+                pass  # ListView, FormView without object
         permission_codename = self._get_permission_codename(request.method)
         check_organization_permission(
             request.user, self.current_organization_id, permission_codename

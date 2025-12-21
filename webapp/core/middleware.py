@@ -21,7 +21,7 @@ class ActiveNavMiddleware:
         active_nav = {}
 
         if request.path.startswith("/audits/project"):
-            active_nav["projects"] = True
+            active_nav["project"] = True
         if request.path.startswith("/dashboard"):
             active_nav["dashboard"] = True
 

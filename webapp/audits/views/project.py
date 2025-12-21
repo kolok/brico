@@ -20,11 +20,11 @@ class ProjectQuerysetMixin(OrganizationPermissionMixin):
 
     def _get_object_organization_id(self) -> int:
         """Get object organization ID."""
-        if hasattr(self, "get_object"):
-            if object := self.get_object():
-                if not isinstance(object, Project):
-                    raise PermissionDenied("Object is not a project")
-        return object.organization_id
+        if not hasattr(self, "get_object"):
+            raise PermissionDenied("Object not found")
+        if object := self.get_object():
+            return object.organization_id
+        raise PermissionDenied("Object not found")
 
 
 class ProjectListView(LoginRequiredMixin, ProjectQuerysetMixin, ListView):

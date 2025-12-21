@@ -25,11 +25,11 @@ class CriterionDetailView(
 
     def _get_object_organization_id(self) -> int:
         """Get object organization ID."""
-        if hasattr(self, "get_object"):
-            if object := self.get_object():
-                if not isinstance(object, ProjectAuditCriterion):
-                    raise PermissionDenied("Object is not a project")
-        return object.project_audit.project.organization_id
+        if not hasattr(self, "get_object"):
+            raise PermissionDenied("Object not found")
+        if object := self.get_object():
+            return object.project_audit.project.organization_id
+        raise PermissionDenied("Object not found")
 
     def get_queryset(self):
         queryset = super().get_queryset()

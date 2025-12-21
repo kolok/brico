@@ -25,11 +25,11 @@ class ProjectAuditQuerysetMixin(OrganizationPermissionMixin, ProjectChildrenMixi
 
     def _get_object_organization_id(self) -> int:
         """Get object organization ID."""
-        if hasattr(self, "get_object"):
-            if object := self.get_object():
-                if not isinstance(object, self.model):
-                    raise PermissionDenied("Object is not a project audit")
-        return object.project.organization_id
+        if not hasattr(self, "get_object"):
+            raise PermissionDenied("Object not found")
+        if object := self.get_object():
+            return object.project.organization_id
+        raise PermissionDenied("Object not found")
 
 
 class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditQuerysetMixin, DetailView):

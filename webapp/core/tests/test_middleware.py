@@ -24,7 +24,7 @@ class TestActiveNavMiddleware:
 
         middleware(request)
 
-        assert request.active_nav["projects"] is True
+        assert request.active_nav["project"] is True
 
     def test_sets_dashboard_active_for_dashboard_path(self, rf):
         """Test that 'dashboard' is set as active for /dashboard path."""
@@ -42,7 +42,7 @@ class TestActiveNavMiddleware:
 
         middleware(request)
 
-        assert request.active_nav["projects"] is True
+        assert request.active_nav["project"] is True
 
     def test_no_active_nav_for_other_paths(self, rf):
         """Test that no active nav is set for other paths."""
@@ -51,7 +51,7 @@ class TestActiveNavMiddleware:
 
         middleware(request)
 
-        assert "projects" not in request.active_nav
+        assert "project" not in request.active_nav
         assert "dashboard" not in request.active_nav
 
 

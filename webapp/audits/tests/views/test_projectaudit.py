@@ -646,7 +646,7 @@ class TestDeleteProjectAuditViewPermissions:
         )
         # Reader can view the confirmation page (GET uses view_projectaudit permission)
         response = client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == 403
 
         # But cannot submit deletion (POST uses delete_projectaudit permission)
         response = client.post(url)
