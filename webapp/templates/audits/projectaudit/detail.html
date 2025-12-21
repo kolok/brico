@@ -13,7 +13,7 @@
         {% for criterion in audit.project_audit_criteria.all %}
             <li>
                 {{ criterion.criterion.name }}
-                <a href="{% url 'audits:criterion_detail' project.slug audit.id criterion.id %}">edit</a>
+                <a href="{% url 'audits:projectauditcriterion_detail' project.slug audit.id criterion.id %}">edit</a>
             </li>
         {% empty %}
             <li>{% translate "No criteria yet." %}</li>

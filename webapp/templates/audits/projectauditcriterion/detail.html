@@ -25,7 +25,7 @@
     <h2>{% translate "Prompts history" %}</h2>
     <ul>
         {% for prompt in criterion.prompts.all %}
-            <li><a href="{% url 'audits:criterion_detail' project.slug audit.id criterion.id %}?session_id={{ prompt.session_id }}" data-turbo-frame="prompts_frame">{{ prompt }}</a></li>
+            <li><a href="{% url 'audits:projectauditcriterion_detail' project.slug audit.id criterion.id %}?session_id={{ prompt.session_id }}" data-turbo-frame="prompts_frame">{{ prompt }}</a></li>
         {% empty %}
             <li>{% translate "No prompts yet." %}</li>
         {% endfor %}

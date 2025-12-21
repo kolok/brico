@@ -1,7 +1,16 @@
 import factory
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from factory import fuzzy
 from factory.faker import Faker
-from organization.models.organization import Organization, Project, Resource
+from organization.models.organization import (
+    Organization,
+    OrganizationMember,
+    Project,
+    Resource,
+)
+
+User = get_user_model()
 
 
 class OrganizationFactory(factory.django.DjangoModelFactory):
@@ -9,6 +18,40 @@ class OrganizationFactory(factory.django.DjangoModelFactory):
         model = Organization
 
     name = Faker("company")
+
+
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = User
+        skip_postgeneration_save = True
+
+    username = Faker("user_name")
+    email = Faker("email")
+
+    @factory.post_generation
+    def password(self, create, extracted, **kwargs):
+        raw_password = extracted or "password"  # pragma: allowlist secret
+        self.set_password(raw_password)
+        if create:
+            self.save(update_fields=["password"])
+
+
+class GroupFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Group
+        django_get_or_create = ("name",)
+
+    name = "reader"
+
+
+class OrganizationMemberFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = OrganizationMember
+
+    user = factory.SubFactory(UserFactory)
+    organization = factory.SubFactory(OrganizationFactory)
+    group = factory.SubFactory(GroupFactory)
+    is_default = False
 
 
 class ProjectFactory(factory.django.DjangoModelFactory):

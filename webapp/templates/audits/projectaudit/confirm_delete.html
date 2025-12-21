@@ -1,0 +1,16 @@
+{% extends 'layout/base-logged.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Delete Project Audit - Brico" %}{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{% translate "Delete Project Audit" %}</h1>
+    <p>{% translate "Are you sure you want to delete this project audit?" %}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">{% translate "Delete" %}</button>
+        <a href="{% url 'audits:project_detail' project.slug %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+    </form>
+</div>
+{% endblock content %}

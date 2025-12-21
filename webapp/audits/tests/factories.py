@@ -1,11 +1,11 @@
 import factory
 from audits.models.audit import (
     AuditLibrary,
+    Comment,
     Criterion,
     ProjectAudit,
     ProjectAuditCriterion,
-    ProjectAuditCriterionComment,
-    ProjectAuditCriterionPrompt,
+    Prompt,
     Tag,
 )
 from django.contrib.auth.models import User
@@ -75,18 +75,18 @@ class ProjectAuditCriterionFactory(factory.django.DjangoModelFactory):
     status = ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET
 
 
-class ProjectAuditCriterionCommentFactory(factory.django.DjangoModelFactory):
+class CommentFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = ProjectAuditCriterionComment
+        model = Comment
 
     user = factory.SubFactory(UserFactory)
     project_audit_criterion = factory.SubFactory(ProjectAuditCriterionFactory)
     comment = Faker("text", max_nb_chars=500)
 
 
-class ProjectAuditCriterionPromptFactory(factory.django.DjangoModelFactory):
+class PromptFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = ProjectAuditCriterionPrompt
+        model = Prompt
 
     project_audit_criterion = factory.SubFactory(ProjectAuditCriterionFactory)
     name = Faker("sentence", nb_words=3)

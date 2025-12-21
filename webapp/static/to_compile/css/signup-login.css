@@ -1,0 +1,4 @@
+/* SIGNUP & LOGIN */
+.signup ul li {
+  @apply text-sm;
+}

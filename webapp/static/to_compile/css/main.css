@@ -1,0 +1,28 @@
+/* MAIN */
+main {
+  @apply flex-1 flex;
+}
+
+main .main-layout {
+  @apply flex-1 lg:min-h-[calc(100vh-8rem)] mx-auto flex flex-col lg:flex-row w-full;
+}
+
+main .main-layout aside {
+  @apply w-full lg:w-64 bg-bg_layout p-4 pl-8 shadow-sm lg:shadow-none shrink-0;
+}
+
+main .main-layout aside nav {
+  @apply space-y-2 flex flex-col;
+}
+
+main .main-layout aside nav a.active {
+  @apply font-bold;
+}
+
+main .content {
+  @apply p-8 w-full;
+}
+
+main .content-center {
+  @apply w-full flex-1 flex justify-center items-center p-4;
+}

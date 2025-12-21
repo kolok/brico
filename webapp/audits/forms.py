@@ -1,6 +1,6 @@
 import uuid
 
-from audits.models.audit import AuditLibrary, ProjectAuditCriterionComment
+from audits.models.audit import AuditLibrary, Comment
 from django import forms
 from organization.models.organization import Project
 
@@ -11,7 +11,7 @@ class NewAuditForm(forms.Form):
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        model = ProjectAuditCriterionComment
+        model = Comment
         fields = ["comment"]
         widgets = {
             "comment": forms.Textarea(

@@ -3,12 +3,16 @@ import uuid
 from pathlib import Path
 
 from audits.forms import PromptForm
-from audits.models.audit import ProjectAuditCriterionPrompt
+from audits.models.audit import ProjectAuditCriterion, Prompt
 from audits.views.mixin import CriteriaChildrenMixin
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import FormView
+from organization.mixins import OrganizationPermissionMixin
 from pydantic_ai import Agent
 
 logger = logging.getLogger(__name__)
@@ -31,21 +35,69 @@ def load_system_prompt(
     )
 
 
-class PromptFormView(LoginRequiredMixin, CriteriaChildrenMixin, FormView):
+class PromptFormView(
+    LoginRequiredMixin, CriteriaChildrenMixin, OrganizationPermissionMixin, FormView
+):
     form_class = PromptForm
+    model = Prompt
     template_name = "audits/prompt.html"
+
+    def _get_queryset_with_organization_filter(
+        self, queryset: QuerySet[Prompt]
+    ) -> QuerySet[Prompt]:
+        return queryset.prefetch_related(
+            "project_audit_criterion__project_audit__project"
+        ).filter(
+            project_audit_criterion__project_audit__project__organization_id=self.current_organization_id
+        )
+
+    def _get_object_organization_id(self) -> int:
+        """Get object organization ID."""
+        if not hasattr(self, "get_object"):
+            raise PermissionDenied("Object not found")
+        obj = self.get_object()  # type: ignore[misc]
+        if obj:
+            project = obj.project_audit_criterion.project_audit.project
+            return project.organization_id
+        raise PermissionDenied("Object not found")
+
+    def _get_criterion_filtered(self) -> ProjectAuditCriterion:
+        """Get criterion filtered by organization."""
+        criterion_id = self.kwargs.get("criterion_id")  # type: ignore[attr-defined]
+        return get_object_or_404(
+            ProjectAuditCriterion.objects.prefetch_related(
+                "project_audit__project"
+            ).filter(
+                project_audit__project__organization_id=self.current_organization_id
+            ),
+            id=criterion_id,
+        )
+
+    def get_object(self):
+        """Return None for FormView, but ensure criterion is filtered."""
+        # This method is called by the mixin's dispatch to check permissions
+        # For FormView, we need to verify the criterion belongs to the organization
+        self._get_criterion_filtered()
+        return None  # FormView doesn't have an object
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["criterion"] = self._get_criterion()
-        context["audit"] = self._get_audit()
-        context["project"] = self._get_project()
+        criterion = self._get_criterion_filtered()
+        context["criterion"] = criterion
+        context["audit"] = criterion.project_audit
+        context["project"] = criterion.project_audit.project
         # Use the form's session_id if it exists, otherwise generate a new one
         session_id = self.request.GET.get("session_id")
         if session_id:
             try:
                 context["session_id"] = uuid.UUID(session_id)
-                prompt = ProjectAuditCriterionPrompt.objects.get(session_id=session_id)
+                # Filter prompt by organization
+                prompt_queryset = Prompt.objects.filter(
+                    session_id=session_id, project_audit_criterion=criterion
+                )
+                prompt = get_object_or_404(
+                    self._get_queryset_with_organization_filter(prompt_queryset)
+                )
                 context["prompt"] = prompt
             except (ValueError, TypeError):
                 context["session_id"] = uuid.uuid4()
@@ -67,13 +119,14 @@ class PromptFormView(LoginRequiredMixin, CriteriaChildrenMixin, FormView):
     def get_success_url(self):
         # Get the session_id from the validated form
         session_id = getattr(self, "_session_id", None)
+        criterion = self._get_criterion_filtered()
 
         url = reverse(
             "audits:prompt",
             kwargs={
-                "project_slug": self._get_project().slug,
-                "audit_id": self._get_audit().id,
-                "criterion_id": self._get_criterion().id,
+                "project_slug": criterion.project_audit.project.slug,
+                "audit_id": criterion.project_audit.id,
+                "criterion_id": criterion.id,
             },
         )
 
@@ -93,27 +146,27 @@ class PromptFormView(LoginRequiredMixin, CriteriaChildrenMixin, FormView):
 
         message = form.cleaned_data.get("message", "").strip()
         name = message if message else "Prompt"
-        max_name_length = ProjectAuditCriterionPrompt._meta.get_field("name").max_length
+        max_name_length = Prompt._meta.get_field("name").max_length
         if len(name) > max_name_length:
             name = name[: max_name_length - 1] + "…"
 
-        prompt, _ = ProjectAuditCriterionPrompt.objects.get_or_create(
+        criterion = self._get_criterion_filtered()
+        prompt, _ = Prompt.objects.get_or_create(
             session_id=session_id,
-            project_audit_criterion=self._get_criterion(),
+            project_audit_criterion=criterion,
             defaults={"name": name},
         )
 
         user_message = form.cleaned_data.get("message", "").strip()
         if not user_message:
             return super().form_valid(form)
-        criterion = self._get_criterion()
         messages_history = prompt.prompt.get("messages", [])
         history_messages = [
             {"role": msg["role"], "content": msg["content"]} for msg in messages_history
         ]
         if not hasattr(settings, "ANTHROPIC_API_KEY") or not settings.ANTHROPIC_API_KEY:
             raise ValueError("ANTHROPIC_API_KEY is not configured.")
-        project = self._get_project()
+        project = criterion.project_audit.project
         resources = ""
         for resource in project.resources.all():
             resources += f"- {resource.get_type_display()}: {resource.url}\n"

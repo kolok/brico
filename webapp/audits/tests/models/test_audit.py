@@ -1,20 +1,20 @@
 import pytest
 from audits.models.audit import (
     AuditLibrary,
+    Comment,
     Criterion,
     ProjectAudit,
     ProjectAuditCriterion,
-    ProjectAuditCriterionComment,
-    ProjectAuditCriterionPrompt,
+    Prompt,
     Tag,
 )
 from audits.tests.factories import (
     AuditLibraryFactory,
+    CommentFactory,
     CriterionFactory,
-    ProjectAuditCriterionCommentFactory,
     ProjectAuditCriterionFactory,
-    ProjectAuditCriterionPromptFactory,
     ProjectAuditFactory,
+    PromptFactory,
     TagFactory,
     UserFactory,
 )
@@ -454,7 +454,7 @@ class TestProjectAuditCriterionComment:
 
     def test_user_foreign_key(self, project_audit_criterion):
         user = UserFactory()
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             user=user, project_audit_criterion=project_audit_criterion
         )
 
@@ -463,7 +463,7 @@ class TestProjectAuditCriterionComment:
 
     def test_project_audit_criterion_foreign_key(self, project_audit_criterion):
         user = UserFactory()
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             user=user, project_audit_criterion=project_audit_criterion
         )
 
@@ -472,7 +472,7 @@ class TestProjectAuditCriterionComment:
 
     def test_comment_default_empty(self, project_audit_criterion):
         user = UserFactory()
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             user=user, project_audit_criterion=project_audit_criterion, comment=""
         )
 
@@ -481,7 +481,7 @@ class TestProjectAuditCriterionComment:
     def test_comment_text(self, project_audit_criterion):
         user = UserFactory()
         comment_text = "This is a test comment"
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             user=user,
             project_audit_criterion=project_audit_criterion,
             comment=comment_text,
@@ -491,29 +491,29 @@ class TestProjectAuditCriterionComment:
 
     def test_cascade_delete_user(self, project_audit_criterion):
         user = UserFactory()
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             user=user, project_audit_criterion=project_audit_criterion
         )
         comment_id = comment.id
 
         user.delete()
 
-        assert not ProjectAuditCriterionComment.objects.filter(id=comment_id).exists()
+        assert not Comment.objects.filter(id=comment_id).exists()
 
     def test_cascade_delete_project_audit_criterion(self, project_audit_criterion):
         user = UserFactory()
-        comment = ProjectAuditCriterionCommentFactory(
+        comment = CommentFactory(
             user=user, project_audit_criterion=project_audit_criterion
         )
         comment_id = comment.id
 
         project_audit_criterion.delete()
 
-        assert not ProjectAuditCriterionComment.objects.filter(id=comment_id).exists()
+        assert not Comment.objects.filter(id=comment_id).exists()
 
     def test_user_comments_relation(self, project_audit_criterion):
         user = UserFactory()
-        comment1 = ProjectAuditCriterionCommentFactory(
+        comment1 = CommentFactory(
             user=user, project_audit_criterion=project_audit_criterion
         )
         criterion2 = CriterionFactory(
@@ -523,7 +523,7 @@ class TestProjectAuditCriterionComment:
         project_audit_criterion2 = ProjectAuditCriterionFactory(
             project_audit=project_audit_criterion.project_audit, criterion=criterion2
         )
-        comment2 = ProjectAuditCriterionCommentFactory(
+        comment2 = CommentFactory(
             user=user, project_audit_criterion=project_audit_criterion2
         )
 
@@ -534,10 +534,10 @@ class TestProjectAuditCriterionComment:
     def test_project_audit_criterion_comments_relation(self, project_audit_criterion):
         user1 = UserFactory()
         user2 = UserFactory()
-        comment1 = ProjectAuditCriterionCommentFactory(
+        comment1 = CommentFactory(
             user=user1, project_audit_criterion=project_audit_criterion
         )
-        comment2 = ProjectAuditCriterionCommentFactory(
+        comment2 = CommentFactory(
             user=user2, project_audit_criterion=project_audit_criterion
         )
 
@@ -547,50 +547,40 @@ class TestProjectAuditCriterionComment:
 
 
 @pytest.mark.django_db
-class TestProjectAuditCriterionPrompt:
+class TestPrompt:
 
     def test_project_audit_criterion_foreign_key(self, project_audit_criterion):
-        prompt = ProjectAuditCriterionPromptFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        prompt = PromptFactory(project_audit_criterion=project_audit_criterion)
 
         assert prompt.project_audit_criterion == project_audit_criterion
         assert prompt in project_audit_criterion.prompts.all()
 
     def test_session_id_generation(self, project_audit_criterion):
-        prompt = ProjectAuditCriterionPromptFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        prompt = PromptFactory(project_audit_criterion=project_audit_criterion)
 
         assert prompt.session_id is not None
 
     def test_session_id_uniqueness(self, project_audit_criterion):
-        prompt1 = ProjectAuditCriterionPromptFactory(
-            project_audit_criterion=project_audit_criterion
-        )
-        prompt2 = ProjectAuditCriterionPromptFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        prompt1 = PromptFactory(project_audit_criterion=project_audit_criterion)
+        prompt2 = PromptFactory(project_audit_criterion=project_audit_criterion)
 
         assert prompt1.session_id != prompt2.session_id
 
     def test_name_default(self, project_audit_criterion):
-        prompt = ProjectAuditCriterionPromptFactory(
+        prompt = PromptFactory(
             project_audit_criterion=project_audit_criterion, name="Prompt"
         )
 
         assert prompt.name == "Prompt"
 
     def test_prompt_json_default(self, project_audit_criterion):
-        prompt = ProjectAuditCriterionPromptFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        prompt = PromptFactory(project_audit_criterion=project_audit_criterion)
 
         assert isinstance(prompt.prompt, dict)
 
     def test_prompt_json_content(self, project_audit_criterion):
         prompt_data = {"messages": [{"role": "user", "content": "Test"}]}
-        prompt = ProjectAuditCriterionPromptFactory(
+        prompt = PromptFactory(
             project_audit_criterion=project_audit_criterion, prompt=prompt_data
         )
 
@@ -598,29 +588,23 @@ class TestProjectAuditCriterionPrompt:
         assert prompt.prompt["messages"][0]["content"] == "Test"
 
     def test_cascade_delete_project_audit_criterion(self, project_audit_criterion):
-        prompt = ProjectAuditCriterionPromptFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        prompt = PromptFactory(project_audit_criterion=project_audit_criterion)
         prompt_id = prompt.id
 
         project_audit_criterion.delete()
 
-        assert not ProjectAuditCriterionPrompt.objects.filter(id=prompt_id).exists()
+        assert not Prompt.objects.filter(id=prompt_id).exists()
 
     def test_project_audit_criterion_prompts_relation(self, project_audit_criterion):
-        prompt1 = ProjectAuditCriterionPromptFactory(
-            project_audit_criterion=project_audit_criterion
-        )
-        prompt2 = ProjectAuditCriterionPromptFactory(
-            project_audit_criterion=project_audit_criterion
-        )
+        prompt1 = PromptFactory(project_audit_criterion=project_audit_criterion)
+        prompt2 = PromptFactory(project_audit_criterion=project_audit_criterion)
 
         assert prompt1 in project_audit_criterion.prompts.all()
         assert prompt2 in project_audit_criterion.prompts.all()
         assert project_audit_criterion.prompts.count() == 2
 
     def test_str_representation(self, project_audit_criterion):
-        prompt = ProjectAuditCriterionPromptFactory(
+        prompt = PromptFactory(
             project_audit_criterion=project_audit_criterion, name="Test Prompt"
         )
 

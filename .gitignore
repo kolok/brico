@@ -1,2 +1,3 @@
 pgdata/
 .cursor/
+.DS_Store

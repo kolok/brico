@@ -1,12 +1,22 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.utils import timezone
-from organization.models.organization import Organization, Project, Resource
+from organization.models.organization import (
+    Organization,
+    OrganizationMember,
+    Project,
+    Resource,
+)
 from organization.tests.factories import (
     OrganizationFactory,
+    OrganizationMemberFactory,
     ProjectFactory,
     ResourceFactory,
+    UserFactory,
 )
+
+User = get_user_model()
 
 
 @pytest.mark.django_db
@@ -216,3 +226,136 @@ class TestResource:
         assert resource1 in project.resources.all()
         assert resource2 in project.resources.all()
         assert project.resources.count() == 2
+
+
+@pytest.fixture
+def user():
+    return UserFactory()
+
+
+@pytest.mark.django_db
+class TestOrganizationMember:
+    def test_unique_user_organization_constraint(self, user):
+        """Test that a user cannot be added to the same organization twice."""
+        org = OrganizationFactory()
+        OrganizationMemberFactory(user=user, organization=org)
+
+        with pytest.raises(IntegrityError):
+            OrganizationMemberFactory(user=user, organization=org)
+
+    def test_unique_default_organization_per_user(self, user):
+        """Test that a user can only have one default organization."""
+        org1 = OrganizationFactory()
+        org2 = OrganizationFactory()
+        OrganizationMemberFactory(user=user, organization=org1, is_default=True)
+
+        with pytest.raises(IntegrityError):
+            OrganizationMemberFactory(user=user, organization=org2, is_default=True)
+
+    def test_multiple_default_false_allowed(self, user):
+        """Test that multiple non-default memberships are allowed."""
+        org1 = OrganizationFactory()
+        org2 = OrganizationFactory()
+        OrganizationMemberFactory(user=user, organization=org1, is_default=False)
+        OrganizationMemberFactory(user=user, organization=org2, is_default=False)
+
+        assert OrganizationMember.objects.filter(user=user).count() == 2
+
+    def test_str_representation_with_default(self, user):
+        """Test string representation with default organization."""
+        org = OrganizationFactory(name="Test Org")
+        membership = OrganizationMemberFactory(
+            user=user, organization=org, is_default=True
+        )
+
+        str_repr = str(membership)
+        assert user.username in str_repr
+        assert "Test Org" in str_repr
+        assert "default" in str_repr.lower()
+
+    def test_str_representation_without_default(self, user):
+        """Test string representation without default organization."""
+        org = OrganizationFactory(name="Test Org")
+        membership = OrganizationMemberFactory(
+            user=user, organization=org, is_default=False
+        )
+
+        str_repr = str(membership)
+        assert user.username in str_repr
+        assert "Test Org" in str_repr
+
+    def test_cascade_delete_user(self, user):
+        """Test that memberships are deleted when user is deleted."""
+        org = OrganizationFactory()
+        membership = OrganizationMemberFactory(user=user, organization=org)
+        membership_id = membership.id
+
+        user.delete()
+
+        assert not OrganizationMember.objects.filter(id=membership_id).exists()
+
+    def test_cascade_delete_organization(self, user):
+        """Test that memberships are deleted when organization is deleted."""
+        org = OrganizationFactory()
+        membership = OrganizationMemberFactory(user=user, organization=org)
+        membership_id = membership.id
+
+        org.delete()
+
+        assert not OrganizationMember.objects.filter(id=membership_id).exists()
+
+    def test_organization_members_relation(self, user):
+        """Test the many-to-many relationship through OrganizationMember."""
+        org = OrganizationFactory()
+        OrganizationMemberFactory(user=user, organization=org)
+
+        assert user in org.members.all()
+        assert org in user.organizations.all()
+
+    def test_user_organization_memberships_relation(self, user):
+        """Test the reverse relation from user to memberships."""
+        org1 = OrganizationFactory()
+        org2 = OrganizationFactory()
+        membership1 = OrganizationMemberFactory(user=user, organization=org1)
+        membership2 = OrganizationMemberFactory(user=user, organization=org2)
+
+        assert membership1 in user.organization_memberships.all()
+        assert membership2 in user.organization_memberships.all()
+        assert user.organization_memberships.count() == 2
+
+    def test_organization_memberships_relation(self, user):
+        """Test the reverse relation from organization to memberships."""
+        org = OrganizationFactory()
+        user2 = UserFactory()
+        membership1 = OrganizationMemberFactory(user=user, organization=org)
+        membership2 = OrganizationMemberFactory(user=user2, organization=org)
+
+        assert membership1 in org.memberships.all()
+        assert membership2 in org.memberships.all()
+        assert org.memberships.count() == 2
+
+    def test_is_default_defaults_to_false(self, user):
+        """Test that is_default defaults to False."""
+        org = OrganizationFactory()
+        membership = OrganizationMemberFactory(user=user, organization=org)
+
+        assert membership.is_default is False
+
+    def test_timestamps_created_at(self, user):
+        """Test that created_at is automatically set."""
+        org = OrganizationFactory()
+        membership = OrganizationMemberFactory(user=user, organization=org)
+
+        assert membership.created_at is not None
+        assert membership.created_at <= timezone.now()
+
+    def test_timestamps_updated_at(self, user):
+        """Test that updated_at is updated on save."""
+        org = OrganizationFactory()
+        membership = OrganizationMemberFactory(user=user, organization=org)
+        initial_updated_at = membership.updated_at
+
+        membership.is_default = True
+        membership.save()
+
+        assert membership.updated_at > initial_updated_at

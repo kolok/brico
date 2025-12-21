@@ -1,0 +1,40 @@
+{% load i18n %}
+
+{% if user_organizations %}
+    <div class="dropdown-menu-wrapper" data-controller="dropdown">
+        <button type="button"
+                class="btn btn-secondary"
+                data-dropdown-target="toggle"
+                data-action="click->dropdown#toggle"
+                aria-expanded="false"
+                aria-haspopup="true">
+            {% if current_organization %}
+                {{ current_organization.1|escape }}
+            {% else %}
+                {% translate "Select Organization" %}
+            {% endif %}
+            <span class="ml-2">▼</span>
+        </button>
+        <div class="dropdown-menu hidden"
+            data-dropdown-target="menu" role="menu" aria-orientation="vertical">
+            {% for org in user_organizations %}
+                <a href="{% url 'organization:switch' organization_id=org.0 %}"
+                class="dropdown-item {% if current_organization and current_organization.0 == org.0 %}active{% endif %}"
+                role="menuitem"
+                tabindex="-1">
+                    {{ org.1 }}
+                    {% if current_organization and current_organization.0 == org.0 %}
+                        <span class="dropdown-item-checkmark">✓</span>
+                    {% endif %}
+                </a>
+            {% endfor %}
+            <hr>
+            <a href="{% url 'organization:create' %}"
+            class="dropdown-item-create"
+            role="menuitem"
+            tabindex="-1">
+                + {% translate "Create Organization" %}
+            </a>
+        </div>
+    </div>
+{% endif %}

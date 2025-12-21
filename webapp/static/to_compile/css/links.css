@@ -1,0 +1,13 @@
+/* LINKS */
+a {
+  @apply text-link hover:text-hover_link active:text-active_link underline;
+}
+
+aside nav a,
+.header-left a {
+  @apply no-underline text-nav_link hover:text-nav_hover_link;
+}
+aside nav a.active,
+.header-left a.active {
+  @apply text-nav_active_link;
+}

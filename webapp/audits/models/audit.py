@@ -98,7 +98,7 @@ class ProjectAuditCriterion(TimestampedModel, models.Model):
     )
 
 
-class ProjectAuditCriterionComment(TimestampedModel, models.Model):
+class Comment(TimestampedModel, models.Model):
     """User comment on a criterion assessment."""
 
     id = models.AutoField(primary_key=True)
@@ -111,7 +111,7 @@ class ProjectAuditCriterionComment(TimestampedModel, models.Model):
     comment = models.TextField(blank=True, default="", null=False)
 
 
-class ProjectAuditCriterionPrompt(TimestampedModel, models.Model):
+class Prompt(TimestampedModel, models.Model):
     """AI prompt session for criterion assessment assistance."""
 
     id = models.AutoField(primary_key=True)
