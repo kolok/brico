@@ -1,4 +1,4 @@
-# Brico
+# Cosqua
 
 ## Prerequis
 

@@ -1,10 +1,10 @@
-# French translations for Brico project.
-# Copyright (C) 2025 Brico
-# This file is distributed under the same license as the Brico package.
+# French translations for Cosqua project.
+# Copyright (C) 2025 Cosqua
+# This file is distributed under the same license as the Cosqua package.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Brico 1.0\n"
+"Project-Id-Version: Cosqua 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-12-12 09:39+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
@@ -175,8 +175,8 @@ msgid "Sign up with"
 msgstr "S'inscrire avec"
 
 #: templates/audits/projectaudit_detail.html:4
-msgid "Audit Detail - Brico"
-msgstr "Détail de l'audit - Brico"
+msgid "Audit Detail - Cosqua"
+msgstr "Détail de l'audit - Cosqua"
 
 #: templates/audits/projectaudit_detail.html:8
 msgid "Audit Detail"
@@ -248,8 +248,8 @@ msgid "Send"
 msgstr "Envoyer"
 
 #: templates/audits/projectauditcriterion_detail.html:4
-msgid "Criterion Detail - Brico"
-msgstr "Détail du critère - Brico"
+msgid "Criterion Detail - Cosqua"
+msgstr "Détail du critère - Cosqua"
 
 #: templates/audits/projectauditcriterion_detail.html:10
 msgid "Status:"
@@ -276,8 +276,8 @@ msgid "No prompts yet."
 msgstr "Aucune invite pour le moment."
 
 #: templates/audits/projectaudit_new.html:4
-msgid "New Audit - Brico"
-msgstr "Nouvel audit - Brico"
+msgid "New Audit - Cosqua"
+msgstr "Nouvel audit - Cosqua"
 
 #: templates/audits/projectaudit_new.html:8
 msgid "New Audit"
@@ -288,8 +288,8 @@ msgid "Create Audit"
 msgstr "Créer un audit"
 
 #: templates/audits/new_project.html:4
-msgid "New Project - Brico"
-msgstr "Nouveau projet - Brico"
+msgid "New Project - Cosqua"
+msgstr "Nouveau projet - Cosqua"
 
 #: templates/audits/new_project.html:8
 msgid "New Project"
@@ -300,8 +300,8 @@ msgid "Create Project"
 msgstr "Créer un projet"
 
 #: templates/audits/project_detail.html:4
-msgid "Project Detail - Brico"
-msgstr "Détail du projet - Brico"
+msgid "Project Detail - Cosqua"
+msgstr "Détail du projet - Cosqua"
 
 #: templates/audits/project_detail.html:10
 msgid "Resources"
@@ -324,8 +324,8 @@ msgid "Start Audit"
 msgstr "Démarrer un audit"
 
 #: templates/audits/project_list.html:4
-msgid "My Projects - Brico"
-msgstr "Mes projets - Brico"
+msgid "My Projects - Cosqua"
+msgstr "Mes projets - Cosqua"
 
 #: templates/audits/project_list.html:7
 msgid "My Projects"
@@ -393,8 +393,8 @@ msgid "View all projects"
 msgstr "Voir tous les projets"
 
 #: templates/index.html:7
-msgid "Welcome to Brico"
-msgstr "Bienvenu sur Brico"
+msgid "Welcome to Cosqua"
+msgstr "Bienvenu sur Cosqua"
 
 #: templates/index.html:11 templates/layout/base.html:25
 msgid "Quality assurance and security, in collaborative mode and IA driven"
@@ -544,5 +544,5 @@ msgstr "S'inscrire avec %(provider_name)s"
 #~ msgid "Project Detail"
 #~ msgstr "Détail du projet"
 
-#~ msgid "Brico"
-#~ msgstr "Brico"
+#~ msgid "Cosqua"
+#~ msgstr "Cosqua"

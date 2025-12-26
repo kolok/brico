@@ -1,13 +1,13 @@
 ---
 services:
-  brico-db:
+  cosqua-db:
     image: postgres
     # set shared memory limit when using docker-compose
     shm_size: 128mb
     environment:
-      - POSTGRES_USER=brico
-      - POSTGRES_PASSWORD=brico
-      - POSTGRES_DB=brico
+      - POSTGRES_USER=cosqua
+      - POSTGRES_PASSWORD=cosqua
+      - POSTGRES_DB=cosqua
     volumes:
       - ./pgdata:/var/lib/postgresql:delegated
     expose:

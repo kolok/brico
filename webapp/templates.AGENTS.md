@@ -55,7 +55,7 @@ Always extend the appropriate base template:
 {% extends 'layout/base-logged.html' %}
 {% load i18n %}
 
-{% block title %}{% translate "My Projects - Brico" %}{% endblock %}
+{% block title %}{% translate "My Projects - Cosqua" %}{% endblock %}
 
 {% block content %}
     <!-- Page content -->
@@ -468,7 +468,7 @@ This example demonstrates proper use of the design system and Tailwind utilities
 {% extends 'layout/base-logged.html' %}
 {% load i18n %}
 
-{% block title %}{% translate "Project List - Brico" %}{% endblock %}
+{% block title %}{% translate "Project List - Cosqua" %}{% endblock %}
 
 {% block content %}
     <!-- h1 uses design system styles from base.css -->
