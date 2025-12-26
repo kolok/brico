@@ -76,7 +76,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get welcomeTitle => 'Bienvenue sur Brico !';
+  String get welcomeTitle => 'Bienvenue sur Cosqua !';
 
   @override
   String get welcomeSubtitle =>

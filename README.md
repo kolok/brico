@@ -1,9 +1,9 @@
-# BRICO
+# COSQUA
 
-Brico is composed to:
+Cosqua is composed to:
 
-* A webapp
-* A mobile application
+- A webapp
+- A mobile application
 
 ## Pre-requist
 

@@ -1,4 +1,4 @@
-# Brico – Project Notes
+# COSQUA – Project Notes
 
 ## Overview
 

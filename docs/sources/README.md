@@ -1,4 +1,4 @@
-# BRICO project documentation
+# COSQUA project documentation
 
 Project documentation
 
