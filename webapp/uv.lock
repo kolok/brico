@@ -386,7 +386,7 @@ wheels = [
 ]
 
 [[package]]
-name = "brico"
+name = "cosqua"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
