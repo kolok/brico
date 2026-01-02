@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Cosqua 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 06:39+0000\n"
+"POT-Creation-Date: 2026-01-02 06:59+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -70,9 +70,14 @@ msgstr "Organisation \"{organization_name}\" sélectionnée."
 msgid "You do not have access to this organization."
 msgstr "Vous n'avez pas accès à cette organisation."
 
-#: templates/account/login.html:5 templates/account/login.html:9
-#: templates/account/login.html:37 templates/index.html:17
-#: templates/layout/base.html:38 templates/socialaccount/login.html:5
+#: templates/account/login.html:5 templates/socialaccount/login.html:5
+#, fuzzy
+#| msgid "Sign In"
+msgid "Sign In - Cosqua"
+msgstr "Se connecter - Cosqua"
+
+#: templates/account/login.html:9 templates/account/login.html:37
+#: templates/index.html:17 templates/layout/base.html:38
 msgid "Sign In"
 msgstr "Se connecter"
 
@@ -99,8 +104,13 @@ msgstr ""
 "  <a href=\"%(signup_url)s\">vous inscrire</a>."
 
 #: templates/account/password_reset.html:5
-#: templates/account/password_reset.html:9
 #: templates/account/password_reset_done.html:5
+#, fuzzy
+#| msgid "Password Reset"
+msgid "Password Reset - Cosqua"
+msgstr "Réinitialisation du mot de passe - Cosqua"
+
+#: templates/account/password_reset.html:9
 #: templates/account/password_reset_done.html:10
 msgid "Password Reset"
 msgstr "Réinitialisation du mot de passe"
@@ -137,6 +147,11 @@ msgstr ""
 "dans quelques minutes."
 
 #: templates/account/password_reset_from_key_done.html:5
+#, fuzzy
+#| msgid "Change Password"
+msgid "Change Password - Cosqua"
+msgstr "Changer le mot de passe - Cosqua"
+
 #: templates/account/password_reset_from_key_done.html:10
 msgid "Change Password"
 msgstr "Changer le mot de passe"
@@ -146,8 +161,10 @@ msgid "Your password is now changed."
 msgstr "Votre mot de passe a été modifié."
 
 #: templates/account/signup.html:5 templates/socialaccount/signup.html:5
-msgid "Signup"
-msgstr "Inscription"
+#, fuzzy
+#| msgid "New Audit - Cosqua"
+msgid "Signup - Cosqua"
+msgstr "S'inscrire - Cosqua"
 
 #: templates/account/signup.html:9 templates/account/signup.html:42
 #: templates/index.html:20 templates/layout/base.html:39
@@ -393,8 +410,13 @@ msgstr ""
 "Aucun message pour le moment. Commencez une conversation en posant une "
 "question ci-dessous."
 
-#: templates/dashboard.html:5 templates/dashboard.html:8
-#: templates/layout/base-logged.html:12
+#: templates/dashboard.html:5
+#, fuzzy
+#| msgid "Dashboard"
+msgid "Dashboard - Cosqua"
+msgstr "Tableau de bord - Cosqua"
+
+#: templates/dashboard.html:8 templates/layout/base-logged.html:12
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
@@ -439,10 +461,15 @@ msgid "Select Organization"
 msgstr "Sélectionner une organisation"
 
 #: templates/organization/components/dropdown_choose_organization.html:36
-#: templates/organization/organization_create.html:5
 #: templates/organization/organization_create.html:28
 msgid "Create Organization"
 msgstr "Créer une organisation"
+
+#: templates/organization/organization_create.html:5
+#, fuzzy
+#| msgid "Create Organization"
+msgid "Create Organization - Cosqua"
+msgstr "Créer une organisation - Cosqua"
 
 #: templates/organization/organization_create.html:9
 msgid "Create Your Organization"
@@ -462,8 +489,10 @@ msgid "Create a new organization to organize your projects."
 msgstr "Créez une nouvelle organisation pour organiser vos projets."
 
 #: templates/socialaccount/authentication_error.html:5
-msgid "Social Network Login Failure"
-msgstr "Échec de connexion réseau social"
+#, fuzzy
+#| msgid "Social Network Login Failure"
+msgid "Social Network Login Failure - Cosqua"
+msgstr "Échec de connexion réseau social - Cosqua"
 
 #: templates/socialaccount/authentication_error.html:10
 msgid "Authentication Error"
@@ -488,6 +517,11 @@ msgid "Create an account"
 msgstr "Créer un compte"
 
 #: templates/socialaccount/connections.html:5
+#, fuzzy
+#| msgid "Account Connections"
+msgid "Account Connections - Cosqua"
+msgstr "Connexions de compte - Cosqua"
+
 #: templates/socialaccount/connections.html:10
 msgid "Account Connections"
 msgstr "Connexions de compte"
@@ -542,6 +576,11 @@ msgid "Continue"
 msgstr "Continuer"
 
 #: templates/socialaccount/login_cancelled.html:5
+#, fuzzy
+#| msgid "Login Cancelled"
+msgid "Login Cancelled - Cosqua"
+msgstr "Connexion annulée - Cosqua"
+
 #: templates/socialaccount/login_cancelled.html:10
 msgid "Login Cancelled"
 msgstr "Connexion annulée"
@@ -550,6 +589,9 @@ msgstr "Connexion annulée"
 #, python-format
 msgid "Sign up with %(provider_name)s"
 msgstr "S'inscrire avec %(provider_name)s"
+
+#~ msgid "Signup"
+#~ msgstr "Inscription"
 
 #~ msgid "Criterion Detail - Brico"
 #~ msgstr "Détail du critère - Brico"
