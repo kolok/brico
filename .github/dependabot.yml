@@ -8,6 +8,11 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "04:00" # UTC
+    groups:
+      pydantic-ai:
+        patterns:
+          - "pydantic-ai"
+          - "pydantic-ai-examples"
     cooldown:
       default-days: 7
   - package-ecosystem: "npm"

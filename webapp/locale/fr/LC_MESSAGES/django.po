@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Cosqua 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 06:25+0000\n"
+"POT-Creation-Date: 2026-01-02 06:39+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -46,7 +46,7 @@ msgstr "Description"
 
 #: organization/models/organization.py:43
 msgid "Role group (administrator, writer, reader)"
-msgstr ""
+msgstr "Groupe de rôle (administrateur, rédacteur, lecteur)"
 
 #: organization/models/organization.py:46
 msgid "Default organization for the user"
@@ -230,6 +230,8 @@ msgid "Send"
 msgstr "Envoyer"
 
 #: templates/audits/project/detail.html:4
+#, fuzzy
+#| msgid "Audit Detail - Cosqua"
 msgid "Project Detail - Cosqua"
 msgstr "Détail du projet - Cosqua"
 
@@ -271,7 +273,7 @@ msgstr "Rechercher"
 
 #: templates/audits/project/list.html:28
 msgid "Clear"
-msgstr "Annuler"
+msgstr "Effacer"
 
 #: templates/audits/project/list.html:45
 #, python-format
@@ -316,25 +318,17 @@ msgid "Create Project"
 msgstr "Créer un projet"
 
 #: templates/audits/projectaudit/confirm_delete.html:4
-#, fuzzy
-#| msgid "New Project - Cosqua"
 msgid "Delete Project Audit - Cosqua"
-msgstr "Nouveau projet - Cosqua"
+msgstr "Supprimer l'audit de projet - Cosqua"
 
 #: templates/audits/projectaudit/confirm_delete.html:8
-#, fuzzy
-#| msgid "Create Project"
 msgid "Delete Project Audit"
-msgstr "Créer un projet"
+msgstr "Supprimer l'audit de projet"
 
 #: templates/audits/projectaudit/confirm_delete.html:9
-#, fuzzy
-#| msgid ""
-#| "Are you sure you want to delete this comment? This action cannot be "
-#| "undone."
 msgid "Are you sure you want to delete this project audit?"
 msgstr ""
-"Êtes-vous sûr de vouloir supprimer ce commentaire ? Cette action est "
+"Êtes-vous sûr de vouloir supprimer cet audit de projet ? Cette action est "
 "irréversible."
 
 #: templates/audits/projectaudit/detail.html:4
@@ -414,7 +408,7 @@ msgstr "Voir tous les projets"
 
 #: templates/index.html:7
 msgid "Welcome to Cosqua"
-msgstr "Bienvenu sur Cosqua"
+msgstr "Bienvenue sur Cosqua"
 
 #: templates/index.html:11 templates/layout/base.html:25
 msgid "Quality assurance and security, in collaborative mode and IA driven"
@@ -464,10 +458,8 @@ msgstr ""
 "équipe."
 
 #: templates/organization/organization_create.html:19
-#, fuzzy
-#| msgid "Create a new project to start auditing your resources."
 msgid "Create a new organization to organize your projects."
-msgstr "Créez un nouveau projet pour commencer à auditer vos ressources."
+msgstr "Créez une nouvelle organisation pour organiser vos projets."
 
 #: templates/socialaccount/authentication_error.html:5
 msgid "Social Network Login Failure"
@@ -558,6 +550,9 @@ msgstr "Connexion annulée"
 #, python-format
 msgid "Sign up with %(provider_name)s"
 msgstr "S'inscrire avec %(provider_name)s"
+
+#~ msgid "Criterion Detail - Brico"
+#~ msgstr "Détail du critère - Brico"
 
 #~ msgid "Audit deleted successfully"
 #~ msgstr "Audit supprimé avec succès"
