@@ -7,10 +7,15 @@
 @import "./headers.css";
 @import "./links.css";
 @import "./main.css";
+@import "./markdown-zone.css";
 @import "./page-headers.css";
 @import "./tiles.css";
 @import "./signup-login.css";
 
 body {
   @apply font-sans bg-bg_content text-content;
+}
+
+p {
+  @apply mb-2;
 }
