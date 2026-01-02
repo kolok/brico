@@ -72,3 +72,11 @@ class ResourceForm(forms.ModelForm):
                 }
             ),
         }
+
+
+class StatusUpdateForm(forms.ModelForm):
+    class Meta:
+        from audits.models.audit import ProjectAuditCriterion
+
+        model = ProjectAuditCriterion
+        fields = ["status"]

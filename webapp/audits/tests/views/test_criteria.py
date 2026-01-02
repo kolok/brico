@@ -1,4 +1,5 @@
 import pytest
+from audits.models.audit import ProjectAuditCriterion
 from audits.tests.factories import ProjectAuditCriterionFactory
 from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.auth import get_user_model
@@ -325,3 +326,327 @@ class TestCriterionDetailViewPermissions:
         response = client.get(url)
 
         assert response.status_code == 404
+
+
+@pytest.mark.django_db
+class TestCriterionStatusUpdateView:
+    """Test the criterion status update view."""
+
+    def test_login_required(self, client):
+        """Test that login is required to update criterion status."""
+        project_audit_criterion = ProjectAuditCriterionFactory()
+        response = client.post(
+            reverse(
+                "audits:projectauditcriterion_detail",
+                kwargs={
+                    "project_slug": project_audit_criterion.project_audit.project.slug,
+                    "audit_id": project_audit_criterion.project_audit.id,
+                    "pk": project_audit_criterion.id,
+                },
+            ),
+            data={
+                "status": ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT
+            },
+        )
+        assert response.status_code == 302
+        assert reverse("account_login") in response.url
+
+    def test_organization_required(self, client):
+        """Test that organization selection is required."""
+        user = UserFactory()
+        project_audit_criterion = ProjectAuditCriterionFactory()
+        client.force_login(user)
+        # No organization in session
+
+        url = reverse(
+            "audits:projectauditcriterion_detail",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "pk": project_audit_criterion.id,
+            },
+        )
+        response = client.post(
+            url,
+            data={
+                "status": ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT
+            },
+        )
+
+        assert response.status_code == 403
+
+    def test_criterion_status_update_view_post_updates_status(
+        self, client, admin_group
+    ):
+        """Test that criterion status update view POST updates the status."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit__project__organization=organization,
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectauditcriterion_detail",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "pk": project_audit_criterion.id,
+            },
+        )
+
+        new_status = ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT
+        response = client.post(url, data={"status": new_status}, follow=True)
+
+        assert response.status_code == 200
+
+        # Verify status was updated
+        project_audit_criterion.refresh_from_db()
+        assert project_audit_criterion.status == new_status
+
+        # Verify redirect to criterion detail
+        assert response.redirect_chain
+        last_redirect_url, status = response.redirect_chain[-1]
+        assert status == 302
+        assert (
+            reverse(
+                "audits:projectauditcriterion_detail",
+                kwargs={
+                    "project_slug": project_audit_criterion.project_audit.project.slug,
+                    "audit_id": project_audit_criterion.project_audit.id,
+                    "pk": project_audit_criterion.id,
+                },
+            )
+            in last_redirect_url
+        )
+
+    def test_criterion_status_update_view_all_statuses(self, client, admin_group):
+        """Test that all status values can be set."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit__project__organization=organization,
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectauditcriterion_detail",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "pk": project_audit_criterion.id,
+            },
+        )
+
+        # Test all status values
+        statuses = [
+            ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_COMPLIANT,
+            ProjectAuditCriterion.ProjectAuditCriterionStatus.PARTIALLY_COMPLIANT,
+            ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+            ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        ]
+
+        for status in statuses:
+            response = client.post(url, data={"status": status})
+            assert response.status_code == 302
+            project_audit_criterion.refresh_from_db()
+            assert project_audit_criterion.status == status
+
+    def test_cannot_update_criterion_from_different_organization(
+        self, client, admin_group
+    ):
+        """Test that user cannot update criterion from different organization."""
+        user = UserFactory()
+        organization1 = OrganizationFactory()
+        organization2 = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization1, group=admin_group
+        )
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit__project__organization=organization2
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (
+            organization1.id,
+            organization1.name,
+        )
+        session.save()
+
+        url = reverse(
+            "audits:projectauditcriterion_detail",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "pk": project_audit_criterion.id,
+            },
+        )
+        response = client.post(
+            url,
+            data={
+                "status": ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT
+            },
+        )
+
+        assert response.status_code == 404
+
+
+@pytest.mark.django_db
+class TestCriterionStatusUpdateViewPermissions:
+    """Test permissions for criterion status update view."""
+
+    def test_reader_cannot_update_criterion_status(self, client, reader_group):
+        """Test that reader cannot update criterion status."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=reader_group
+        )
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit__project__organization=organization
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectauditcriterion_detail",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "pk": project_audit_criterion.id,
+            },
+        )
+        # GET should work (can see form)
+        response = client.get(url)
+        assert response.status_code == 200
+
+        # POST should fail (cannot update)
+        response = client.post(
+            url,
+            data={
+                "status": ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT
+            },
+        )
+        assert response.status_code == 403
+
+    def test_writer_can_update_criterion_status(self, client, writer_group):
+        """Test that writer can update criterion status."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=writer_group
+        )
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit__project__organization=organization,
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectauditcriterion_detail",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "pk": project_audit_criterion.id,
+            },
+        )
+        response = client.get(url)
+        assert response.status_code == 200
+
+        # POST should work
+        new_status = ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT
+        response = client.post(url, data={"status": new_status})
+        assert response.status_code == 302
+
+        project_audit_criterion.refresh_from_db()
+        assert project_audit_criterion.status == new_status
+
+    def test_admin_can_update_criterion_status(self, client, admin_group):
+        """Test that administrator can update criterion status."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit__project__organization=organization,
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectauditcriterion_detail",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "pk": project_audit_criterion.id,
+            },
+        )
+        response = client.get(url)
+        assert response.status_code == 200
+
+        # POST should work
+        new_status = ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT
+        response = client.post(url, data={"status": new_status})
+        assert response.status_code == 302
+
+        project_audit_criterion.refresh_from_db()
+        assert project_audit_criterion.status == new_status
+
+    def test_non_member_cannot_update_criterion_status(self, client):
+        """Test that non-member cannot update criterion status."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            project_audit__project__organization=organization
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectauditcriterion_detail",
+            kwargs={
+                "project_slug": project_audit_criterion.project_audit.project.slug,
+                "audit_id": project_audit_criterion.project_audit.id,
+                "pk": project_audit_criterion.id,
+            },
+        )
+        response = client.post(
+            url,
+            data={
+                "status": ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT
+            },
+        )
+
+        assert response.status_code == 403
