@@ -21,11 +21,11 @@
             {% csrf_token %}
             <div class="flex gap-2">
                 <button type="submit"
-                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition">
+                        class="btn-danger">
                     {% translate "Delete" %}
                 </button>
                 <a href="{% url 'audits:comment_fragment' project.slug audit.id criterion.id object.id %}"
-                   class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition"
+                   class="btn btn-secondary"
                    data-turbo-frame="comment_{{ object.id }}">
                     {% translate "Cancel" %}
                 </a>

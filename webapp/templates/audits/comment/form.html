@@ -13,11 +13,11 @@
                 {{ form.as_p }}
                 <div class="flex gap-2 mt-4">
                     <button type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">
+                            class="btn-primary">
                         {% translate "Update" %}
                     </button>
                     <a href="{% url 'audits:comment_fragment' project.slug audit.id criterion.id object.id %}"
-                       class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition"
+                       class="btn btn-secondary"
                        data-turbo-frame="comment_{{ object.id }}">
                         {% translate "Cancel" %}
                     </a>
@@ -39,11 +39,11 @@
                 {{ form.as_p }}
                 <div class="flex gap-2 mt-4">
                     <button type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition">
+                            class="btn-primary">
                         {% translate "Create" %}
                     </button>
                     <a href="{% url 'audits:comment_form_cancel' project.slug audit.id criterion.id %}"
-                       class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-md transition"
+                       class="btn btn-secondary"
                        data-turbo-frame="comment_form_frame">
                         {% translate "Cancel" %}
                     </a>

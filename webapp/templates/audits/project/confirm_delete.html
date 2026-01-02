@@ -1,0 +1,39 @@
+{% extends 'layout/base-logged.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Delete Project - Cosqua" %}{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{% translate "Delete Project" %}</h1>
+    <div class="bg-white border border-red-200 rounded-lg p-4 mb-4">
+        <h3 class="text-lg font-semibold text-red-600 mb-3">
+            {% translate "Danger Zone" %}
+        </h3>
+
+        <p class="mb-4 text-gray-700">
+            {% translate "Are you sure you want to delete this project? This action cannot be undone. All audits and resources associated with this project will also be deleted." %}
+        </p>
+
+        <div class="bg-gray-50 border border-gray-200 rounded-sm p-3 mb-4">
+            <p class="text-sm text-gray-500 mb-1">{% translate "Project:" %}</p>
+            <p class="text-gray-700 font-semibold">{{ object.name }}</p>
+            {% if object.description %}
+            <p class="text-gray-600 mt-2">{{ object.description }}</p>
+            {% endif %}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex gap-2">
+                <button type="submit" class="btn-danger">
+                    {% translate "Delete Project" %}
+                </button>
+                <a href="{% url 'audits:project_detail' object.slug %}" class="btn btn-secondary">
+                    {% translate "Cancel" %}
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

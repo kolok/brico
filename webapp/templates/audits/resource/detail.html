@@ -1,0 +1,33 @@
+{% extends 'layout/base-logged.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Resource Detail - Cosqua" %}{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{{ resource.name }}</h1>
+    <div class="space-y-4">
+        <div>
+            <h2 class="text-lg font-semibold">{% translate "Type" %}</h2>
+            <p>{{ resource.get_type_display }}</p>
+        </div>
+        {% if resource.url %}
+            <div>
+                <h2 class="text-lg font-semibold">{% translate "URL" %}</h2>
+                <p><a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800">{{ resource.url }}</a></p>
+            </div>
+        {% endif %}
+        {% if resource.description %}
+            <div>
+                <h2 class="text-lg font-semibold">{% translate "Description" %}</h2>
+                <p>{{ resource.description }}</p>
+            </div>
+        {% endif %}
+    </div>
+    <div class="flex gap-2 mt-6">
+        <a href="{% url 'audits:resource_edit' project.slug resource.id %}" class="btn btn-primary">{% translate "Edit" %}</a>
+        <a href="{% url 'audits:resource_delete' project.slug resource.id %}" class="btn btn-danger">{% translate "Delete" %}</a>
+        <a href="{% url 'audits:project_detail' project.slug %}" class="btn btn-secondary">{% translate "Back to Project" %}</a>
+    </div>
+</div>
+{% endblock content %}

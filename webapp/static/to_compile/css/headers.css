@@ -1,20 +1,13 @@
-/* HEADERS */
-header {
-  @apply w-full bg-bg_layout shadow px-8;
+/* H tags */
+
+h1 {
+  @apply text-2xl font-bold mb-4;
 }
 
-header nav {
-  @apply flex h-16 items-center justify-between;
+h2 {
+  @apply text-xl font-semibold mt-4 mb-2;
 }
 
-header .header-title {
-  @apply text-2xl font-bold;
-}
-
-header .header-title-link {
-  @apply flex items-center gap-2;
-}
-
-header .header-subtitle {
-  @apply text-sm italic;
+h3 {
+  @apply text-lg font-semibold mt-2 mb-2;
 }

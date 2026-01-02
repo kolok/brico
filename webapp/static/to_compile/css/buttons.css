@@ -12,3 +12,7 @@ button,
 .btn-secondary {
   @apply bg-secondary text-secondary_text border border-border hover:bg-secondary_hover hover:text-secondary_hover_text transition;
 }
+
+.btn-danger {
+  @apply bg-danger text-danger_text border-border hover:bg-danger_hover hover:text-danger_hover_text transition;
+}

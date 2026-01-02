@@ -5,19 +5,23 @@
 
 {% block content %}
 <div>
-    <h1>{% translate "Audit Detail" %}</h1>
-    <p>{{ audit.audit_library.name }}</p>
+    <h1>{% translate "Audit :" %} {{ audit.audit_library.name }}</h1>
     <p>{{ audit.audit_library.description }}</p>
     <h2>{% translate "Criteria" %}</h2>
-    <ul>
+    <div class="tiles">
         {% for criterion in audit.project_audit_criteria.all %}
-            <li>
-                {{ criterion.criterion.name }}
-                <a href="{% url 'audits:projectauditcriterion_detail' project.slug audit.id criterion.id %}">edit</a>
-            </li>
+            <a href="{% url 'audits:projectauditcriterion_detail' project.slug audit.id criterion.id %}" class="tile {% cycle 'tile-even' 'tile-odd' %}">
+                <h2>{{ criterion.criterion.name }}</h2>
+                {% if criterion.criterion.description %}
+                    <p>{{ criterion.criterion.description|truncatewords:10 }}</p>
+                {% endif %}
+                <p class="text-sm font-semibold mt-2">{{ criterion.get_status_display }}</p>
+            </a>
         {% empty %}
-            <li>{% translate "No criteria yet." %}</li>
+            <div class="tile tile-empty">
+                <p>{% translate "No criteria yet." %}</p>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 {% endblock content %}

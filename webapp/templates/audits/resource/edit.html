@@ -1,0 +1,55 @@
+{% extends 'layout/base-logged.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Edit Resource - Cosqua" %}{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{{ project.name }} - {% translate "Edit Resource" %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="space-y-4">
+            <div>
+                <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    {% translate "Name" %}
+                </label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="{{ form.type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    {% translate "Type" %}
+                </label>
+                {{ form.type }}
+                {% if form.type.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.type.errors }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="{{ form.url.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    {% translate "URL" %}
+                </label>
+                {{ form.url }}
+                {% if form.url.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.url.errors }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    {% translate "Description" %}
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="flex gap-2 mt-6">
+            <button type="submit" class="btn btn-primary">{% translate "Update Resource" %}</button>
+            <a href="{% url 'audits:project_detail' project.slug %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+        </div>
+    </form>
+</div>
+{% endblock content %}
