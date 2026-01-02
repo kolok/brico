@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Cosqua 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-12 09:39+0000\n"
+"POT-Creation-Date: 2026-01-02 06:25+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -16,25 +16,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: audits/views/audits.py:65
-msgid "Audit created successfully"
-msgstr "Audit créé avec succès"
-
-#: audits/views/audits.py:73
-msgid "Audit deleted successfully"
-msgstr "Audit supprimé avec succès"
-
-#: audits/views/comment.py:48
+#: audits/views/comment.py:109
 msgid "Comment created successfully"
 msgstr "Commentaire créé avec succès"
 
-#: audits/views/comment.py:77
+#: audits/views/comment.py:145
 msgid "Comment updated successfully"
 msgstr "Commentaire mis à jour avec succès"
 
-#: audits/views/projects.py:60
-msgid "No organization is configured. Please contact an administrator."
-msgstr "Aucune organisation n'est configurée. Veuillez contacter un administrateur."
+#: audits/views/projectaudit.py:83
+msgid "Audit created successfully"
+msgstr "Audit créé avec succès"
 
 #: core/user_registration_serializer.py:19
 msgid "Passwords do not match."
@@ -44,33 +36,37 @@ msgstr "Les mots de passe ne correspondent pas."
 msgid "Email addresses do not match."
 msgstr "Les adresses e-mail ne correspondent pas."
 
-#: organization/models/organization.py:13
+#: organization/models/organization.py:14
 msgid "Name"
 msgstr "Nom"
 
-#: organization/models/organization.py:17
+#: organization/models/organization.py:18
 msgid "Description"
 msgstr "Description"
 
-#: organization/models/organization.py:39
+#: organization/models/organization.py:43
+msgid "Role group (administrator, writer, reader)"
+msgstr ""
+
+#: organization/models/organization.py:46
 msgid "Default organization for the user"
 msgstr "Organisation par défaut pour l'utilisateur"
 
-#: organization/models/organization.py:58
+#: organization/models/organization.py:65
 msgid "default"
 msgstr "par défaut"
 
-#: organization/views.py:52
+#: organization/views.py:57
 #, python-brace-format
 msgid "Organization \"{organization_name}\" created successfully."
 msgstr "Organisation \"{organization_name}\" créée avec succès."
 
-#: organization/views.py:85
+#: organization/views.py:90
 #, python-brace-format
 msgid "Organization \"{organization_name}\" selected."
 msgstr "Organisation \"{organization_name}\" sélectionnée."
 
-#: organization/views.py:93
+#: organization/views.py:98
 msgid "You do not have access to this organization."
 msgstr "Vous n'avez pas accès à cette organisation."
 
@@ -174,72 +170,58 @@ msgstr "S'inscrire avec :"
 msgid "Sign up with"
 msgstr "S'inscrire avec"
 
-#: templates/audits/projectaudit_detail.html:4
-msgid "Audit Detail - Cosqua"
-msgstr "Détail de l'audit - Cosqua"
-
-#: templates/audits/projectaudit_detail.html:8
-msgid "Audit Detail"
-msgstr "Détail de l'audit"
-
-#: templates/audits/projectaudit_detail.html:11
-msgid "Criteria"
-msgstr "Critères"
-
-#: templates/audits/projectaudit_detail.html:19
-msgid "No criteria yet."
-msgstr "Aucun critère pour le moment."
-
-#: templates/audits/comment_confirm_delete.html:6
+#: templates/audits/comment/confirm_delete.html:6
 msgid "Delete Comment"
 msgstr "Supprimer le commentaire"
 
-#: templates/audits/comment_confirm_delete.html:10
+#: templates/audits/comment/confirm_delete.html:10
 msgid ""
 "Are you sure you want to delete this comment? This action cannot be undone."
 msgstr ""
 "Êtes-vous sûr de vouloir supprimer ce commentaire ? Cette action est "
 "irréversible."
 
-#: templates/audits/comment_confirm_delete.html:25
-#: templates/audits/comment_item.html:20
+#: templates/audits/comment/confirm_delete.html:25
+#: templates/audits/comment/item.html:20
+#: templates/audits/projectaudit/confirm_delete.html:12
 msgid "Delete"
 msgstr "Supprimer"
 
-#: templates/audits/comment_confirm_delete.html:30
-#: templates/audits/comment_form.html:22 templates/audits/comment_form.html:48
+#: templates/audits/comment/confirm_delete.html:30
+#: templates/audits/comment/form.html:22 templates/audits/comment/form.html:48
+#: templates/audits/projectaudit/confirm_delete.html:13
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/audits/comment_form.html:7
+#: templates/audits/comment/form.html:7
 msgid "Edit Comment"
 msgstr "Modifier le commentaire"
 
-#: templates/audits/comment_form.html:17
+#: templates/audits/comment/form.html:17
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: templates/audits/comment_form.html:32
+#: templates/audits/comment/form.html:32
 msgid "New Comment"
 msgstr "Nouveau commentaire"
 
-#: templates/audits/comment_form.html:43
+#: templates/audits/comment/form.html:43
 msgid "Create"
 msgstr "Créer"
 
-#: templates/audits/comment_item.html:15
+#: templates/audits/comment/item.html:15
 msgid "Edit"
 msgstr "Modifier"
 
-#: templates/audits/comments_list.html:6
+#: templates/audits/comment/list.html:6
 msgid "Comments"
 msgstr "Commentaires"
 
-#: templates/audits/comments_list.html:10
+#: templates/audits/comment/list.html:10
 msgid "Add Comment"
 msgstr "Ajouter un commentaire"
 
-#: templates/audits/comments_list.html:21
+#: templates/audits/comment/list.html:21
 msgid "No comments yet."
 msgstr "Aucun commentaire pour le moment."
 
@@ -247,131 +229,169 @@ msgstr "Aucun commentaire pour le moment."
 msgid "Send"
 msgstr "Envoyer"
 
-#: templates/audits/projectauditcriterion_detail.html:4
-msgid "Criterion Detail - Cosqua"
-msgstr "Détail du critère - Cosqua"
-
-#: templates/audits/projectauditcriterion_detail.html:10
-msgid "Status:"
-msgstr "Statut :"
-
-#: templates/audits/projectauditcriterion_detail.html:14
-msgid "Loading comments..."
-msgstr "Chargement des commentaires..."
-
-#: templates/audits/projectauditcriterion_detail.html:18
-msgid "Discussion with AI"
-msgstr "Discussion avec l'IA"
-
-#: templates/audits/projectauditcriterion_detail.html:21
-msgid "Loading prompts..."
-msgstr "Chargement des invites..."
-
-#: templates/audits/projectauditcriterion_detail.html:25
-msgid "Prompts history"
-msgstr "Historique des invites"
-
-#: templates/audits/projectauditcriterion_detail.html:30
-msgid "No prompts yet."
-msgstr "Aucune invite pour le moment."
-
-#: templates/audits/projectaudit_new.html:4
-msgid "New Audit - Cosqua"
-msgstr "Nouvel audit - Cosqua"
-
-#: templates/audits/projectaudit_new.html:8
-msgid "New Audit"
-msgstr "Nouvel audit"
-
-#: templates/audits/projectaudit_new.html:12
-msgid "Create Audit"
-msgstr "Créer un audit"
-
-#: templates/audits/new_project.html:4
-msgid "New Project - Cosqua"
-msgstr "Nouveau projet - Cosqua"
-
-#: templates/audits/new_project.html:8
-msgid "New Project"
-msgstr "Nouveau projet"
-
-#: templates/audits/new_project.html:12
-msgid "Create Project"
-msgstr "Créer un projet"
-
-#: templates/audits/project_detail.html:4
+#: templates/audits/project/detail.html:4
 msgid "Project Detail - Cosqua"
 msgstr "Détail du projet - Cosqua"
 
-#: templates/audits/project_detail.html:10
+#: templates/audits/project/detail.html:10
 msgid "Resources"
 msgstr "Ressources"
 
-#: templates/audits/project_detail.html:15
+#: templates/audits/project/detail.html:15
 msgid "No resources yet."
 msgstr "Aucune ressource pour le moment."
 
-#: templates/audits/project_detail.html:18
+#: templates/audits/project/detail.html:18
 msgid "Audits"
 msgstr "Audits"
 
-#: templates/audits/project_detail.html:26
+#: templates/audits/project/detail.html:26
 msgid "No audits yet."
 msgstr "Aucun audit pour le moment."
 
-#: templates/audits/project_detail.html:29
+#: templates/audits/project/detail.html:29
 msgid "Start Audit"
 msgstr "Démarrer un audit"
 
-#: templates/audits/project_list.html:4
+#: templates/audits/project/list.html:4
 msgid "My Projects - Cosqua"
 msgstr "Mes projets - Cosqua"
 
-#: templates/audits/project_list.html:7
+#: templates/audits/project/list.html:7
 msgid "My Projects"
 msgstr "Mes projets"
 
-#: templates/audits/project_list.html:15
+#: templates/audits/project/list.html:15
 msgid "Search by project name..."
 msgstr "Chercher par le nom du projet..."
 
-#: templates/audits/project_list.html:21
+#: templates/audits/project/list.html:21
 msgid "Search"
 msgstr "Rechercher"
 
-#: templates/audits/project_list.html:28
+#: templates/audits/project/list.html:28
 msgid "Clear"
 msgstr "Annuler"
 
-#: templates/audits/project_list.html:45
+#: templates/audits/project/list.html:45
 #, python-format
 msgid "%(count)s Resource"
 msgid_plural "%(count)s Resources"
 msgstr[0] "%(count)s Ressource"
 msgstr[1] "%(count)s Ressources"
 
-#: templates/audits/project_list.html:48
+#: templates/audits/project/list.html:48
 #, python-format
 msgid "%(count)s Audit"
 msgid_plural "%(count)s Audits"
 msgstr[0] "%(count)s Audit"
 msgstr[1] "%(count)s Audits"
 
-#: templates/audits/project_list.html:55
+#: templates/audits/project/list.html:55
 msgid "No projects found matching your search."
 msgstr "Aucun projet trouvé correspondant à votre recherche."
 
-#: templates/audits/project_list.html:57
+#: templates/audits/project/list.html:57
 msgid "No projects yet."
 msgstr "Aucun projet pour le moment."
 
-#: templates/audits/project_list.html:63
+#: templates/audits/project/list.html:63
 msgid "➕ Add a new project"
 msgstr "➕ Ajouter un nouveau projet"
 
-#: templates/audits/project_list.html:64
+#: templates/audits/project/list.html:64
 msgid "Create a new project to start auditing your resources."
 msgstr "Créez un nouveau projet pour commencer à auditer vos ressources."
+
+#: templates/audits/project/new.html:4
+msgid "New Project - Cosqua"
+msgstr "Nouveau projet - Cosqua"
+
+#: templates/audits/project/new.html:8
+msgid "New Project"
+msgstr "Nouveau projet"
+
+#: templates/audits/project/new.html:12
+msgid "Create Project"
+msgstr "Créer un projet"
+
+#: templates/audits/projectaudit/confirm_delete.html:4
+#, fuzzy
+#| msgid "New Project - Cosqua"
+msgid "Delete Project Audit - Cosqua"
+msgstr "Nouveau projet - Cosqua"
+
+#: templates/audits/projectaudit/confirm_delete.html:8
+#, fuzzy
+#| msgid "Create Project"
+msgid "Delete Project Audit"
+msgstr "Créer un projet"
+
+#: templates/audits/projectaudit/confirm_delete.html:9
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to delete this comment? This action cannot be "
+#| "undone."
+msgid "Are you sure you want to delete this project audit?"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer ce commentaire ? Cette action est "
+"irréversible."
+
+#: templates/audits/projectaudit/detail.html:4
+msgid "Audit Detail - Cosqua"
+msgstr "Détail de l'audit - Cosqua"
+
+#: templates/audits/projectaudit/detail.html:8
+msgid "Audit Detail"
+msgstr "Détail de l'audit"
+
+#: templates/audits/projectaudit/detail.html:11
+msgid "Criteria"
+msgstr "Critères"
+
+#: templates/audits/projectaudit/detail.html:19
+msgid "No criteria yet."
+msgstr "Aucun critère pour le moment."
+
+#: templates/audits/projectaudit/new.html:4
+msgid "New Audit - Cosqua"
+msgstr "Nouvel audit - Cosqua"
+
+#: templates/audits/projectaudit/new.html:8
+msgid "New Audit"
+msgstr "Nouvel audit"
+
+#: templates/audits/projectaudit/new.html:12
+msgid "Create Audit"
+msgstr "Créer un audit"
+
+#: templates/audits/projectauditcriterion/detail.html:4
+msgid "Criterion Detail - Cosqua"
+msgstr "Détail du critère - Cosqua"
+
+#: templates/audits/projectauditcriterion/detail.html:10
+msgid "Status:"
+msgstr "Statut :"
+
+#: templates/audits/projectauditcriterion/detail.html:14
+msgid "Loading comments..."
+msgstr "Chargement des commentaires..."
+
+#: templates/audits/projectauditcriterion/detail.html:18
+msgid "Discussion with AI"
+msgstr "Discussion avec l'IA"
+
+#: templates/audits/projectauditcriterion/detail.html:21
+msgid "Loading prompts..."
+msgstr "Chargement des invites..."
+
+#: templates/audits/projectauditcriterion/detail.html:25
+msgid "Prompts history"
+msgstr "Historique des invites"
+
+#: templates/audits/projectauditcriterion/detail.html:30
+msgid "No prompts yet."
+msgstr "Aucune invite pour le moment."
 
 #: templates/audits/prompt.html:30
 msgid "No messages yet. Start a conversation by asking a question below."
@@ -424,7 +444,7 @@ msgstr "Mentions légales"
 msgid "Select Organization"
 msgstr "Sélectionner une organisation"
 
-#: templates/organization/components/dropdown_choose_organization.html:34
+#: templates/organization/components/dropdown_choose_organization.html:36
 #: templates/organization/organization_create.html:5
 #: templates/organization/organization_create.html:28
 msgid "Create Organization"
@@ -440,7 +460,8 @@ msgid ""
 "organization helps you organize your projects and collaborate with your team."
 msgstr ""
 "Bienvenue ! Pour commencer, veuillez créer votre première organisation. Une "
-"organisation vous aide à organiser vos projets et à collaborer avec votre équipe."
+"organisation vous aide à organiser vos projets et à collaborer avec votre "
+"équipe."
 
 #: templates/organization/organization_create.html:19
 #, fuzzy
@@ -537,6 +558,14 @@ msgstr "Connexion annulée"
 #, python-format
 msgid "Sign up with %(provider_name)s"
 msgstr "S'inscrire avec %(provider_name)s"
+
+#~ msgid "Audit deleted successfully"
+#~ msgstr "Audit supprimé avec succès"
+
+#~ msgid "No organization is configured. Please contact an administrator."
+#~ msgstr ""
+#~ "Aucune organisation n'est configurée. Veuillez contacter un "
+#~ "administrateur."
 
 #~ msgid "Forgot Password?"
 #~ msgstr "Mot de passe oublié ?"
