@@ -43,3 +43,19 @@ class ProjectForm(forms.ModelForm):
             "name": "",
             "description": "",
         }
+
+
+class ResourceForm(forms.ModelForm):
+    class Meta:
+        from organization.models.organization import Resource
+
+        model = Resource
+        fields = ["name", "type", "url", "description"]
+        widgets = {
+            "url": forms.URLInput(
+                attrs={
+                    "class": "w-full max-w-[600px]",
+                    "placeholder": "https://example.com",
+                }
+            ),
+        }

@@ -183,7 +183,7 @@ The design system in `base.css` contains all reusable components and patterns:
 - **UI components**: `.btn`, `.btn-primary`, `.btn-secondary`, `.card`
 - **Form elements**: `input`, `label`, `.helptext`
 - **Typography**: `h1`, `h2`, `h3`, `a`
-- **App-specific components**: `.project-tile`, `.project-tiles`, `.tile-even`, `.tile-odd`
+- **App-specific components**: `.tile`, `.tiles`, `.tile-even`, `.tile-odd`
 
 **Example from `base.css`:**
 
@@ -192,7 +192,7 @@ The design system in `base.css` contains all reusable components and patterns:
   @apply bg-primary text-primary_text border-border hover:bg-primary_hover hover:text-primary_hover_text transition;
 }
 
-.project-tile {
+.tile {
   @apply block p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow no-underline text-content;
 }
 ```
@@ -239,8 +239,8 @@ Always prefer design system classes from `base.css`:
 
 <!-- Use design system layout -->
 <main class="content">
-    <div class="project-tiles">
-        <a href="..." class="project-tile tile-even">
+    <div class="tiles">
+        <a href="..." class="tile tile-even">
             <!-- Tile content -->
         </a>
     </div>
@@ -310,8 +310,8 @@ Use Tailwind utility classes directly only for:
 </div>
 
 <!-- Use design system project tiles -->
-<div class="project-tiles">
-    <a href="..." class="project-tile tile-even">
+<div class="tiles">
+    <a href="..." class="tile tile-even">
         <h2>Project Name</h2>
     </a>
 </div>
@@ -497,10 +497,10 @@ This example demonstrates proper use of the design system and Tailwind utilities
         </div>
     </form>
 
-    <!-- project-tiles and project-tile are design system classes from base.css -->
-    <div class="project-tiles">
+    <!-- tiles and tile are design system classes from base.css -->
+    <div class="tiles">
         {% for project in object_list %}
-            <a href="{% url 'audits:project_detail' project.slug %}" class="project-tile {% cycle 'tile-even' 'tile-odd' %}">
+            <a href="{% url 'audits:project_detail' project.slug %}" class="tile {% cycle 'tile-even' 'tile-odd' %}">
                 <!-- h2 uses design system styles from base.css -->
                 <h2>{{ project.name }}</h2>
                 {% if project.description %}
@@ -508,8 +508,8 @@ This example demonstrates proper use of the design system and Tailwind utilities
                 {% endif %}
             </a>
         {% empty %}
-            <!-- project-tile-empty is a design system class from base.css -->
-            <div class="project-tile project-tile-empty">
+            <!-- tile-empty is a design system class from base.css -->
+            <div class="tile tile-empty">
                 <p>
                     {% if request.GET.search %}
                         {% translate "No projects found matching your search." %}
@@ -525,7 +525,7 @@ This example demonstrates proper use of the design system and Tailwind utilities
 
 **Key points:**
 
-- ✅ Design system classes (`btn`, `btn-primary`, `project-tile`, `project-tiles`) come from `base.css`
+- ✅ Design system classes (`btn`, `btn-primary`, `tile`, `tiles`) come from `base.css`
 - ✅ Tailwind utilities (`mb-6`, `flex`, `gap-2`) are used only for page-specific layout
 - ✅ All colors are referenced from `tailwind.config.js` via design system classes
 - ✅ Typography (`h1`, `h2`) uses design system styles from `base.css`

@@ -1,13 +1,13 @@
 {% extends 'layout/base-logged.html' %}
-{% load i18n %}
+{% load i18n markdown_filters %}
 
 {% block title %}{% translate "Criterion Detail - Cosqua" %}{% endblock %}
 
 {% block content %}
 <div>
     <h1>{{ criterion.criterion.name }}</h1>
-    <p>{{ criterion.criterion.description }}</p>
     <p>{% translate "Status:" %} {{ criterion.get_status_display }}</p>
+    <div class="prose prose-sm max-w-none">{{ criterion.criterion.description|markdown }}</div>
 
     <turbo-frame id="comments_frame" src="{% url 'audits:comments_list' project.slug audit.id criterion.id %}">
         <div class="flex items-center justify-center py-8">
