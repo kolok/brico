@@ -61,9 +61,9 @@ jobs:
       postgres:
         image: postgis/postgis:15-3.3-alpine
         env:
-          POSTGRES_USER: brico
-          POSTGRES_PASSWORD: brico # pragma: allowlist secret
-          POSTGRES_DB: brico
+          POSTGRES_USER: cosqua
+          POSTGRES_PASSWORD: cosqua # pragma: allowlist secret
+          POSTGRES_DB: cosqua
         options: >-
           --health-cmd pg_isready
           --health-interval 1s

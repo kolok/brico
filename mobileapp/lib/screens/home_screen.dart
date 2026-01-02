@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Brico'),
+        title: const Text('Cosqua'),
         actions: [
           TextButton.icon(
             icon: const Icon(Icons.logout, color: Colors.blue),
