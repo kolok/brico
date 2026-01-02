@@ -6,7 +6,16 @@
 {% block content %}
 <div>
     <h1>{{ criterion.criterion.name }}</h1>
-    <p>{% translate "Status:" %} {{ criterion.get_status_display }}</p>
+    <div data-controller="auto-submit" class="mb-4">
+        <form
+            method="post"
+            action="{% url 'audits:projectauditcriterion_detail' project.slug audit.id criterion.id %}"
+            data-action="change->auto-submit#handleChange"
+        >
+            {% csrf_token %}
+            {{ form.status }}
+        </form>
+    </div>
     <div class="markdown-zone">{{ criterion.criterion.description|markdown }}</div>
 
     <turbo-frame id="comments_frame" src="{% url 'audits:comments_list' project.slug audit.id criterion.id %}">
