@@ -31,7 +31,20 @@ class CommentForm(forms.ModelForm):
 
 
 class PromptForm(forms.Form):
-    message = forms.CharField(required=True)
+    message = forms.CharField(
+        label="",
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                "class": "w-full",
+                "rows": 2,
+                "placeholder": (
+                    "Ask a question or leave it empty to get a general answer about"
+                    " this criterion…"
+                ),
+            }
+        ),
+    )
     session_id = forms.UUIDField(widget=forms.HiddenInput(), initial=uuid.uuid4())
 
 

@@ -394,15 +394,15 @@ msgstr "Discussion avec l'IA"
 
 #: templates/audits/projectauditcriterion/detail.html:21
 msgid "Loading prompts..."
-msgstr "Chargement des invites..."
+msgstr "Chargement des discussions..."
 
 #: templates/audits/projectauditcriterion/detail.html:25
 msgid "Prompts history"
-msgstr "Historique des invites"
+msgstr "Historique des discussions"
 
 #: templates/audits/projectauditcriterion/detail.html:30
 msgid "No prompts yet."
-msgstr "Aucune invite pour le moment."
+msgstr "Aucune discussion pour le moment."
 
 #: templates/audits/prompt.html:30
 msgid "No messages yet. Start a conversation by asking a question below."
