@@ -20,7 +20,7 @@ class TestActiveNavMiddleware:
     def test_sets_projects_active_for_projects_path(self, rf):
         """Test that 'projects' is set as active for /audits/projects path."""
         middleware = ActiveNavMiddleware(lambda request: None)
-        request = rf.get("/audits/projects/")
+        request = rf.get("/audits/project/")
 
         middleware(request)
 
@@ -38,7 +38,7 @@ class TestActiveNavMiddleware:
     def test_sets_both_active_for_nested_path(self, rf):
         """Test that both can be active for nested paths."""
         middleware = ActiveNavMiddleware(lambda request: None)
-        request = rf.get("/audits/projects/123/")
+        request = rf.get("/audits/project/123/")
 
         middleware(request)
 

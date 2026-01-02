@@ -5,7 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, FormView, ListView
+from django.views.generic import DeleteView, DetailView, FormView, ListView
 from organization.mixins import OrganizationPermissionMixin
 from organization.models.organization import Organization, Project
 
@@ -76,3 +76,13 @@ class ProjectFormView(LoginRequiredMixin, ProjectQuerysetMixin, FormView):
         project.save()
         self.slug = project.slug
         return super().form_valid(form)
+
+
+class DeleteProjectView(LoginRequiredMixin, ProjectQuerysetMixin, DeleteView):
+    """Delete a project."""
+
+    model = Project
+    template_name = "audits/project/confirm_delete.html"
+
+    def get_success_url(self):
+        return reverse_lazy("audits:project_list")

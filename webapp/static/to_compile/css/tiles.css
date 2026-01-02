@@ -1,9 +1,9 @@
 /* PROJECT TILES */
-.project-tiles {
+.tiles {
   @apply space-y-4;
 }
 
-.project-tile {
+.tile {
   @apply block p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow no-underline text-content;
 }
 
@@ -15,6 +15,6 @@
   @apply bg-odd;
 }
 
-.project-tile-empty {
+.tile-empty {
   @apply text-center italic bg-odd;
 }

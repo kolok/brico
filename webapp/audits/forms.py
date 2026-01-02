@@ -31,7 +31,20 @@ class CommentForm(forms.ModelForm):
 
 
 class PromptForm(forms.Form):
-    message = forms.CharField(required=True)
+    message = forms.CharField(
+        label="",
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                "class": "w-full",
+                "rows": 2,
+                "placeholder": (
+                    "Ask a question or leave it empty to get a general answer about"
+                    " this criterion…"
+                ),
+            }
+        ),
+    )
     session_id = forms.UUIDField(widget=forms.HiddenInput(), initial=uuid.uuid4())
 
 
@@ -43,3 +56,27 @@ class ProjectForm(forms.ModelForm):
             "name": "",
             "description": "",
         }
+
+
+class ResourceForm(forms.ModelForm):
+    class Meta:
+        from organization.models.organization import Resource
+
+        model = Resource
+        fields = ["name", "type", "url", "description"]
+        widgets = {
+            "url": forms.URLInput(
+                attrs={
+                    "class": "w-full max-w-[600px]",
+                    "placeholder": "https://example.com",
+                }
+            ),
+        }
+
+
+class StatusUpdateForm(forms.ModelForm):
+    class Meta:
+        from audits.models.audit import ProjectAuditCriterion
+
+        model = ProjectAuditCriterion
+        fields = ["status"]

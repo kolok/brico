@@ -1,0 +1,3 @@
+.markdown-zone {
+  @apply bg-white border border-border rounded-lg p-4 mt-2 mb-4;
+}
