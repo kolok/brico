@@ -14,12 +14,10 @@
         <turbo-frame id="comment_form_frame">
         </turbo-frame>
 
-        <div class="space-y-4 mt-4">
-            {% for comment in comments %}
-                {% include "audits/comment/item.html" with comment=comment project=project audit=audit criterion=criterion %}
-            {% empty %}
-                <p class="text-gray-500 italic">{% translate "No comments yet." %}</p>
-            {% endfor %}
-        </div>
+        {% for comment in comments %}
+            {% include "audits/comment/item.html" with comment=comment project=project audit=audit criterion=criterion %}
+        {% empty %}
+            <p class="block block-info">{% translate "No comments yet." %}</p>
+        {% endfor %}
     </div>
 </turbo-frame>

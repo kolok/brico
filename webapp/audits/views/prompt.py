@@ -201,12 +201,23 @@ class PromptFormView(
             )
 
             # Save the updated history to the JSON prompt
-            prompt.prompt = {"messages": messages_history}
-            prompt.save()
 
         except Exception as err:
             # In case of error, continue anyway to not block the user
             # The error could be logged here if necessary
             logger.error("Something goes wrong: %s", err, exc_info=True)
+            error_message = f"""## An error occurred:
+
+{str(err)}
+            """
+            messages_history.extend(
+                [
+                    {"role": "user", "content": user_message},
+                    {"role": "error", "content": error_message},
+                ]
+            )
+        finally:
+            prompt.prompt = {"messages": messages_history}
+            prompt.save()
 
         return super().form_valid(form)

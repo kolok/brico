@@ -2,7 +2,7 @@
 
 {% if object %}
     <turbo-frame id="comment_{{ object.id }}">
-        <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+        <div class="block block-active">
             <h3 class="text-lg font-semibold mb-3">
                 {% translate "Edit Comment" %}
             </h3>
@@ -27,7 +27,7 @@
     </turbo-frame>
 {% else %}
     <turbo-frame id="comment_form_frame">
-        <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+        <div class="block block-active">
             <h3 class="text-lg font-semibold mb-3">
                 {% translate "New Comment" %}
             </h3>

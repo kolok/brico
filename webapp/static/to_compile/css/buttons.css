@@ -16,3 +16,8 @@ button,
 .btn-danger {
   @apply bg-danger text-danger_text border-border hover:bg-danger_hover hover:text-danger_hover_text transition;
 }
+
+button:disabled,
+.btn:disabled {
+  @apply bg-gray-200 border-gray-200 cursor-not-allowed;
+}
