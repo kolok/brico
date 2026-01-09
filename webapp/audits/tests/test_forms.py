@@ -121,23 +121,23 @@ class TestPromptForm:
         )
         assert form.is_valid()
 
-    def test_form_invalid_without_message(self):
-        """Test that the form is invalid without a message."""
-        form = PromptForm(data={})
-        assert not form.is_valid()
-        assert "message" in form.errors
+    def test_form_valid_without_message(self):
+        """Test that the form is valid without a message."""
+        session_id = uuid.uuid4()
+        form = PromptForm(data={"session_id": str(session_id)})
+        assert form.is_valid()
 
-    def test_form_invalid_with_empty_message(self):
-        """Test that the form is invalid with an empty message."""
-        form = PromptForm(data={"message": ""})
-        assert not form.is_valid()
-        assert "message" in form.errors
+    def test_form_valid_with_empty_message(self):
+        """Test that the form is valid with an empty message."""
+        session_id = uuid.uuid4()
+        form = PromptForm(data={"message": "", "session_id": str(session_id)})
+        assert form.is_valid()
 
-    def test_form_invalid_with_whitespace_only_message(self):
-        """Test that the form is invalid with a message containing only whitespace."""
-        form = PromptForm(data={"message": "   "})
-        assert not form.is_valid()
-        assert "message" in form.errors
+    def test_form_valid_with_whitespace_only_message(self):
+        """Test that the form is valid with a message containing only whitespace."""
+        session_id = uuid.uuid4()
+        form = PromptForm(data={"message": "   ", "session_id": str(session_id)})
+        assert form.is_valid()
 
     def test_form_invalid_with_invalid_session_id(self):
         """Test that the form is invalid with an invalid session_id."""

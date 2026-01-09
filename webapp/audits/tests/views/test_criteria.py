@@ -460,6 +460,7 @@ class TestCriterionStatusUpdateView:
             ProjectAuditCriterion.ProjectAuditCriterionStatus.PARTIALLY_COMPLIANT,
             ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
             ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+            ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_APPLICABLE,
         ]
 
         for status in statuses:

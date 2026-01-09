@@ -28,7 +28,7 @@ class CommentForm(forms.ModelForm):
 class PromptForm(forms.Form):
     message = forms.CharField(
         label="",
-        required=True,
+        required=False,
         widget=forms.Textarea(
             attrs={
                 "class": "w-full",
