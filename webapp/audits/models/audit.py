@@ -97,7 +97,11 @@ class ProjectAuditCriterion(TimestampedModel, models.Model):
         max_length=255,
         choices=ProjectAuditCriterionStatus.choices,
         default=ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        verbose_name=_("Status"),
     )
+
+    def __str__(self):
+        return f"{self.criterion.public_id} - {self.criterion.name}"
 
 
 class Comment(TimestampedModel, models.Model):

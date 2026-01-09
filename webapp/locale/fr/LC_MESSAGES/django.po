@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Cosqua 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-09 07:36+0000\n"
+"POT-Creation-Date: 2026-01-09 09:33+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -22,17 +22,17 @@ msgstr ""
 msgid "Add a comment…"
 msgstr "Ajouter un commentaire…"
 
-#: audits/forms.py:27 audits/models/audit.py:114
-msgid "Comment"
-msgstr "Commentaire"
-
-#: audits/forms.py:40
+#: audits/forms.py:37
 msgid ""
 "Ask a question or leave it empty to get a general answer about this "
 "criterion…"
 msgstr ""
 "Posez une question ou laissez vide pour obtenir une réponse générale sur ce "
 "critère…"
+
+#: audits/forms.py:74
+msgid "Invalid status"
+msgstr "Statut invalide"
 
 #: audits/models/audit.py:83
 msgid "⚪️ Not Handled Yet"
@@ -54,6 +54,16 @@ msgstr "🟢 Conforme"
 msgid "❌ Not Applicable"
 msgstr "❌ Non applicable"
 
+#: audits/models/audit.py:100
+#, fuzzy
+#| msgid "Status:"
+msgid "Status"
+msgstr "Statut"
+
+#: audits/models/audit.py:118
+msgid "Comment"
+msgstr "Commentaire"
+
 #: audits/views/comment.py:109
 msgid "Comment created successfully"
 msgstr "Commentaire créé avec succès"
@@ -62,9 +72,15 @@ msgstr "Commentaire créé avec succès"
 msgid "Comment updated successfully"
 msgstr "Commentaire mis à jour avec succès"
 
-#: audits/views/projectaudit.py:83
+#: audits/views/projectaudit.py:91
 msgid "Audit created successfully"
 msgstr "Audit créé avec succès"
+
+#: audits/views/projectauditcriterion.py:62
+#, fuzzy
+#| msgid "Comment updated successfully"
+msgid "Status updated successfully"
+msgstr "Statut mis à jour avec succès"
 
 #: audits/views/resource.py:70
 msgid "Resource created successfully"
@@ -260,7 +276,7 @@ msgid "Delete"
 msgstr "Supprimer"
 
 #: templates/audits/comment/confirm_delete.html:30
-#: templates/audits/comment/form.html:30 templates/audits/comment/form.html:64
+#: templates/audits/comment/form.html:22 templates/audits/comment/form.html:48
 #: templates/audits/project/confirm_delete.html:33
 #: templates/audits/projectaudit/confirm_delete.html:13
 #: templates/audits/resource/confirm_delete.html:21
@@ -272,15 +288,15 @@ msgstr "Annuler"
 msgid "Edit Comment"
 msgstr "Modifier le commentaire"
 
-#: templates/audits/comment/form.html:25
+#: templates/audits/comment/form.html:17
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: templates/audits/comment/form.html:40
+#: templates/audits/comment/form.html:32
 msgid "New Comment"
 msgstr "Nouveau commentaire"
 
-#: templates/audits/comment/form.html:59
+#: templates/audits/comment/form.html:43
 msgid "Create"
 msgstr "Créer"
 
@@ -310,16 +326,16 @@ msgstr "Envoyer"
 #, fuzzy
 #| msgid "Delete Project Audit - Cosqua"
 msgid "Delete Project - Cosqua"
-msgstr "Supprimer l'audit de projet - Cosqua"
+msgstr "Supprimer le projet - Cosqua"
 
 #: templates/audits/project/confirm_delete.html:8
 #: templates/audits/project/confirm_delete.html:30
 #: templates/audits/project/detail.html:72
 #: templates/audits/project/detail.html:78
 #, fuzzy
-#| msgid "Delete Project Audit"
+#| msgid "Delete Project"
 msgid "Delete Project"
-msgstr "Supprimer l'audit de projet"
+msgstr "Supprimer le projet"
 
 #: templates/audits/project/confirm_delete.html:11
 #: templates/audits/project/detail.html:69
@@ -404,8 +420,8 @@ msgid ""
 "audits and resources associated with this project will also be deleted."
 msgstr ""
 "Une fois que vous supprimez un projet, il n'y a pas de retour en arrière "
-"possible. Veuillez être certain. Tous les audits et ressources associés à "
-"ce projet seront également supprimés."
+"possible. Veuillez être certain. Tous les audits et ressources associés à ce "
+"projet seront également supprimés."
 
 #: templates/audits/project/list.html:4
 msgid "My Projects - Cosqua"
@@ -416,8 +432,8 @@ msgid "My Projects"
 msgstr "Mes projets"
 
 #: templates/audits/project/list.html:15
-msgid "Search by project name..."
-msgstr "Chercher par le nom du projet..."
+msgid "Search by project name…"
+msgstr "Chercher par le nom du projet…"
 
 #: templates/audits/project/list.html:21
 msgid "Search"
@@ -517,23 +533,33 @@ msgstr "Créer un audit"
 msgid "Criterion Detail - Cosqua"
 msgstr "Détail du critère - Cosqua"
 
-#: templates/audits/projectauditcriterion/detail.html:23
-msgid "Loading comments..."
-msgstr "Chargement des commentaires..."
+#: templates/audits/projectauditcriterion/detail.html:10
+#, fuzzy
+#| msgid "Back to login"
+msgid "Back to audit"
+msgstr "Retour à la connexion"
 
-#: templates/audits/projectauditcriterion/detail.html:27
+#: templates/audits/projectauditcriterion/detail.html:21
+msgid "Updating…"
+msgstr "Mise à jour…"
+
+#: templates/audits/projectauditcriterion/detail.html:29
+msgid "Loading comments…"
+msgstr "Chargement des commentaires…"
+
+#: templates/audits/projectauditcriterion/detail.html:33
 msgid "Discussion with AI"
 msgstr "Discussion avec l'IA"
 
-#: templates/audits/projectauditcriterion/detail.html:30
-msgid "Loading prompts..."
-msgstr "Chargement des discussions..."
+#: templates/audits/projectauditcriterion/detail.html:36
+msgid "Loading prompts…"
+msgstr "Chargement des discussions…"
 
-#: templates/audits/projectauditcriterion/detail.html:34
+#: templates/audits/projectauditcriterion/detail.html:40
 msgid "Prompts history"
 msgstr "Historique des discussions"
 
-#: templates/audits/projectauditcriterion/detail.html:39
+#: templates/audits/projectauditcriterion/detail.html:45
 msgid "No prompts yet."
 msgstr "Aucune discussion pour le moment."
 
@@ -804,9 +830,6 @@ msgstr "S'inscrire avec %(provider_name)s"
 
 #~ msgid "Audit Detail"
 #~ msgstr "Détail de l'audit"
-
-#~ msgid "Status:"
-#~ msgstr "Statut :"
 
 #~ msgid "Signup"
 #~ msgstr "Inscription"

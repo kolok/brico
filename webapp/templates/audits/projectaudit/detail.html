@@ -9,9 +9,9 @@
     <p>{{ audit.audit_library.description }}</p>
     <h2>{% translate "Criteria" %}</h2>
     <div class="tiles">
-        {% for criterion in audit.project_audit_criteria.all %}
+        {% for criterion in audit_criteria %}
             <a href="{% url 'audits:projectauditcriterion_detail' project.slug audit.id criterion.id %}" class="tile {% cycle 'tile-even' 'tile-odd' %}">
-                <h2>{{ criterion.criterion.name }}</h2>
+                <h2>{{ criterion }}</h2>
                 {% if criterion.criterion.description %}
                     <p>{{ criterion.criterion.description|truncatewords:10 }}</p>
                 {% endif %}

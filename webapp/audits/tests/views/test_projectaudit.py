@@ -107,6 +107,103 @@ class TestProjectAuditDetailView:
         assert response.context["audit"] == audit
         assert response.context["project"] == project
 
+    def test_projectaudit_detail_view_criteria_natural_sort(self, client, admin_group):
+        """Test that audit criteria are sorted using natural sort order."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project = ProjectFactory(organization=organization)
+        audit_library = AuditLibraryFactory(organization=organization)
+        audit = ProjectAuditFactory(project=project, audit_library=audit_library)
+
+        # Create criteria with public_ids that test natural sorting:
+        # - Decimal numbers: 4.2 should come before 4.11
+        # - Decimal numbers: 1.1 should come before 10.1
+        # - Alphanumeric: CRI-001 should sort alphabetically
+        criterion_4_11 = CriterionFactory(
+            audit_library=audit_library, public_id="4.11", name="Criterion 4.11"
+        )
+        criterion_4_2 = CriterionFactory(
+            audit_library=audit_library, public_id="4.2", name="Criterion 4.2"
+        )
+        criterion_10_1 = CriterionFactory(
+            audit_library=audit_library, public_id="10.1", name="Criterion 10.1"
+        )
+        criterion_1_1 = CriterionFactory(
+            audit_library=audit_library, public_id="1.1", name="Criterion 1.1"
+        )
+        criterion_alpha = CriterionFactory(
+            audit_library=audit_library, public_id="CRI-001", name="Criterion Alpha"
+        )
+
+        # Create ProjectAuditCriterion instances
+        ProjectAuditCriterion.objects.create(
+            project_audit=audit, criterion=criterion_4_11
+        )
+        ProjectAuditCriterion.objects.create(
+            project_audit=audit, criterion=criterion_4_2
+        )
+        ProjectAuditCriterion.objects.create(
+            project_audit=audit, criterion=criterion_10_1
+        )
+        ProjectAuditCriterion.objects.create(
+            project_audit=audit, criterion=criterion_1_1
+        )
+        ProjectAuditCriterion.objects.create(
+            project_audit=audit, criterion=criterion_alpha
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_detail",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.get(url)
+
+        assert response.status_code == 200
+        audit_criteria = response.context["audit_criteria"]
+
+        # Extract public_ids in order
+        public_ids = [criterion.criterion.public_id for criterion in audit_criteria]
+
+        # Verify natural sort order by checking relative positions:
+        # - Decimal numbers sorted numerically: 1.1 < 4.2 < 4.11 < 10.1
+        # - Alphanumeric sorted alphabetically: CRI-001
+        # Note: In Python, floats sort before strings, so decimals come before
+        # alphanumeric
+
+        # Find indices
+        idx_1_1 = public_ids.index("1.1")
+        idx_4_2 = public_ids.index("4.2")
+        idx_4_11 = public_ids.index("4.11")
+        idx_10_1 = public_ids.index("10.1")
+        idx_cri = public_ids.index("CRI-001")
+
+        # Verify decimal ordering: 1.1 < 4.2 < 4.11 < 10.1
+        assert (
+            idx_1_1 < idx_4_2
+        ), f"Expected '1.1' before '4.2', got order: {public_ids}"
+        assert (
+            idx_4_2 < idx_4_11
+        ), f"Expected '4.2' before '4.11', got order: {public_ids}"
+        assert (
+            idx_4_11 < idx_10_1
+        ), f"Expected '4.11' before '10.1', got order: {public_ids}"
+
+        # Verify all decimals come before alphanumeric
+        assert (
+            idx_cri > idx_1_1
+            and idx_cri > idx_4_2
+            and idx_cri > idx_4_11
+            and idx_cri > idx_10_1
+        ), f"Expected all decimals before 'CRI-001', got order: {public_ids}"
+
 
 @pytest.mark.django_db
 class TestProjectAuditDetailViewPermissions:

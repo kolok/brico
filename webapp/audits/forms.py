@@ -23,9 +23,6 @@ class CommentForm(forms.ModelForm):
                 }
             ),
         }
-        labels = {
-            "comment": _("Comment"),
-        }
 
 
 class PromptForm(forms.Form):
@@ -70,3 +67,9 @@ class StatusUpdateForm(forms.ModelForm):
     class Meta:
         model = ProjectAuditCriterion
         fields = ["status"]
+
+    def clean_status(self):
+        status = self.cleaned_data.get("status")
+        if status not in ProjectAuditCriterion.ProjectAuditCriterionStatus.values:
+            raise forms.ValidationError(_("Invalid status"))
+        return status

@@ -29,7 +29,7 @@ templates/
 │   │   └── prompt_form.html
 │   ├── project_list.html
 │   ├── project_detail.html
-│   └── ...
+│   └── …
 ├── account/             # Django-allauth templates
 └── socialaccount/       # Social auth templates
 ```
@@ -155,7 +155,7 @@ Always load i18n at the top of templates that contain user-facing text:
 #### Translation in Attributes
 
 ```django
-<input placeholder="{% translate 'Search by project name...' %}">
+<input placeholder="{% translate 'Search by project name…' %}">
 ```
 
 ### Best Practices for i18n
@@ -209,7 +209,7 @@ theme: {
     primary: "#2563eb",
     primary_hover: "#1d4ed8",
     primary_text: "white",
-    // ... more colors
+    // … more colors
   },
 }
 ```
@@ -230,7 +230,7 @@ Always prefer design system classes from `base.css`:
 ```django
 <!-- Use design system classes -->
 <button class="btn btn-primary">{% translate "Submit" %}</button>
-<a href="..." class="btn btn-secondary">{% translate "Cancel" %}</a>
+<a href="…" class="btn btn-secondary">{% translate "Cancel" %}</a>
 
 <!-- Use design system components -->
 <div class="card">
@@ -240,7 +240,7 @@ Always prefer design system classes from `base.css`:
 <!-- Use design system layout -->
 <main class="content">
     <div class="tiles">
-        <a href="..." class="tile tile-even">
+        <a href="…" class="tile tile-even">
             <!-- Tile content -->
         </a>
     </div>
@@ -284,7 +284,7 @@ Use Tailwind utility classes directly only for:
 <button class="btn btn-primary">{% translate "Submit" %}</button>
 
 <!-- Secondary button (from design system) -->
-<a href="..." class="btn btn-secondary">{% translate "Cancel" %}</a>
+<a href="…" class="btn btn-secondary">{% translate "Cancel" %}</a>
 ```
 
 #### Forms
@@ -311,7 +311,7 @@ Use Tailwind utility classes directly only for:
 
 <!-- Use design system project tiles -->
 <div class="tiles">
-    <a href="..." class="tile tile-even">
+    <a href="…" class="tile tile-even">
         <h2>Project Name</h2>
     </a>
 </div>
@@ -482,7 +482,7 @@ This example demonstrates proper use of the design system and Tailwind utilities
                 type="text"
                 name="search"
                 value="{{ request.GET.search }}"
-                placeholder="{% translate 'Search by project name...' %}"
+                placeholder="{% translate 'Search by project name…' %}"
             >
             <!-- btn and btn-primary are design system classes from base.css -->
             <button type="submit" class="btn btn-primary">

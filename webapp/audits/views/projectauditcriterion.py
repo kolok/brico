@@ -1,10 +1,12 @@
 from audits.forms import StatusUpdateForm
 from audits.models.audit import ProjectAuditCriterion
 from audits.views.mixin import AuditChildrenMixin
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import UpdateView
 from organization.mixins import OrganizationPermissionMixin
 
@@ -55,3 +57,7 @@ class CriterionDetailView(
                 "pk": self.get_object().id,
             },
         )
+
+    def form_valid(self, form):
+        messages.success(self.request, _("Status updated successfully"))
+        return super().form_valid(form)
