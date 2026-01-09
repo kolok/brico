@@ -7,25 +7,78 @@
 <div>
     <h1>{{ project.name }}</h1>
     <p>{{ project.description }}</p>
-    <h2>{% translate "Resources" %}</h2>
-    <ul>
-        {% for resource in project.resources.all %}
-            <li>{{ resource.name }}</li>
-        {% empty %}
-            <li>{% translate "No resources yet." %}</li>
-        {% endfor %}
-    </ul>
     <h2>{% translate "Audits" %}</h2>
-    <ul>
+    <div class="tiles">
         {% for audit in project.audits.all %}
-            <li>{{ audit.audit_library.name }} →
-                <a href="{% url 'audits:projectaudit_detail' project.slug audit.id %}">edit</a>
-                <a href="{% url 'audits:projectaudit_delete' project.slug audit.id %}">delete</a>
-            </li>
+            <div class="tile {% cycle 'tile-even' 'tile-odd' %}">
+                <h2>{{ audit.audit_library.name }}</h2>
+                {% if audit.audit_library.description %}
+                    <p>{{ audit.audit_library.description|truncatewords:10 }}</p>
+                {% endif %}
+                <div class="flex gap-2 mt-4">
+                    <a href="{% url 'audits:projectaudit_detail' project.slug audit.id %}" class="btn btn-primary">{% translate "Let's audit it" %}</a>
+                    <a href="{% url 'audits:projectaudit_delete' project.slug audit.id %}" class="btn btn-danger">{% translate "Delete" %}</a>
+                </div>
+            </div>
         {% empty %}
-            <li>{% translate "No audits yet." %}</li>
+            <div class="tile tile-empty">
+                <p>{% translate "No audits yet." %}</p>
+            </div>
         {% endfor %}
-    </ul>
-    <a class="btn btn-primary" href="{% url 'audits:projectaudit_new' project.slug %}">{% translate "Start Audit" %}</a>
+        <a href="{% url 'audits:projectaudit_new' project.slug %}" class="tile">
+            <h2>➕ {% translate "Start Audit" %}</h2>
+            <p>{% translate "Create a new audit for this project." %}</p>
+        </a>
+    </div>
+
+    <h2>{% translate "Resources" %}</h2>
+    <div class="tiles">
+        {% resetcycle %}
+        {% for resource in project.resources.all %}
+            <div class="tile {% cycle 'tile-even' 'tile-odd' %}">
+                <h2>{{ resource.name }}</h2>
+                {% if resource.description %}
+                    <p>{{ resource.description|truncatewords:10 }}</p>
+                {% endif %}
+                <p class="text-sm text-gray-600">{% translate "Type:" %} {{ resource.get_type_display }}</p>
+                {% if resource.url %}
+                    <p class="text-sm">
+                        <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800">
+                            {{ resource.url|truncatechars:50 }}
+                        </a>
+                    </p>
+                {% endif %}
+                <div class="flex gap-2 mt-4">
+                    <a href="{% url 'audits:resource_detail' project.slug resource.id %}" class="btn btn-primary">{% translate "View" %}</a>
+                    <a href="{% url 'audits:resource_edit' project.slug resource.id %}" class="btn btn-secondary">{% translate "Edit" %}</a>
+                    <a href="{% url 'audits:resource_delete' project.slug resource.id %}" class="btn btn-danger">{% translate "Delete" %}</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="tile tile-empty">
+                <p>{% translate "No resources yet." %}</p>
+            </div>
+        {% endfor %}
+        <a href="{% url 'audits:resource_new' project.slug %}" class="tile">
+            <h2>➕ {% translate "Add Resource" %}</h2>
+            <p>{% translate "Create a new resource for this project." %}</p>
+        </a>
+    </div>
+
+
+    <h2>{% translate "Danger Zone" %}</h2>
+    <div class="danger-zone  bg-white border border-red rounded-lg p-4 mb-4">
+        <h3>
+            {% translate "Delete Project" %}
+        </h3>
+        <p>
+            {% translate "Once you delete a project, there is no going back. Please be certain. All audits and resources associated with this project will also be deleted." %}
+        </p>
+        <a href="{% url 'audits:project_delete' project.slug %}" class="btn btn-danger">
+            {% translate "Delete Project" %}
+        </a>
+    </div>
 </div>
+
+
 {% endblock content %}

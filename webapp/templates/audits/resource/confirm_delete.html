@@ -1,0 +1,25 @@
+{% extends 'layout/base-logged.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Delete Resource - Cosqua" %}{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{% translate "Delete Resource" %}</h1>
+    <p>{% translate "Are you sure you want to delete this resource? This action cannot be undone." %}</p>
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4">
+        <h2 class="font-semibold">{{ resource.name }}</h2>
+        {% if resource.description %}
+            <p class="text-gray-600">{{ resource.description|truncatewords:10 }}</p>
+        {% endif %}
+        <p class="text-sm text-gray-500">{% translate "Type:" %} {{ resource.get_type_display }}</p>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="flex gap-2">
+            <button type="submit" class="btn btn-danger">{% translate "Delete" %}</button>
+            <a href="{% url 'audits:project_detail' project.slug %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+        </div>
+    </form>
+</div>
+{% endblock content %}

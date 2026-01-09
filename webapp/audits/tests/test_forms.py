@@ -1,8 +1,8 @@
 import uuid
 
 import pytest
-from audits.forms import CommentForm, NewAuditForm, PromptForm
-from audits.models.audit import Comment
+from audits.forms import CommentForm, NewAuditForm, PromptForm, StatusUpdateForm
+from audits.models.audit import Comment, ProjectAuditCriterion
 from audits.tests.factories import (
     AuditLibraryFactory,
     CommentFactory,
@@ -121,23 +121,23 @@ class TestPromptForm:
         )
         assert form.is_valid()
 
-    def test_form_invalid_without_message(self):
-        """Test that the form is invalid without a message."""
-        form = PromptForm(data={})
-        assert not form.is_valid()
-        assert "message" in form.errors
+    def test_form_valid_without_message(self):
+        """Test that the form is valid without a message."""
+        session_id = uuid.uuid4()
+        form = PromptForm(data={"session_id": str(session_id)})
+        assert form.is_valid()
 
-    def test_form_invalid_with_empty_message(self):
-        """Test that the form is invalid with an empty message."""
-        form = PromptForm(data={"message": ""})
-        assert not form.is_valid()
-        assert "message" in form.errors
+    def test_form_valid_with_empty_message(self):
+        """Test that the form is valid with an empty message."""
+        session_id = uuid.uuid4()
+        form = PromptForm(data={"message": "", "session_id": str(session_id)})
+        assert form.is_valid()
 
-    def test_form_invalid_with_whitespace_only_message(self):
-        """Test that the form is invalid with a message containing only whitespace."""
-        form = PromptForm(data={"message": "   "})
-        assert not form.is_valid()
-        assert "message" in form.errors
+    def test_form_valid_with_whitespace_only_message(self):
+        """Test that the form is valid with a message containing only whitespace."""
+        session_id = uuid.uuid4()
+        form = PromptForm(data={"message": "   ", "session_id": str(session_id)})
+        assert form.is_valid()
 
     def test_form_invalid_with_invalid_session_id(self):
         """Test that the form is invalid with an invalid session_id."""
@@ -167,3 +167,74 @@ class TestPromptForm:
         assert form.is_valid()
         assert form.cleaned_data["session_id"] == session_id
         assert form.cleaned_data["message"] == "Test message"
+
+
+STATUS_CLASS = ProjectAuditCriterion.ProjectAuditCriterionStatus
+
+
+@pytest.mark.django_db
+class TestStatusUpdateForm:
+    """Test the StatusUpdateForm."""
+
+    def test_form_has_status_field(self):
+        """Test that the form contains the status field."""
+        form = StatusUpdateForm()
+        assert "status" in form.fields
+        assert form.Meta.fields == ["status"]
+
+    def test_form_valid_with_valid_status_not_handled_yet(self):
+        """Test that the form is valid with NOT_HANDLED_YET status."""
+        form = StatusUpdateForm(data={"status": STATUS_CLASS.NOT_HANDLED_YET})
+        assert form.is_valid()
+
+    def test_form_valid_with_valid_status_not_compliant(self):
+        """Test that the form is valid with NOT_COMPLIANT status."""
+        form = StatusUpdateForm(data={"status": STATUS_CLASS.NOT_COMPLIANT})
+        assert form.is_valid()
+
+    def test_form_valid_with_valid_status_partially_compliant(self):
+        """Test that the form is valid with PARTIALLY_COMPLIANT status."""
+        form = StatusUpdateForm(data={"status": STATUS_CLASS.PARTIALLY_COMPLIANT})
+        assert form.is_valid()
+
+    def test_form_valid_with_valid_status_compliant(self):
+        """Test that the form is valid with COMPLIANT status."""
+        form = StatusUpdateForm(data={"status": STATUS_CLASS.COMPLIANT})
+        assert form.is_valid()
+
+    def test_form_valid_with_valid_status_not_applicable(self):
+        """Test that the form is valid with NOT_APPLICABLE status."""
+        form = StatusUpdateForm(data={"status": STATUS_CLASS.NOT_APPLICABLE})
+        assert form.is_valid()
+
+    def test_form_invalid_with_invalid_status(self):
+        """Test that the form is invalid with an invalid status."""
+        form = StatusUpdateForm(data={"status": "INVALID_STATUS"})
+        assert not form.is_valid()
+        assert "status" in form.errors
+
+    def test_form_invalid_with_empty_status(self):
+        """Test that the form is invalid without a status."""
+        form = StatusUpdateForm(data={})
+        assert not form.is_valid()
+        assert "status" in form.errors
+
+    def test_form_clean_status_validates_status(self):
+        """Test that clean_status method validates the status correctly."""
+        form = StatusUpdateForm(data={"status": STATUS_CLASS.COMPLIANT})
+        assert form.is_valid()
+        assert form.cleaned_data["status"] == STATUS_CLASS.COMPLIANT
+
+    def test_form_save_updates_instance_status(self):
+        """Test that the form save updates the instance status."""
+        project_audit_criterion = ProjectAuditCriterionFactory(
+            status=STATUS_CLASS.NOT_HANDLED_YET
+        )
+        form = StatusUpdateForm(
+            data={"status": STATUS_CLASS.COMPLIANT},
+            instance=project_audit_criterion,
+        )
+        assert form.is_valid()
+        updated_criterion = form.save()
+        assert updated_criterion.status == STATUS_CLASS.COMPLIANT
+        assert updated_criterion.pk == project_audit_criterion.pk

@@ -75,7 +75,7 @@ This file applies to **`webapp/` only**.
 ## Templating & UI rules
 
 - Prefer **Django templates + Turbo Frames** over custom JS.
-- Keep templates small and componentized via `templates/.../components/` when appropriate.
+- Keep templates small and componentized via `templates/…/components/` when appropriate.
 - If adding user-facing strings, make them translatable.
 
 ## Safety / repo hygiene

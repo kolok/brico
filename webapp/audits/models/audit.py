@@ -3,6 +3,7 @@ from uuid import uuid4
 from core.models.mixin import TimestampedModel
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 from organization.models.organization import Organization, Project
 
@@ -79,10 +80,11 @@ class ProjectAuditCriterion(TimestampedModel, models.Model):
     """Assessment of a specific criterion for a project audit."""
 
     class ProjectAuditCriterionStatus(models.TextChoices):
-        NOT_HANDLED_YET = "NOT_HANDLED_YET", "⚪️ Not Handled Yet"
-        NOT_COMPLIANT = "NOT_COMPLIANT", "🔴 Not Compliant"
-        PARTIALLY_COMPLIANT = "PARTIALLY_COMPLIANT", "🟡 Partially Compliant"
-        COMPLIANT = "COMPLIANT", "🟢 Compliant"
+        NOT_HANDLED_YET = "NOT_HANDLED_YET", _("⚪️ Not Handled Yet")
+        NOT_COMPLIANT = "NOT_COMPLIANT", _("🔴 Not Compliant")
+        PARTIALLY_COMPLIANT = "PARTIALLY_COMPLIANT", _("🟡 Partially Compliant")
+        COMPLIANT = "COMPLIANT", _("🟢 Compliant")
+        NOT_APPLICABLE = "NOT_APPLICABLE", _("❌ Not Applicable")
 
     id = models.AutoField(primary_key=True)
     project_audit = models.ForeignKey(
@@ -95,7 +97,11 @@ class ProjectAuditCriterion(TimestampedModel, models.Model):
         max_length=255,
         choices=ProjectAuditCriterionStatus.choices,
         default=ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        verbose_name=_("Status"),
     )
+
+    def __str__(self):
+        return f"{self.criterion.public_id} - {self.criterion.name}"
 
 
 class Comment(TimestampedModel, models.Model):
@@ -108,7 +114,9 @@ class Comment(TimestampedModel, models.Model):
     project_audit_criterion = models.ForeignKey(
         ProjectAuditCriterion, on_delete=models.CASCADE, related_name="comments"
     )
-    comment = models.TextField(blank=True, default="", null=False)
+    comment = models.TextField(
+        blank=True, default="", null=False, verbose_name=_("Comment")
+    )
 
 
 class Prompt(TimestampedModel, models.Model):

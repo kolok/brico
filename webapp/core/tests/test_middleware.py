@@ -6,6 +6,7 @@ from core.middleware import (
     OrganizationMiddleware,
 )
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from organization.tests.factories import (
     OrganizationFactory,
     OrganizationMemberFactory,
@@ -20,7 +21,7 @@ class TestActiveNavMiddleware:
     def test_sets_projects_active_for_projects_path(self, rf):
         """Test that 'projects' is set as active for /audits/projects path."""
         middleware = ActiveNavMiddleware(lambda request: None)
-        request = rf.get("/audits/projects/")
+        request = rf.get("/audits/project/")
 
         middleware(request)
 
@@ -38,7 +39,7 @@ class TestActiveNavMiddleware:
     def test_sets_both_active_for_nested_path(self, rf):
         """Test that both can be active for nested paths."""
         middleware = ActiveNavMiddleware(lambda request: None)
-        request = rf.get("/audits/projects/123/")
+        request = rf.get("/audits/project/123/")
 
         middleware(request)
 
@@ -155,7 +156,6 @@ class TestOrganizationMiddleware:
 
     def test_does_not_process_for_unauthenticated_user(self, rf):
         """Test that middleware does not process for unauthenticated users."""
-        from django.contrib.auth.models import AnonymousUser
 
         request = rf.get("/")
         request.user = AnonymousUser()

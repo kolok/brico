@@ -276,7 +276,7 @@ The permission system uses a single abstract mixin `OrganizationPermissionMixin`
 ```mermaid
 flowchart TD
     A[LoginRequiredMixin] --> B[OrganizationPermissionMixin<br/>Abstract Mixin]
-    B --> C[Concrete Mixin<br/>e.g. ProjectQuerysetMixin]
+    B --> C[Concrete Mixin<br/>e.g. ProjectViewMixin]
     C --> D[ListView]
     C --> E[DetailView]
     C --> F[CreateView]
@@ -322,8 +322,8 @@ from organization.mixins import OrganizationPermissionMixin
 from django.db.models import QuerySet
 from django.core.exceptions import PermissionDenied
 
-class ProjectQuerysetMixin(OrganizationPermissionMixin):
-    """Mixin to filter projects by organization."""
+class ProjectViewMixin(OrganizationPermissionMixin):
+    """Mixin to filter and check permissions by organization."""
 
     def _get_queryset_with_organization_filter(
         self, queryset: QuerySet[Project]
@@ -342,8 +342,8 @@ class ProjectQuerysetMixin(OrganizationPermissionMixin):
 #### Example: ProjectAudit Mixin (for nested resources)
 
 ```python
-class ProjectAuditQuerysetMixin(OrganizationPermissionMixin):
-    """Mixin to filter project audits by organization."""
+class ProjectAuditViewMixin(OrganizationPermissionMixin):
+    """Mixin to filter and check permissions by organization."""
 
     def _get_queryset_with_organization_filter(
         self, queryset: QuerySet[ProjectAudit]
@@ -414,8 +414,8 @@ sequenceDiagram
 from organization.mixins import OrganizationPermissionMixin
 from django.db.models import QuerySet
 
-class ProjectQuerysetMixin(OrganizationPermissionMixin):
-    """Mixin to filter projects by organization."""
+class ProjectViewMixin(OrganizationPermissionMixin):
+    """Mixin to filter and check permissions by organization."""
 
     def _get_queryset_with_organization_filter(
         self, queryset: QuerySet[Project]
@@ -429,7 +429,7 @@ class ProjectQuerysetMixin(OrganizationPermissionMixin):
                     raise PermissionDenied("Object is not a project")
         return object.organization_id
 
-class ProjectListView(LoginRequiredMixin, ProjectQuerysetMixin, ListView):
+class ProjectListView(LoginRequiredMixin, ProjectViewMixin, ListView):
     model = Project
     template_name = "projects/list.html"
 
@@ -445,7 +445,7 @@ class ProjectListView(LoginRequiredMixin, ProjectQuerysetMixin, ListView):
 ### Example 2: Detail View with Object Permission Check
 
 ```python
-class ProjectDetailView(LoginRequiredMixin, ProjectQuerysetMixin, DetailView):
+class ProjectDetailView(LoginRequiredMixin, ProjectViewMixin, DetailView):
     model = Project
     template_name = "projects/detail.html"
     context_object_name = "project"
@@ -457,7 +457,7 @@ class ProjectDetailView(LoginRequiredMixin, ProjectQuerysetMixin, DetailView):
 from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from organization.models.organization import Organization
 
-class ProjectFormView(LoginRequiredMixin, ProjectQuerysetMixin, FormView):
+class ProjectFormView(LoginRequiredMixin, ProjectViewMixin, FormView):
     form_class = ProjectForm
     template_name = "projects/new.html"
     model = Project
@@ -478,8 +478,8 @@ class ProjectFormView(LoginRequiredMixin, ProjectQuerysetMixin, FormView):
 ### Example 4: Nested Resource (ProjectAudit)
 
 ```python
-class ProjectAuditQuerysetMixin(OrganizationPermissionMixin):
-    """Mixin to filter project audits by organization."""
+class ProjectAuditViewMixin(OrganizationPermissionMixin):
+    """Mixin to filter and check permissions by organization."""
 
     def _get_queryset_with_organization_filter(
         self, queryset: QuerySet[ProjectAudit]
@@ -495,7 +495,7 @@ class ProjectAuditQuerysetMixin(OrganizationPermissionMixin):
                     raise PermissionDenied("Object is not a project audit")
         return object.project.organization_id
 
-class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditQuerysetMixin, DetailView):
+class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditViewMixin, DetailView):
     model = ProjectAudit
     template_name = "audits/detail.html"
 ```
@@ -724,8 +724,8 @@ flowchart LR
 - `organization/models/organization.py`: OrganizationMember model
 - `organization/permissions.py`: Permission checking functions (`has_organization_permission`, `check_organization_permission`)
 - `organization/mixins.py`: Abstract `OrganizationPermissionMixin` for views
-- `audits/views/project.py`: Example concrete mixin implementation (`ProjectQuerysetMixin`)
-- `audits/views/projectaudit.py`: Example nested resource mixin (`ProjectAuditQuerysetMixin`)
+- `audits/views/project.py`: Example concrete mixin implementation (`ProjectViewMixin`)
+- `audits/views/projectaudit.py`: Example nested resource mixin (`ProjectAuditViewMixin`)
 - `organization/management/commands/create_initial_roles.py`: Command to create role groups
 - `core/middleware.py`: OrganizationMiddleware for session management
 

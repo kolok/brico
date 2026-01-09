@@ -1,5 +1,6 @@
 from audits.forms import NewAuditForm
 from audits.models.audit import ProjectAudit, ProjectAuditCriterion
+from audits.utils import natural_sort_key
 from audits.views.mixin import ProjectChildrenMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,8 +12,8 @@ from django.views.generic import DeleteView, DetailView, FormView
 from organization.mixins import OrganizationPermissionMixin
 
 
-class ProjectAuditQuerysetMixin(OrganizationPermissionMixin, ProjectChildrenMixin):
-    """Mixin to filter project audits by organization."""
+class ProjectAuditViewMixin(OrganizationPermissionMixin, ProjectChildrenMixin):
+    """Mixin to filter and check permissions by organization."""
 
     model = ProjectAudit
 
@@ -27,12 +28,13 @@ class ProjectAuditQuerysetMixin(OrganizationPermissionMixin, ProjectChildrenMixi
         """Get object organization ID."""
         if not hasattr(self, "get_object"):
             raise PermissionDenied("Object not found")
-        if object := self.get_object():
+        # get_object() is provided by DetailView/DeleteView when mixed with this mixin
+        if object := self.get_object():  # type: ignore[attr-defined]
             return object.project.organization_id
         raise PermissionDenied("Object not found")
 
 
-class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditQuerysetMixin, DetailView):
+class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditViewMixin, DetailView):
     """Display audit details."""
 
     template_name = "audits/projectaudit/detail.html"
@@ -41,6 +43,12 @@ class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditQuerysetMixin, Deta
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["project"] = self._get_project()
+        audit_criteria = list(
+            self.get_object().project_audit_criteria.all().select_related("criterion")
+        )
+        # Sort using natural sort: numeric for decimals, alphanumeric otherwise
+        audit_criteria.sort(key=lambda x: natural_sort_key(x.criterion.public_id))
+        context["audit_criteria"] = audit_criteria
         return context
 
     def get_queryset(self):
@@ -52,7 +60,7 @@ class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditQuerysetMixin, Deta
         )
 
 
-class NewProjectAuditView(LoginRequiredMixin, ProjectAuditQuerysetMixin, FormView):
+class NewProjectAuditView(LoginRequiredMixin, ProjectAuditViewMixin, FormView):
     """Create a new audit for a project."""
 
     form_class = NewAuditForm
@@ -84,8 +92,7 @@ class NewProjectAuditView(LoginRequiredMixin, ProjectAuditQuerysetMixin, FormVie
         return super().form_valid(form)
 
 
-# FIXME : use DeleteView
-class DeleteProjectAuditView(LoginRequiredMixin, ProjectAuditQuerysetMixin, DeleteView):
+class DeleteProjectAuditView(LoginRequiredMixin, ProjectAuditViewMixin, DeleteView):
     model = ProjectAudit
     template_name = "audits/projectaudit/confirm_delete.html"
 

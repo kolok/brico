@@ -1,24 +1,39 @@
 {% extends 'layout/base-logged.html' %}
-{% load i18n %}
+{% load i18n markdown_filters %}
 
 {% block title %}{% translate "Criterion Detail - Cosqua" %}{% endblock %}
 
 {% block content %}
 <div>
-    <h1>{{ criterion.criterion.name }}</h1>
-    <p>{{ criterion.criterion.description }}</p>
-    <p>{% translate "Status:" %} {{ criterion.get_status_display }}</p>
+    <h1>{{ criterion }}</h1>
+    <p>
+        <a href="{% url 'audits:projectaudit_detail' project.slug audit.id %}">⮐ {% translate "Back to audit" %} « {{ audit.audit_library.name }} »</a>
+    </p>
+    <div data-controller="auto-submit" class="mb-4">
+        <form
+            method="post"
+            action="{% url 'audits:projectauditcriterion_detail' project.slug audit.id criterion.id %}"
+            data-action="change->auto-submit#handleChange"
+        >
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div data-auto-submit-target="loading" class="hidden">
+                {% translate "Updating…" %}
+            </div>
+        </form>
+    </div>
+    <div class="markdown-zone">{{ criterion.criterion.description|markdown }}</div>
 
     <turbo-frame id="comments_frame" src="{% url 'audits:comments_list' project.slug audit.id criterion.id %}">
         <div class="flex items-center justify-center py-8">
-            <div class="text-gray-500">{% translate "Loading comments..." %}</div>
+            <div class="text-gray-500">{% translate "Loading comments…" %}</div>
         </div>
     </turbo-frame>
 
     <h2>{% translate "Discussion with AI" %}</h2>
     <turbo-frame id="prompts_frame" src="{% url 'audits:prompt' project.slug audit.id criterion.id %}?session_id={{ session_id }}">
         <div class="flex items-center justify-center py-8">
-            <div class="text-gray-500">{% translate "Loading prompts..." %}</div>
+            <div class="text-gray-500">{% translate "Loading prompts…" %}</div>
         </div>
     </turbo-frame>
 

@@ -1,20 +1,25 @@
+from audits.forms import StatusUpdateForm
 from audits.models.audit import ProjectAuditCriterion
 from audits.views.mixin import AuditChildrenMixin
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
-from django.views.generic import DetailView
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from django.views.generic.edit import UpdateView
 from organization.mixins import OrganizationPermissionMixin
 
 
 class CriterionDetailView(
-    LoginRequiredMixin, AuditChildrenMixin, OrganizationPermissionMixin, DetailView
+    LoginRequiredMixin, AuditChildrenMixin, OrganizationPermissionMixin, UpdateView
 ):
-    """Display the details of a criterion."""
+    """Display the details and update the status of a criterion."""
 
+    context_object_name = "criterion"
+    form_class = StatusUpdateForm
     model = ProjectAuditCriterion
     template_name = "audits/projectauditcriterion/detail.html"
-    context_object_name = "criterion"
 
     def _get_queryset_with_organization_filter(
         self, queryset: QuerySet[ProjectAuditCriterion]
@@ -28,6 +33,7 @@ class CriterionDetailView(
         if not hasattr(self, "get_object"):
             raise PermissionDenied("Object not found")
         if object := self.get_object():
+            assert isinstance(object, ProjectAuditCriterion)
             return object.project_audit.project.organization_id
         raise PermissionDenied("Object not found")
 
@@ -41,3 +47,17 @@ class CriterionDetailView(
         context["audit"] = self._get_audit()
         context["session_id"] = self.request.GET.get("session_id")
         return context
+
+    def get_success_url(self):
+        return reverse_lazy(
+            "audits:projectauditcriterion_detail",
+            kwargs={
+                "project_slug": self._get_project().slug,
+                "audit_id": self._get_audit().id,
+                "pk": self.get_object().id,
+            },
+        )
+
+    def form_valid(self, form):
+        messages.success(self.request, _("Status updated successfully"))
+        return super().form_valid(form)

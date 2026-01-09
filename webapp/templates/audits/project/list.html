@@ -12,7 +12,7 @@
                 type="text"
                 name="search"
                 value="{{ request.GET.search }}"
-                placeholder="{% translate 'Search by project name...' %}"
+                placeholder="{% translate 'Search by project name…' %}"
             >
             <button
                 type="submit"
@@ -31,11 +31,11 @@
         </div>
     </form>
 
-    <div class="project-tiles">
+    <div class="tiles">
         {% for project in object_list %}
             <a
                 href="{% url 'audits:project_detail' project.slug %}"
-                class="project-tile {% cycle 'tile-even' 'tile-odd' %}"
+                class="tile {% cycle 'tile-even' 'tile-odd' %}"
             >
                 <h2>{{ project.name }}</h2>
                 {% if project.description %}
@@ -49,7 +49,7 @@
                 </p>
             </a>
         {% empty %}
-            <div class="project-tile project-tile-empty">
+            <div class="tile tile-empty">
                 <p>
                     {% if request.GET.search %}
                         {% translate "No projects found matching your search." %}
@@ -59,7 +59,7 @@
                 </p>
             </div>
         {% endfor %}
-        <a href="{% url 'audits:project_form' %}" class="project-tile">
+        <a href="{% url 'audits:project_form' %}" class="tile">
             <h2>{% translate "➕ Add a new project" %}</h2>
             <p>{% translate "Create a new project to start auditing your resources." %}</p>
         </a>

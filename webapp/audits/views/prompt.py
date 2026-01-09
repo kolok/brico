@@ -1,6 +1,7 @@
 import logging
 import uuid
 from pathlib import Path
+from urllib.parse import urlencode
 
 from audits.forms import PromptForm
 from audits.models.audit import ProjectAuditCriterion, Prompt
@@ -11,6 +12,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as translate
 from django.views.generic import FormView
 from organization.mixins import OrganizationPermissionMixin
 from pydantic_ai import Agent
@@ -132,7 +134,6 @@ class PromptFormView(
 
         # Add the session_id as a query parameter
         if session_id:
-            from urllib.parse import urlencode
 
             params = urlencode({"session_id": str(session_id)})
             return f"{url}?{params}"
@@ -144,11 +145,17 @@ class PromptFormView(
         # Store the session_id to use it in get_success_url
         self._session_id = session_id
 
-        message = form.cleaned_data.get("message", "").strip()
-        name = message if message else "Prompt"
+        user_message = form.cleaned_data.get("message", "").strip()
+        name = user_message if user_message else translate("Prompt without question")
         max_name_length = Prompt._meta.get_field("name").max_length
         if len(name) > max_name_length:
             name = name[: max_name_length - 1] + "…"
+
+        if user_message == "":
+            user_message = (
+                "can you check this assertion and tell me it is compliant, "
+                "not compliant, partially compliant or not applicable?"
+            )
 
         criterion = self._get_criterion_filtered()
         prompt, _ = Prompt.objects.get_or_create(
@@ -157,9 +164,6 @@ class PromptFormView(
             defaults={"name": name},
         )
 
-        user_message = form.cleaned_data.get("message", "").strip()
-        if not user_message:
-            return super().form_valid(form)
         messages_history = prompt.prompt.get("messages", [])
         history_messages = [
             {"role": msg["role"], "content": msg["content"]} for msg in messages_history

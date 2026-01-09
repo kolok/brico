@@ -58,13 +58,13 @@ run-docker:
 
 .PHONY: run-webapp
 run-webapp: run-docker
-	@echo "Attente du démarrage de Docker..."
+	@echo "Attente du démarrage de Docker…"
 	@sleep 5
 	make run
 
 .PHONY: run-all
 run-all: run-docker
-	@echo "Attente du démarrage de Docker..."
+	@echo "Attente du démarrage de Docker…"
 	@sleep 5
 	$(UV_RUN) honcho start -f Procfile.dev
 

@@ -52,22 +52,22 @@ help:
 # Installation and configuration
 .PHONY: install
 install:
-	@echo "$(GREEN)Installing Flutter dependencies...$(NC)"
+	@echo "$(GREEN)Installing Flutter dependencies…$(NC)"
 	$(FLUTTER) pub get
 
 .PHONY: upgrade
 upgrade:
-	@echo "$(GREEN)Updating dependencies...$(NC)"
+	@echo "$(GREEN)Updating dependencies…$(NC)"
 	$(FLUTTER) pub upgrade
 
 .PHONY: upgrade-major
 upgrade-major:
-	@echo "$(GREEN)Updating dependencies (major versions)...$(NC)"
+	@echo "$(GREEN)Updating dependencies (major versions)…$(NC)"
 	$(FLUTTER) pub upgrade --major-versions
 
 .PHONY: doctor
 doctor:
-	@echo "$(GREEN)Checking the Flutter installation...$(NC)"
+	@echo "$(GREEN)Checking the Flutter installation…$(NC)"
 	$(FLUTTER) doctor -v
 
 .PHONY: devices
@@ -78,12 +78,12 @@ devices:
 # Development
 .PHONY: run
 run:
-	@echo "$(GREEN)Launching the app...$(NC)"
+	@echo "$(GREEN)Launching the app…$(NC)"
 	$(FLUTTER) run
 
 .PHONY: hot-reload
 hot-reload:
-	@echo "$(GREEN)Launching with hot reload...$(NC)"
+	@echo "$(GREEN)Launching with hot reload…$(NC)"
 	$(FLUTTER) run --hot
 
 # Build
@@ -92,22 +92,22 @@ build-android: build-android-apk
 
 .PHONY: build-android-apk
 build-android-apk:
-	@echo "$(GREEN)Building the Android APK...$(NC)"
+	@echo "$(GREEN)Building the Android APK…$(NC)"
 	$(FLUTTER) build apk --release
 
 .PHONY: build-android-aab
 build-android-aab:
-	@echo "$(GREEN)Building the Android AAB for the Play Store...$(NC)"
+	@echo "$(GREEN)Building the Android AAB for the Play Store…$(NC)"
 	$(FLUTTER) build appbundle --release
 
 .PHONY: build-ios
 build-ios:
-	@echo "$(GREEN)Building for iOS...$(NC)"
+	@echo "$(GREEN)Building for iOS…$(NC)"
 	$(FLUTTER) build ios --release
 
 .PHONY: build-web
 build-web:
-	@echo "$(GREEN)Building for the web...$(NC)"
+	@echo "$(GREEN)Building for the web…$(NC)"
 	$(FLUTTER) build web --release
 
 .PHONY: build-all
@@ -117,28 +117,28 @@ build-all: build-android-apk build-android-aab build-web
 # Code quality
 .PHONY: test
 test:
-	@echo "$(GREEN)Running tests...$(NC)"
+	@echo "$(GREEN)Running tests…$(NC)"
 	$(FLUTTER) test
 
 .PHONY: test-coverage
 test-coverage:
-	@echo "$(GREEN)Running tests with coverage...$(NC)"
+	@echo "$(GREEN)Running tests with coverage…$(NC)"
 	$(FLUTTER) test --coverage
 	@echo "$(YELLOW)Coverage report available in coverage/lcov.info$(NC)"
 
 .PHONY: analyze
 analyze:
-	@echo "$(GREEN)Analyzing the code...$(NC)"
+	@echo "$(GREEN)Analyzing the code…$(NC)"
 	$(FLUTTER) analyze
 
 .PHONY: format
 format:
-	@echo "$(GREEN)Formatting the code...$(NC)"
+	@echo "$(GREEN)Formatting the code…$(NC)"
 	$(FLUTTER_FORMAT) lib/ test/ -l 120
 
 .PHONY: check-format
 check-format:
-	@echo "$(GREEN)Checking formatting...$(NC)"
+	@echo "$(GREEN)Checking formatting…$(NC)"
 	$(FLUTTER_FORMAT) --set-exit-if-changed lib/ test/ -l 120
 
 .PHONY: lint
@@ -148,12 +148,12 @@ lint: analyze check-format
 # Cleaning
 .PHONY: clean
 clean:
-	@echo "$(GREEN)Cleaning build files...$(NC)"
+	@echo "$(GREEN)Cleaning build files…$(NC)"
 	$(FLUTTER) clean
 
 .PHONY: clean-all
 clean-all: clean
-	@echo "$(GREEN)Performing full cleanup...$(NC)"
+	@echo "$(GREEN)Performing full cleanup…$(NC)"
 	rm -rf .dart_tool/
 	rm -rf build/
 	rm -rf .flutter-plugins
@@ -163,24 +163,24 @@ clean-all: clean
 
 .PHONY: reset
 reset: clean-all
-	@echo "$(GREEN)Full reset and reinstallation...$(NC)"
+	@echo "$(GREEN)Full reset and reinstallation…$(NC)"
 	$(FLUTTER) pub get
 	@echo "$(GREEN)Reset completed!$(NC)"
 
 # Utilities
 .PHONY: pub-outdated
 pub-outdated:
-	@echo "$(GREEN)Checking available updates...$(NC)"
+	@echo "$(GREEN)Checking available updates…$(NC)"
 	$(FLUTTER) pub outdated
 
 .PHONY: pub-upgrade-dry
 pub-upgrade-dry:
-	@echo "$(GREEN)Simulating upgrade...$(NC)"
+	@echo "$(GREEN)Simulating upgrade…$(NC)"
 	$(FLUTTER) pub upgrade --dry-run
 
 .PHONY: localizations
 localizations:
-	@echo "$(GREEN)Generating localization files...$(NC)"
+	@echo "$(GREEN)Generating localization files…$(NC)"
 	$(FLUTTER) gen-l10n
 
 # Production build helper

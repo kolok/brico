@@ -1,15 +1,21 @@
 @import "./buttons.css";
-@import "./headers.css";
-@import "./main.css";
-@import "./footers.css";
 @import "./cards.css";
-@import "./typography.css";
-@import "./links.css";
-@import "./forms.css";
-@import "./signup-login.css";
-@import "./project-tiles.css";
+@import "./danger-zone.css";
 @import "./dropdown.css";
+@import "./footers.css";
+@import "./forms.css";
+@import "./headers.css";
+@import "./links.css";
+@import "./main.css";
+@import "./markdown-zone.css";
+@import "./page-headers.css";
+@import "./tiles.css";
+@import "./signup-login.css";
 
 body {
   @apply font-sans bg-bg_content text-content;
+}
+
+p {
+  @apply mb-2;
 }
