@@ -1,0 +1,27 @@
+.blocks-container {
+  @apply space-y-4;
+}
+
+.block {
+  @apply flex justify-start border border-gray-200 rounded-lg mb-2 p-4;
+}
+
+.block-info {
+  @apply italic;
+}
+
+.block-user {
+  @apply bg-blue-600 text-white max-w-2xl;
+}
+
+.block-assistant {
+  @apply bg-white;
+}
+
+.block-active {
+  @apply bg-white;
+}
+
+.block-error {
+  @apply bg-white border border-danger text-danger;
+}
