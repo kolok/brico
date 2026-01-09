@@ -1,6 +1,7 @@
 import logging
 import uuid
 from pathlib import Path
+from urllib.parse import urlencode
 
 from audits.forms import PromptForm
 from audits.models.audit import ProjectAuditCriterion, Prompt
@@ -132,7 +133,6 @@ class PromptFormView(
 
         # Add the session_id as a query parameter
         if session_id:
-            from urllib.parse import urlencode
 
             params = urlencode({"session_id": str(session_id)})
             return f"{url}?{params}"

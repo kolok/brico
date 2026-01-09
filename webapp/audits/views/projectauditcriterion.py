@@ -10,9 +10,9 @@ from organization.mixins import OrganizationPermissionMixin
 
 
 class CriterionDetailView(
-    LoginRequiredMixin, OrganizationPermissionMixin, AuditChildrenMixin, UpdateView
+    LoginRequiredMixin, AuditChildrenMixin, OrganizationPermissionMixin, UpdateView
 ):
-    """Display and update the details of a criterion."""
+    """Display the details and update the status of a criterion."""
 
     context_object_name = "criterion"
     form_class = StatusUpdateForm

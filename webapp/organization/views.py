@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.db import transaction
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy
 from django.views.generic import CreateView, RedirectView
 from organization.models import Organization, OrganizationMember
@@ -67,7 +67,6 @@ class OrganizationSwitchView(LoginRequiredMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         """Change the current organization in the session."""
-        from django.urls import reverse
 
         organization_id = kwargs.get("organization_id")
 

@@ -26,7 +26,7 @@
             </div>
         {% endfor %}
         <a href="{% url 'audits:projectaudit_new' project.slug %}" class="tile">
-            <h2>{% translate "➕ Start Audit" %}</h2>
+            <h2>➕ {% translate "Start Audit" %}</h2>
             <p>{% translate "Create a new audit for this project." %}</p>
         </a>
     </div>
@@ -60,7 +60,7 @@
             </div>
         {% endfor %}
         <a href="{% url 'audits:resource_new' project.slug %}" class="tile">
-            <h2>{% translate "➕ Add Resource" %}</h2>
+            <h2>➕ {% translate "Add Resource" %}</h2>
             <p>{% translate "Create a new resource for this project." %}</p>
         </a>
     </div>

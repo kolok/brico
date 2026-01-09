@@ -11,8 +11,8 @@ from django.views.generic import DeleteView, DetailView, FormView
 from organization.mixins import OrganizationPermissionMixin
 
 
-class ProjectAuditQuerysetMixin(OrganizationPermissionMixin, ProjectChildrenMixin):
-    """Mixin to filter project audits by organization."""
+class ProjectAuditViewMixin(OrganizationPermissionMixin, ProjectChildrenMixin):
+    """Mixin to filter and check permissions by organization."""
 
     model = ProjectAudit
 
@@ -32,7 +32,7 @@ class ProjectAuditQuerysetMixin(OrganizationPermissionMixin, ProjectChildrenMixi
         raise PermissionDenied("Object not found")
 
 
-class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditQuerysetMixin, DetailView):
+class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditViewMixin, DetailView):
     """Display audit details."""
 
     template_name = "audits/projectaudit/detail.html"
@@ -52,7 +52,7 @@ class ProjectAuditDetailView(LoginRequiredMixin, ProjectAuditQuerysetMixin, Deta
         )
 
 
-class NewProjectAuditView(LoginRequiredMixin, ProjectAuditQuerysetMixin, FormView):
+class NewProjectAuditView(LoginRequiredMixin, ProjectAuditViewMixin, FormView):
     """Create a new audit for a project."""
 
     form_class = NewAuditForm
@@ -85,7 +85,7 @@ class NewProjectAuditView(LoginRequiredMixin, ProjectAuditQuerysetMixin, FormVie
 
 
 # FIXME : use DeleteView
-class DeleteProjectAuditView(LoginRequiredMixin, ProjectAuditQuerysetMixin, DeleteView):
+class DeleteProjectAuditView(LoginRequiredMixin, ProjectAuditViewMixin, DeleteView):
     model = ProjectAudit
     template_name = "audits/projectaudit/confirm_delete.html"
 

@@ -6,6 +6,7 @@ from core.middleware import (
     OrganizationMiddleware,
 )
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from organization.tests.factories import (
     OrganizationFactory,
     OrganizationMemberFactory,
@@ -155,7 +156,6 @@ class TestOrganizationMiddleware:
 
     def test_does_not_process_for_unauthenticated_user(self, rf):
         """Test that middleware does not process for unauthenticated users."""
-        from django.contrib.auth.models import AnonymousUser
 
         request = rf.get("/")
         request.user = AnonymousUser()

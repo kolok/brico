@@ -1,8 +1,9 @@
 import uuid
 
-from audits.models.audit import AuditLibrary, Comment
+from audits.models.audit import AuditLibrary, Comment, ProjectAuditCriterion
 from django import forms
-from organization.models.organization import Project
+from django.utils.translation import gettext_lazy as _
+from organization.models.organization import Project, Resource
 
 
 class NewAuditForm(forms.Form):
@@ -17,16 +18,13 @@ class CommentForm(forms.ModelForm):
             "comment": forms.Textarea(
                 attrs={
                     "rows": 4,
-                    "placeholder": "Add a comment...",
-                    "class": (
-                        "w-full px-3 py-2 border border-gray-300 rounded-md"
-                        " focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                    ),
+                    "placeholder": _("Add a comment…"),
+                    "class": "w-full",
                 }
             ),
         }
         labels = {
-            "comment": "",
+            "comment": _("Comment"),
         }
 
 
@@ -38,7 +36,7 @@ class PromptForm(forms.Form):
             attrs={
                 "class": "w-full",
                 "rows": 2,
-                "placeholder": (
+                "placeholder": _(
                     "Ask a question or leave it empty to get a general answer about"
                     " this criterion…"
                 ),
@@ -52,23 +50,17 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ["name", "description"]
-        labels = {
-            "name": "",
-            "description": "",
-        }
 
 
 class ResourceForm(forms.ModelForm):
     class Meta:
-        from organization.models.organization import Resource
-
         model = Resource
         fields = ["name", "type", "url", "description"]
         widgets = {
             "url": forms.URLInput(
                 attrs={
                     "class": "w-full max-w-[600px]",
-                    "placeholder": "https://example.com",
+                    "placeholder": "https://github.com/organization/repository",
                 }
             ),
         }
@@ -76,7 +68,5 @@ class ResourceForm(forms.ModelForm):
 
 class StatusUpdateForm(forms.ModelForm):
     class Meta:
-        from audits.models.audit import ProjectAuditCriterion
-
         model = ProjectAuditCriterion
         fields = ["status"]

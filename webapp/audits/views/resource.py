@@ -11,10 +11,14 @@ from organization.mixins import OrganizationPermissionMixin
 from organization.models.organization import Resource
 
 
-class ResourceQuerysetMixin(OrganizationPermissionMixin, ProjectChildrenMixin):
-    """Mixin to filter resources by organization."""
+class ResourceViewMixin(OrganizationPermissionMixin, ProjectChildrenMixin):
+    """
+    Mixin to filter and check permissions by organization.
+    Mixin is also used to factorize common behavior of all Resource views.
+    """
 
     model = Resource
+    context_object_name = "resource"
 
     def _get_queryset_with_organization_filter(
         self, queryset: QuerySet[Resource]
@@ -28,15 +32,9 @@ class ResourceQuerysetMixin(OrganizationPermissionMixin, ProjectChildrenMixin):
         if not hasattr(self, "get_object"):
             raise PermissionDenied("Object not found")
         if object := self.get_object():
+            assert isinstance(object, Resource)
             return object.project.organization_id
         raise PermissionDenied("Object not found")
-
-
-class ResourceDetailView(LoginRequiredMixin, ResourceQuerysetMixin, DetailView):
-    """Display resource details."""
-
-    template_name = "audits/resource/detail.html"
-    context_object_name = "resource"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -49,23 +47,23 @@ class ResourceDetailView(LoginRequiredMixin, ResourceQuerysetMixin, DetailView):
         queryset = queryset.filter(project=project)
         return queryset
 
-
-class NewResourceView(LoginRequiredMixin, ResourceQuerysetMixin, CreateView):
-    """Create a new resource for a project."""
-
-    form_class = ResourceForm
-    template_name = "audits/resource/new.html"
-    model = Resource
-
     def get_success_url(self):
         return reverse_lazy(
             "audits:project_detail", kwargs={"slug": self._get_project().slug}
         )
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["project"] = self._get_project()
-        return context
+
+class ResourceDetailView(LoginRequiredMixin, ResourceViewMixin, DetailView):
+    """Display resource details."""
+
+    template_name = "audits/resource/detail.html"
+
+
+class NewResourceView(LoginRequiredMixin, ResourceViewMixin, CreateView):
+    """Create a new resource for a project."""
+
+    form_class = ResourceForm
+    template_name = "audits/resource/new.html"
 
     def form_valid(self, form):
         form.instance.project = self._get_project()
@@ -73,53 +71,18 @@ class NewResourceView(LoginRequiredMixin, ResourceQuerysetMixin, CreateView):
         return super().form_valid(form)
 
 
-class EditResourceView(LoginRequiredMixin, ResourceQuerysetMixin, UpdateView):
+class EditResourceView(LoginRequiredMixin, ResourceViewMixin, UpdateView):
     """Edit an existing resource."""
 
     form_class = ResourceForm
     template_name = "audits/resource/edit.html"
-    model = Resource
-    context_object_name = "resource"
-
-    def get_success_url(self):
-        return reverse_lazy(
-            "audits:project_detail", kwargs={"slug": self._get_project().slug}
-        )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["project"] = self._get_project()
-        return context
-
-    def get_queryset(self):
-        project = self._get_project()
-        queryset = super().get_queryset()
-        queryset = queryset.filter(project=project)
-        return queryset
 
     def form_valid(self, form):
         messages.success(self.request, _("Resource updated successfully"))
         return super().form_valid(form)
 
 
-class DeleteResourceView(LoginRequiredMixin, ResourceQuerysetMixin, DeleteView):
+class DeleteResourceView(LoginRequiredMixin, ResourceViewMixin, DeleteView):
     """Delete a resource."""
 
-    model = Resource
     template_name = "audits/resource/confirm_delete.html"
-
-    def get_success_url(self):
-        return reverse_lazy(
-            "audits:project_detail", kwargs={"slug": self._get_project().slug}
-        )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["project"] = self._get_project()
-        return context
-
-    def get_queryset(self):
-        project = self._get_project()
-        queryset = super().get_queryset()
-        queryset = queryset.filter(project=project)
-        return queryset
