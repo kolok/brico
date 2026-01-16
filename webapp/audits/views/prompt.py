@@ -185,8 +185,7 @@ class PromptFormView(
 
         messages_history = prompt.prompt.get("messages", [])
         # Filter out error messages and user messages that precede them
-        messages_history = self._filter_prompt_in_error(messages_history)
-        logging.warning("Messages history: %s", messages_history)
+        filtered_messages_history = self._filter_prompt_in_error(messages_history)
 
         if not hasattr(settings, "ANTHROPIC_API_KEY") or not settings.ANTHROPIC_API_KEY:
             raise ValueError("ANTHROPIC_API_KEY is not configured.")
@@ -210,7 +209,9 @@ class PromptFormView(
             # Send the message to Claude with the history
             result = agent.run_sync(
                 user_message,
-                message_history=messages_history if messages_history else None,  # type: ignore
+                message_history=(
+                    filtered_messages_history if filtered_messages_history else None
+                ),  # type: ignore
             )
 
             messages_history.extend(
