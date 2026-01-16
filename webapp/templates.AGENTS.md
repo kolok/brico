@@ -25,19 +25,35 @@ templates/
 ├── components/          # Reusable components (shared across apps)
 │   └── messages.html    # Django messages component
 ├── audits/              # Templates for audits app
-│   ├── components/      # App-specific components
-│   │   └── prompt_form.html
-│   ├── project_list.html
-│   ├── project_detail.html
-│   └── …
+│   ├── comment/         # Comment-related templates
+│   │   ├── form.html
+│   │   ├── list.html
+│   │   └── …
+│   ├── project/         # Project-related templates
+│   │   ├── list.html
+│   │   ├── detail.html
+│   │   └── …
+│   ├── prompt/          # Prompt-related templates
+│   │   ├── detail.html
+│   │   └── form.html
+│   ├── resource/        # Resource-related templates
+│   │   ├── detail.html
+│   │   ├── new.html
+│   │   └── …
+│   └── …                # Other subdirectories (projectaudit/, projectauditcriterion/, etc.)
 ├── account/             # Django-allauth templates
+│   ├── login.html
+│   ├── signup.html
+│   └── …
 └── socialaccount/       # Social auth templates
+    ├── login.html
+    └── …
 ```
 
 ### Naming Conventions
 
-- **Template files**: lowercase with underscores, e.g., `project_list.html`, `comment_form.html`
-- **Component files**: placed in `components/` subdirectory, e.g., `components/prompt_form.html`
+- **Template files**: for each django app, and by object typology <app>/<object>/<template.html>, e.g., `audits/project/list.html`, `audits/comment/form.html`
+- **Component files**: placed in `components/` subdirectory, e.g., `components/message.html`
 - **Layout files**: placed in `layout/` directory, prefixed with `base-`, e.g., `base.html`, `base-logged.html`
 
 ## Template Inheritance
@@ -106,8 +122,6 @@ Components are reusable template fragments placed in `components/` directories.
 Use `{% include %}` to include components:
 
 ```django
-{% include "audits/components/prompt_form.html" with project=project audit=audit criterion=criterion %}
-
 {% include "components/messages.html" %}
 ```
 

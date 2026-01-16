@@ -318,7 +318,7 @@ msgstr "Ajouter un commentaire"
 msgid "No comments yet."
 msgstr "Aucun commentaire pour le moment."
 
-#: templates/audits/components/prompt_form.html:12
+#: templates/audits/prompt/form.html:12
 msgid "Send"
 msgstr "Envoyer"
 
@@ -563,7 +563,7 @@ msgstr "Historique des discussions"
 msgid "No prompts yet."
 msgstr "Aucune discussion pour le moment."
 
-#: templates/audits/prompt.html:28
+#: templates/audits/prompt/detail.html:28
 msgid "No messages yet. Start a conversation by asking a question below."
 msgstr ""
 "Aucun message pour le moment. Commencez une conversation en posant une "

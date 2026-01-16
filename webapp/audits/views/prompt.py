@@ -42,7 +42,26 @@ class PromptFormView(
 ):
     form_class = PromptForm
     model = Prompt
-    template_name = "audits/prompt.html"
+    template_name = "audits/prompt/detail.html"
+
+    def _filter_prompt_in_error(self, messages_history: list[dict]) -> list[dict]:
+        """Filter out error messages and user messages that precede them."""
+        history_messages = []
+        for i, msg in enumerate(messages_history):
+            # Skip error messages
+            if msg["role"] == "error":
+                continue
+            # Skip user messages that are immediately before an error message
+            if (
+                msg["role"] == "user"
+                and i + 1 < len(messages_history)
+                and messages_history[i + 1]["role"] == "error"
+            ):
+                continue
+            # Include user and assistant messages
+            if msg["role"] in ["user", "assistant"]:
+                history_messages.append(msg)
+        return history_messages
 
     def _get_queryset_with_organization_filter(
         self, queryset: QuerySet[Prompt]
@@ -165,9 +184,10 @@ class PromptFormView(
         )
 
         messages_history = prompt.prompt.get("messages", [])
-        history_messages = [
-            {"role": msg["role"], "content": msg["content"]} for msg in messages_history
-        ]
+        # Filter out error messages and user messages that precede them
+        messages_history = self._filter_prompt_in_error(messages_history)
+        logging.warning("Messages history: %s", messages_history)
+
         if not hasattr(settings, "ANTHROPIC_API_KEY") or not settings.ANTHROPIC_API_KEY:
             raise ValueError("ANTHROPIC_API_KEY is not configured.")
         project = criterion.project_audit.project
@@ -190,7 +210,7 @@ class PromptFormView(
             # Send the message to Claude with the history
             result = agent.run_sync(
                 user_message,
-                message_history=history_messages if history_messages else None,  # type: ignore
+                message_history=messages_history if messages_history else None,  # type: ignore
             )
 
             messages_history.extend(
@@ -206,9 +226,11 @@ class PromptFormView(
             # In case of error, continue anyway to not block the user
             # The error could be logged here if necessary
             logger.error("Something goes wrong: %s", err, exc_info=True)
-            error_message = f"""## An error occurred:
+            error_message = f"""
+## An error occurred:
 
 {str(err)}
+
             """
             messages_history.extend(
                 [
