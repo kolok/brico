@@ -22,7 +22,7 @@
             </div>
         </form>
     </div>
-    <div class="markdown-zone">{{ criterion.criterion.description|markdown }}</div>
+    <div class="block block-active">{{ criterion.criterion.description|markdown }}</div>
 
     <turbo-frame id="comments_frame" src="{% url 'audits:comments_list' project.slug audit.id criterion.id %}">
         <div class="flex items-center justify-center py-8">

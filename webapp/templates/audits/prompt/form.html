@@ -1,14 +1,19 @@
 {% load i18n %}
 
 <div class="border border-gray-200 rounded-lg p-4 bg-white">
-    <form method="post" action="{% url 'audits:prompt' project.slug audit.id criterion.id %}" class="flex space-x-4">
+    <form method="post"
+          action="{% url 'audits:prompt' project.slug audit.id criterion.id %}"
+          class="flex space-x-4"
+          data-turbo-frame="prompts_frame"
+          data-action="submit->prompt-form#handleSubmit">
         {% csrf_token %}
         <div class="flex-1 flex flex-row gap-2">
             <div class="flex-1">
                 {{ form.as_p }}
             </div>
             <button type="submit"
-                class="btn-primary self-start">
+                class="btn-primary self-start"
+                data-prompt-form-target="submitButton">
                 {% translate "Send" %}
             </button>
         </div>

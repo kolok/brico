@@ -1,0 +1,41 @@
+{% load i18n markdown_filters %}
+
+<turbo-frame id="prompts_frame">
+    <div class="" data-controller="prompt-form">
+
+        {% if prompt %}
+            {% for message in prompt.prompt.messages %}
+                {% if message.role == "user" %}
+                    <div class="flex justify-end">
+                        <div class="block block-user">
+                            <div class="whitespace-pre-wrap">{{ message.content }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if message.role == "assistant" %}
+                    <div class="flex justify-start">
+                        <div class="block block-assistant">{{ message.content|markdown }}</div>
+                    </div>
+                {% endif %}
+                {% if message.role == "error" %}
+                    <div class="flex justify-start">
+                        <div class="block block-error">{{ message.content|markdown }}</div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div hidden>
+                {{ prompt.prompt }}
+            </div>
+
+        {% else %}
+            <div class="block block-info" data-prompt-form-target="emptyStateMessage">
+                {% translate "No messages yet. Start a prompt by asking a question below." %}
+            </div>
+        {% endif %}
+        <div class="hidden block block-info" data-prompt-form-target="loadingMessage">
+            {% translate "Ongoing request, please wait the answer" %}
+        </div>
+        {% include "audits/prompt/form.html" with form=form %}
+
+    </div>
+</turbo-frame>

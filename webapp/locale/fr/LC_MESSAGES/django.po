@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Cosqua 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-09 09:33+0000\n"
+"POT-Creation-Date: 2026-01-16 09:08+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -314,13 +314,9 @@ msgstr "Commentaires"
 msgid "Add Comment"
 msgstr "Ajouter un commentaire"
 
-#: templates/audits/comment/list.html:21
+#: templates/audits/comment/list.html:20
 msgid "No comments yet."
 msgstr "Aucun commentaire pour le moment."
-
-#: templates/audits/components/prompt_form.html:12
-msgid "Send"
-msgstr "Envoyer"
 
 #: templates/audits/project/confirm_delete.html:4
 #, fuzzy
@@ -563,11 +559,20 @@ msgstr "Historique des discussions"
 msgid "No prompts yet."
 msgstr "Aucune discussion pour le moment."
 
-#: templates/audits/prompt.html:28
-msgid "No messages yet. Start a conversation by asking a question below."
+#: templates/audits/prompt/detail.html:32
+#, fuzzy
+msgid "No messages yet. Start a prompt by asking a question below."
 msgstr ""
 "Aucun message pour le moment. Commencez une conversation en posant une "
 "question ci-dessous."
+
+#: templates/audits/prompt/detail.html:36
+msgid "Ongoing request, please wait the answer"
+msgstr "Requête en cours, veuillez patienter"
+
+#: templates/audits/prompt/form.html:17
+msgid "Send"
+msgstr "Envoyer"
 
 #: templates/audits/resource/confirm_delete.html:4
 #, fuzzy
