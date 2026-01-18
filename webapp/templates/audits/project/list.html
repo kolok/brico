@@ -37,15 +37,23 @@
                 href="{% url 'audits:project_detail' project.slug %}"
                 class="tile {% cycle 'tile-even' 'tile-odd' %}"
             >
-                <h2>{{ project.name }}</h2>
+                <h2>{{ project.name }} ({% blocktranslate count count=project.resources.count|default:0 %}{{ count }} Resource{% plural %}{{ count }} Resources{% endblocktranslate %})</h2>
                 {% if project.description %}
                     <p>{{ project.description|truncatewords:5 }}</p>
                 {% endif %}
                 <p>
-                    {% blocktranslate count count=project.resources.count|default:0 %}{{ count }} Resource{% plural %}{{ count }} Resources{% endblocktranslate %}
                 </p>
                 <p>
-                    {% blocktranslate count count=project.audits.count|default:0 %}{{ count }} Audit{% plural %}{{ count }} Audits{% endblocktranslate %}
+                    {% for audit in project.active_audits_list %}
+                        <div class="flex flex-wrap items-start gap-6 border-b border-gray-600 pb-2">
+                            <h3>{{ audit }}</h3>
+                            {% include 'audits/projectaudit/_partials/kpi.html' with audit=audit size="small" %}
+                        </div>
+                    {% endfor %}
+                    <p>
+                        {% blocktranslate count count=project.archived_audits_list|length|default:0 %}{{ count }} Archived Audit{% plural %}{{ count }} Archived Audits{% endblocktranslate %}
+                    </p>
+
                 </p>
             </a>
         {% empty %}

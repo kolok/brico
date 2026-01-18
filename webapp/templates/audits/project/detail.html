@@ -6,20 +6,25 @@
 {% block content %}
 <div>
     <h1>{{ project.name }}</h1>
-    <p>{{ project.description }}</p>
+    <p>
+        <a href="{% url 'audits:project_list' %}">⮐ {% translate "Back to projects list" %}</a>
+    </p>
+    {% if project.description %}
+        <h2>{% translate "Description" %}</h2>
+        <p>{{ project.description }}</p>
+    {% endif %}
     <h2>{% translate "Audits" %}</h2>
     <div class="tiles">
         {% for audit in project.audits.all %}
-            <div class="tile {% cycle 'tile-even' 'tile-odd' %}">
-                <h2>{{ audit.audit_library.name }}</h2>
+            <a href="{% url 'audits:projectaudit_detail' project.slug audit.id %}"
+                class="tile {% cycle 'tile-even' 'tile-odd' %} {% if audit.status == "ARCHIVED" %}tile-archived{% endif %}"
+            >
+                <h2>{{ audit }}</h2>
+                {% include 'audits/projectaudit/_partials/kpi.html' with audit=audit size="medium" %}
                 {% if audit.audit_library.description %}
                     <p>{{ audit.audit_library.description|truncatewords:10 }}</p>
                 {% endif %}
-                <div class="flex gap-2 mt-4">
-                    <a href="{% url 'audits:projectaudit_detail' project.slug audit.id %}" class="btn btn-primary">{% translate "Let's audit it" %}</a>
-                    <a href="{% url 'audits:projectaudit_delete' project.slug audit.id %}" class="btn btn-danger">{% translate "Delete" %}</a>
-                </div>
-            </div>
+            </a>
         {% empty %}
             <div class="tile tile-empty">
                 <p>{% translate "No audits yet." %}</p>

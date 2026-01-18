@@ -1,0 +1,23 @@
+{% load i18n %}
+
+<p class="mb-2 flex items-center gap-2">
+    {{ title }}
+</p>
+<div class="tooltip-group group">
+    <div class="kpi-bar">
+        <div class="kpi-bar-item bg-green" style="width: {{ green_ratio|stringformat:".2f" }}%"></div>
+        {% if orange_ratio %}
+            <div class="kpi-bar-item bg-orange" style="width: {{ orange_ratio|stringformat:".2f" }}%"></div>
+        {% endif %}
+    </div>
+    <span class="tooltip-block">
+        <span class="kpi-legend-line"><span class="kpi-legend-dot bg-green"></span><span class="kpi-legend-text">{{ green_ratio }}%&nbsp;{{ green_label }}</span></span>
+        {% if orange_ratio and orange_label %}
+            <span class="kpi-legend-line"><span class="kpi-legend-dot bg-orange"></span><span class="kpi-legend-text">{{ orange_ratio }}%&nbsp;{{ orange_label }}</span></span>
+        {% endif %}
+        {% if grey_label %}
+            <span class="kpi-legend-line"><span class="kpi-legend-dot bg-gray-200"></span><span class="kpi-legend-text">{{ grey_label }}</span></span>
+        {% endif %}
+        <span class="tooltip-block-bottom"></span>
+    </span>
+</div>

@@ -13,6 +13,7 @@ from audits.views.project import (
     ProjectListView,
 )
 from audits.views.projectaudit import (
+    ArchiveProjectAuditView,
     DeleteProjectAuditView,
     NewProjectAuditView,
     ProjectAuditDetailView,
@@ -54,6 +55,11 @@ urlpatterns = [
         "project/<str:project_slug>/audit/<int:pk>/delete/",
         DeleteProjectAuditView.as_view(),
         name="projectaudit_delete",
+    ),
+    path(
+        "project/<str:project_slug>/audit/<int:pk>/archive/",
+        ArchiveProjectAuditView.as_view(),
+        name="projectaudit_archive",
     ),
     # Resources URLs
     path(
