@@ -1,5 +1,3 @@
-import logging
-
 from audits.forms import NewAuditForm
 from audits.models.audit import ProjectAudit, ProjectAuditCriterion
 from audits.utils import natural_sort_key
@@ -129,9 +127,8 @@ class ArchiveProjectAuditView(LoginRequiredMixin, ProjectAuditViewMixin, DeleteV
 
     def form_valid(self, form):
         """Archive the audit instead of deleting it."""
-        self.object = self.get_object()
-        logging.warning(f"Archiving audit {self.object}")
-        self.object.status = ProjectAudit.ProjectAuditStatus.ARCHIVED
-        self.object.save()
+        audit: ProjectAudit = self.get_object()  # type: ignore[assignment]
+        audit.status = ProjectAudit.ProjectAuditStatus.ARCHIVED
+        audit.save()
         messages.success(self.request, _("Audit archived successfully"))
         return HttpResponseRedirect(self.get_success_url())

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             model_name="projectaudit",
             name="status",
             field=models.CharField(
-                choices=[("ACTIVE", "🟢 Active"), ("ARCHIVED", "� Archived")],
+                choices=[("ACTIVE", "🟢 Active"), ("ARCHIVED", "🟠 Archived")],
                 default="ACTIVE",
                 max_length=255,
                 verbose_name="Status",
