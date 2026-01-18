@@ -198,6 +198,7 @@ The design system in `base.css` contains all reusable components and patterns:
 - **Form elements**: `input`, `label`, `.helptext`
 - **Typography**: `h1`, `h2`, `h3`, `a`
 - **App-specific components**: `.tile`, `.tiles`, `.tile-even`, `.tile-odd`
+- **Interactive components**: `.tooltip-group`, `.tooltip-block`, `.tooltip-block-bottom` (tooltips), `.kpi-bar`, `.kpi-bar-item` (KPI bars)
 
 **Example from `base.css`:**
 
@@ -328,6 +329,68 @@ Use Tailwind utility classes directly only for:
     <a href="…" class="tile tile-even">
         <h2>Project Name</h2>
     </a>
+</div>
+```
+
+#### Tooltips
+
+The tooltip component provides hover-based information displays. It uses Tailwind's `group` class mechanism for hover state management.
+
+**Architecture:**
+
+The tooltip component uses a three-layer structure:
+
+1. **`.tooltip-group`**: The container element that must also include Tailwind's `group` class. This element serves as the hover trigger and positioning context.
+2. **`.tooltip-block`**: The actual tooltip content container, positioned absolutely above the trigger element. It remains hidden by default and becomes visible on `group-hover`.
+3. **`.tooltip-block-bottom`**: An optional decorative element (arrow/triangle) positioned at the bottom of the tooltip block, pointing to the trigger element.
+
+**Important:** The `.tooltip-group` element **must** include the Tailwind `group` class alongside it for the hover mechanism to work. This is because the `.tooltip-block` uses `group-hover:opacity-100` and `group-hover:visible` to control visibility.
+
+**Usage:**
+
+```django
+<div class="tooltip-group group">
+    <!-- Trigger element (e.g., KPI bar, icon, text) -->
+    <div class="kpi-bar">
+        <!-- Content that triggers tooltip on hover -->
+    </div>
+
+    <!-- Tooltip content (hidden by default, shown on hover) -->
+    <span class="tooltip-block">
+        <!-- Tooltip content (e.g., legend items) -->
+        <span class="kpi-legend-line">
+            <span class="kpi-legend-dot bg-green"></span>
+            <span class="kpi-legend-text">{% translate "Compliant" %}</span>
+        </span>
+        <!-- Optional: decorative arrow pointing down -->
+        <span class="tooltip-block-bottom"></span>
+    </span>
+</div>
+```
+
+**Key points:**
+
+- ✅ Always use `tooltip-group group` (both classes) on the container element
+- ✅ The `.tooltip-block` is absolutely positioned and appears above the trigger element
+- ✅ The `.tooltip-block-bottom` element creates a visual arrow connecting the tooltip to the trigger
+- ✅ The tooltip automatically shows/hides on hover thanks to Tailwind's `group-hover` mechanism
+- ✅ The component is defined in `static/to_compile/css/tooltip.css`
+
+**Example from the codebase:**
+
+```django
+<div class="tooltip-group group">
+    <div class="kpi-bar">
+        <div class="kpi-bar-item bg-green" style="width: 75%"></div>
+        <div class="kpi-bar-item bg-orange" style="width: 15%"></div>
+    </div>
+    <span class="tooltip-block">
+        <span class="kpi-legend-line">
+            <span class="kpi-legend-dot bg-green"></span>
+            <span class="kpi-legend-text">75% {% translate "Compliant" %}</span>
+        </span>
+        <span class="tooltip-block-bottom"></span>
+    </span>
 </div>
 ```
 

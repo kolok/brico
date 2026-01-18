@@ -18,3 +18,7 @@
 .tile-empty {
   @apply text-center italic bg-odd;
 }
+
+.tile-archived {
+  @apply text-gray-600 italic;
+}
