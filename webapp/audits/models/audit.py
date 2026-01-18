@@ -82,7 +82,7 @@ class ProjectAudit(TimestampedModel, models.Model):
 
     class ProjectAuditStatus(models.TextChoices):
         ACTIVE = "ACTIVE", _("🟢 Active")
-        ARCHIVED = "ARCHIVED", _("� Archived")
+        ARCHIVED = "ARCHIVED", _(" Archived")
 
     objects = ProjectAuditManager()
 
@@ -102,15 +102,10 @@ class ProjectAudit(TimestampedModel, models.Model):
 
     def get_completion_percentage(self) -> float:
         """
-        Calculate audit completion percentage.
-
-        Returns the percentage of criteria that have been handled
-        (i.e., not in NOT_HANDLED_YET status).
-
-        Returns:
-            float: Percentage (0-100) of completed criteria.
+        percentage of criteria that have been handled
+        (i.e., not in NOT_HANDLED_YET status)
         """
-        nb_criteria_by_status = self.nb_criteria_by_status()
+        nb_criteria_by_status = self._nb_criteria_by_status()
         if nb_criteria_by_status["ALL"] == 0:
             return 0
         return round(
@@ -122,16 +117,10 @@ class ProjectAudit(TimestampedModel, models.Model):
 
     def get_compliance_percentage(self) -> dict[str, float]:
         """
-        Calculate audit compliance percentage.
-
-        Audit compliance - how many criteria are compliant / partially compliant among
-        applicable criteria :
-        % of compliant / % of partially compliant / ALL - % of not applicable
-
-        Returns:
-            dict[str, float]: Percentage of completion by status.
+        percentage of criteria that are compliant or partially compliant
+        among applicable criteria
         """
-        nb_criteria_by_status = self.nb_criteria_by_status()
+        nb_criteria_by_status = self._nb_criteria_by_status()
         all_minus_not_applicable = (
             nb_criteria_by_status["ALL"] - nb_criteria_by_status["NOT_APPLICABLE"]
         )
@@ -154,14 +143,11 @@ class ProjectAudit(TimestampedModel, models.Model):
             "partially_completed": partially_completed,
         }
 
-    def nb_criteria_by_status(self) -> dict[str, int]:
+    def _nb_criteria_by_status(self) -> dict[str, int]:
         """
-        Count the number of criteria by status.
-
-        Returns:
-            dict[str, int]: Number of criteria by status.
+        Number of criteria by status
+        Use counter to limit the number of queries to DB
         """
-        # Working on criteria to limit the number of queries
         project_audit_criteria = list(self.project_audit_criteria.all())
         counts = Counter(criterion.status for criterion in project_audit_criteria)
         result = {
@@ -177,7 +163,7 @@ class ProjectAudit(TimestampedModel, models.Model):
 
     def __str__(self):
         return f"{self.audit_library.name}" + (
-            " (Archived)" if self.status == "ARCHIVED" else ""
+            f" ({self.get_status_display()})" if self.status == "ARCHIVED" else ""
         )
 
 
