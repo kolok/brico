@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "django_extensions",
+    "debug_toolbar",
     "import_export",
     "allauth",
     "allauth.account",
@@ -76,6 +77,10 @@ MIDDLEWARE = [
     "core.middleware.OrganizationMiddleware",
     "core.middleware.ActiveNavMiddleware",
 ]
+
+# Django Debug Toolbar - only active in DEBUG mode
+if DEBUG:
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
 # Configuration django-allauth
 AUTHENTICATION_BACKENDS = [
@@ -239,3 +244,11 @@ IMPORT_EXPORT_FORMATS = [CSV, XLSX, XLS]
 # ----------------------
 ANTHROPIC_API_KEY = env.str("ANTHROPIC_API_KEY", default="")
 ANTHROPIC_MODEL = env.str("ANTHROPIC_MODEL", default="anthropic:claude-sonnet-4-0")
+
+# Django Debug Toolbar configuration
+# -----------------------------------
+if DEBUG:
+    INTERNAL_IPS = [
+        "127.0.0.1",
+        "localhost",
+    ]

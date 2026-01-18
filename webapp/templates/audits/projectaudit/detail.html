@@ -5,8 +5,15 @@
 
 {% block content %}
 <div>
-    <h1>{% translate "Audit:" %} {{ audit.audit_library.name }}</h1>
-    <p>{{ audit.audit_library.description }}</p>
+    <h1>{% translate "Audit:" %} {{ audit }}</h1>
+    <p>
+        <a href="{% url 'audits:project_detail' project.slug %}">⮐ {% translate "Back to project" %} « {{ project.name }} »</a>
+    </p>
+    {% include 'audits/projectaudit/_partials/kpi.html' with audit=audit size="medium" %}
+    {% if audit.audit_library.description %}
+        <h2>{% translate "Description" %}</h2>
+        <p>{{ audit.audit_library.description }}</p>
+    {% endif %}
     <h2>{% translate "Criteria" %}</h2>
     <div class="tiles">
         {% for criterion in audit_criteria %}
@@ -22,6 +29,34 @@
                 <p>{% translate "No criteria yet." %}</p>
             </div>
         {% endfor %}
+    </div>
+
+    <h2>{% translate "Danger Zone" %}</h2>
+    <div class="danger-zone bg-white border border-red rounded-lg p-4 mb-4 flex flex-col gap-4">
+        {% if audit.status == "ACTIVE" %}
+        <div>
+            <h3>
+                {% translate "Archive Audit" %}
+            </h3>
+            <p>
+                {% translate "Once you archive an audit, it will be marked as archived and will no longer appear in active audits." %}
+            </p>
+            <a href="{% url 'audits:projectaudit_archive' project.slug audit.id %}" class="btn btn-danger">
+                {% translate "Archive Audit" %}
+            </a>
+        </div>
+        {% endif %}
+        <div>
+        <h3 class="mt-4">
+            {% translate "Delete Audit" %}
+        </h3>
+        <p>
+            {% translate "Once you delete an audit, there is no going back. Please be certain. All criteria and assessments associated with this audit will also be deleted." %}
+        </p>
+        <a href="{% url 'audits:projectaudit_delete' project.slug audit.id %}" class="btn btn-danger">
+            {% translate "Delete Audit" %}
+        </a>
+        </div>
     </div>
 </div>
 {% endblock content %}
