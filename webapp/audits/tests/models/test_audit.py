@@ -329,6 +329,277 @@ class TestProjectAudit:
         assert audit_library.projects.count() == 2
 
 
+@pytest.mark.django_db
+class TestProjectAuditStrRepresentation:
+    def test_str_representation_active(self, project, audit_library):
+        """Test __str__ method when status is ACTIVE."""
+        audit_library.name = "Test Audit Library"
+        audit_library.save()
+        project_audit = ProjectAuditFactory(
+            project=project,
+            audit_library=audit_library,
+            status=ProjectAudit.ProjectAuditStatus.ACTIVE,
+        )
+
+        assert str(project_audit) == "Test Audit Library"
+
+    def test_str_representation_archived(self, project, audit_library):
+        """Test __str__ method when status is ARCHIVED."""
+        audit_library.name = "Test Audit Library"
+        audit_library.save()
+        project_audit = ProjectAuditFactory(
+            project=project,
+            audit_library=audit_library,
+            status=ProjectAudit.ProjectAuditStatus.ARCHIVED,
+        )
+
+        assert "Test Audit Library" in str(project_audit)
+        assert "Archived" in str(project_audit)
+
+
+@pytest.fixture
+def criteria(audit_library):
+    return [
+        CriterionFactory(audit_library=audit_library, public_id="CRI-001"),
+        CriterionFactory(audit_library=audit_library, public_id="CRI-002"),
+        CriterionFactory(audit_library=audit_library, public_id="CRI-003"),
+        CriterionFactory(audit_library=audit_library, public_id="CRI-004"),
+        CriterionFactory(audit_library=audit_library, public_id="CRI-005"),
+    ]
+
+
+@pytest.mark.django_db
+class TestProjectAuditCompletionPercentage:
+    def test_get_completion_percentage_no_criteria(self, project_audit):
+        """Test get_completion_percentage when there are no criteria."""
+        completion = project_audit.get_completion_percentage()
+        assert completion == 0
+
+    def test_get_completion_percentage_all_not_handled(self, project_audit, criteria):
+        """Test get_completion_percentage when all criteria are NOT_HANDLED_YET."""
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[0],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[1],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+
+        completion = project_audit.get_completion_percentage()
+        assert completion == 0
+
+    def test_get_completion_percentage_all_handled(self, project_audit, criteria):
+        """Test get_completion_percentage when all criteria are handled."""
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[0],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[1],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[2],
+            status=(
+                ProjectAuditCriterion.ProjectAuditCriterionStatus.PARTIALLY_COMPLIANT
+            ),
+        )
+
+        completion = project_audit.get_completion_percentage()
+        assert completion == 100.0
+
+    def test_get_completion_percentage_partial(self, project_audit, criteria):
+        """
+        Test get_completion_percentage with mixed handled and not handled criteria.
+        """
+        # 2 handled, 2 not handled = 50%
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[0],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[1],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[2],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[3],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+
+        completion = project_audit.get_completion_percentage()
+        assert completion == 50.0
+
+    def test_get_completion_percentage_with_rounding(self, project_audit, criteria):
+        """Test get_completion_percentage with rounding (1 out of 3 = 33.33%)."""
+        # 1 handled, 2 not handled = 33.33% (rounded to 33.33)
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[0],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[1],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[2],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+
+        completion = project_audit.get_completion_percentage()
+        assert completion == 33.33
+
+
+@pytest.mark.django_db
+class TestProjectAuditCompliancePercentage:
+    def test_get_compliance_percentage_no_criteria(self, project_audit):
+        """Test get_compliance_percentage when there are no criteria."""
+        compliance = project_audit.get_compliance_percentage()
+        assert compliance == {"completed": 0, "partially_completed": 0}
+
+    def test_get_compliance_percentage_all_not_applicable(
+        self, project_audit, criteria
+    ):
+        """Test get_compliance_percentage when all criteria are NOT_APPLICABLE."""
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[0],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_APPLICABLE,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[1],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_APPLICABLE,
+        )
+
+        compliance = project_audit.get_compliance_percentage()
+        assert compliance == {"completed": 0, "partially_completed": 0}
+
+    def test_get_compliance_percentage_all_compliant(self, project_audit, criteria):
+        """Test get_compliance_percentage when all applicable criteria are COMPLIANT."""
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[0],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[1],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+
+        compliance = project_audit.get_compliance_percentage()
+        assert compliance == {"completed": 100.0, "partially_completed": 0}
+
+    def test_get_compliance_percentage_mixed_statuses(self, project_audit, criteria):
+        """Test get_compliance_percentage with mixed statuses."""
+        # 2 COMPLIANT, 1 PARTIALLY_COMPLIANT, 1 NOT_APPLICABLE
+        # Applicable: 3, COMPLIANT: 2 (66.67%), PARTIALLY_COMPLIANT: 1 (33.33%)
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[0],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[1],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[2],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.PARTIALLY_COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[3],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_APPLICABLE,
+        )
+
+        compliance = project_audit.get_compliance_percentage()
+        assert compliance["completed"] == 66.67
+        assert compliance["partially_completed"] == 33.33
+
+    def test_get_compliance_percentage_with_not_handled_yet(
+        self, project_audit, criteria
+    ):
+        """Test get_compliance_percentage excluding NOT_HANDLED_YET from applicable."""
+        # 1 COMPLIANT, 1 NOT_HANDLED_YET (excluded), 1 NOT_APPLICABLE (excluded)
+        # Applicable: 2 (NOT_HANDLED_YET is included), COMPLIANT: 1 (50%)
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[0],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[1],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_HANDLED_YET,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[2],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_APPLICABLE,
+        )
+
+        compliance = project_audit.get_compliance_percentage()
+        # Applicable = ALL - NOT_APPLICABLE = 3 - 1 = 2
+        # COMPLIANT = 1, so completed = 50%
+        assert compliance["completed"] == 50.0
+        assert compliance["partially_completed"] == 0
+
+    def test_get_compliance_percentage_complex_scenario(self, project_audit, criteria):
+        """Test get_compliance_percentage with a complex scenario."""
+        # 2 COMPLIANT, 1 PARTIALLY_COMPLIANT, 1 NOT_COMPLIANT, 1 NOT_APPLICABLE
+        # Applicable: 4 (excluding NOT_APPLICABLE)
+        # COMPLIANT: 2 (50%), PARTIALLY_COMPLIANT: 1 (25%)
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[0],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[1],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[2],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.PARTIALLY_COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[3],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_COMPLIANT,
+        )
+        ProjectAuditCriterionFactory(
+            project_audit=project_audit,
+            criterion=criteria[4],
+            status=ProjectAuditCriterion.ProjectAuditCriterionStatus.NOT_APPLICABLE,
+        )
+
+        compliance = project_audit.get_compliance_percentage()
+        assert compliance["completed"] == 50.0
+        assert compliance["partially_completed"] == 25.0
+
+
 @pytest.fixture
 def project_audit_criterion(project_audit, criterion):
     return ProjectAuditCriterionFactory(
