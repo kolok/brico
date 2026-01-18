@@ -1,3 +1,4 @@
+from collections import Counter
 from uuid import uuid4
 
 from core.models.mixin import TimestampedModel
@@ -64,8 +65,26 @@ class Tag(TimestampedModel, models.Model):
         return self.name
 
 
+class ProjectAuditManager(models.Manager):
+    """Manager for ProjectAudit model."""
+
+    def get_active(self):
+        return self.get_queryset().filter(status=ProjectAudit.ProjectAuditStatus.ACTIVE)
+
+    def get_archived(self):
+        return self.get_queryset().filter(
+            status=ProjectAudit.ProjectAuditStatus.ARCHIVED
+        )
+
+
 class ProjectAudit(TimestampedModel, models.Model):
     """Audit instance for a specific project."""
+
+    class ProjectAuditStatus(models.TextChoices):
+        ACTIVE = "ACTIVE", _("🟢 Active")
+        ARCHIVED = "ARCHIVED", _("� Archived")
+
+    objects = ProjectAuditManager()
 
     id = models.AutoField(primary_key=True)
     project = models.ForeignKey(
@@ -74,6 +93,92 @@ class ProjectAudit(TimestampedModel, models.Model):
     audit_library = models.ForeignKey(
         AuditLibrary, on_delete=models.CASCADE, related_name="projects"
     )
+    status = models.CharField(
+        max_length=255,
+        choices=ProjectAuditStatus.choices,
+        default=ProjectAuditStatus.ACTIVE,
+        verbose_name=_("Status"),
+    )
+
+    def get_completion_percentage(self) -> float:
+        """
+        Calculate audit completion percentage.
+
+        Returns the percentage of criteria that have been handled
+        (i.e., not in NOT_HANDLED_YET status).
+
+        Returns:
+            float: Percentage (0-100) of completed criteria.
+        """
+        nb_criteria_by_status = self.nb_criteria_by_status()
+        if nb_criteria_by_status["ALL"] == 0:
+            return 0
+        return round(
+            (nb_criteria_by_status["ALL"] - nb_criteria_by_status["NOT_HANDLED_YET"])
+            / nb_criteria_by_status["ALL"]
+            * 100,
+            2,
+        )
+
+    def get_compliance_percentage(self) -> dict[str, float]:
+        """
+        Calculate audit compliance percentage.
+
+        Audit compliance - how many criteria are compliant / partially compliant among
+        applicable criteria :
+        % of compliant / % of partially compliant / ALL - % of not applicable
+
+        Returns:
+            dict[str, float]: Percentage of completion by status.
+        """
+        nb_criteria_by_status = self.nb_criteria_by_status()
+        all_minus_not_applicable = (
+            nb_criteria_by_status["ALL"] - nb_criteria_by_status["NOT_APPLICABLE"]
+        )
+        if all_minus_not_applicable == 0:
+            return {
+                "completed": 0,
+                "partially_completed": 0,
+            }
+        completed = round(
+            nb_criteria_by_status["COMPLIANT"] / all_minus_not_applicable * 100, 2
+        )
+        partially_completed = round(
+            nb_criteria_by_status["PARTIALLY_COMPLIANT"]
+            / all_minus_not_applicable
+            * 100,
+            2,
+        )
+        return {
+            "completed": completed,
+            "partially_completed": partially_completed,
+        }
+
+    def nb_criteria_by_status(self) -> dict[str, int]:
+        """
+        Count the number of criteria by status.
+
+        Returns:
+            dict[str, int]: Number of criteria by status.
+        """
+        # Working on criteria to limit the number of queries
+        project_audit_criteria = list(self.project_audit_criteria.all())
+        counts = Counter(criterion.status for criterion in project_audit_criteria)
+        result = {
+            "NOT_HANDLED_YET": 0,
+            "NOT_COMPLIANT": 0,
+            "PARTIALLY_COMPLIANT": 0,
+            "COMPLIANT": 0,
+            "NOT_APPLICABLE": 0,
+            "ALL": counts.total(),
+        }
+        result.update({key: counts.get(key, 0) for key in counts.keys()})
+        return result
+
+    def __str__(self):
+        return f"{self.audit_library.name}" + (
+            " (Archived)" if self.status == "ARCHIVED" else ""
+        )
 
 
 class ProjectAuditCriterion(TimestampedModel, models.Model):

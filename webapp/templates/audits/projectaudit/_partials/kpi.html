@@ -1,0 +1,10 @@
+<div class="flex flex-wrap items-start gap-6">
+    <div class="mb-4 {% if size == 'medium' %}w-64{% elif size == 'small' %}w-48{% else %}w-full{% endif %}">
+        {% include 'audits/components/kpi-bar.html' with title=_("Completion:") green_ratio=audit.get_completion_percentage green_label=_("Completed") grey_label=_("Not Completed") %}
+    </div>
+    {% with compliance=audit.get_compliance_percentage %}
+        <div class="mb-4 {% if size == 'medium' %}w-64{% elif size == 'small' %}w-48{% else %}w-full{% endif %}">
+            {% include 'audits/components/kpi-bar.html' with title=_("Compliance:") green_ratio=compliance.completed green_label=_("Compliant") orange_ratio=compliance.partially_completed orange_label=_("Partially Compliant") grey_label=_("Not Compliant / Not Handled") %}
+        </div>
+    {% endwith %}
+</div>
