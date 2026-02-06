@@ -19,6 +19,8 @@ jobs:
   backend_linter:
     name: 📝 Backend Linter
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
       - name: Install uv
@@ -41,6 +43,8 @@ jobs:
   frontend_linter:
     name: 📝 Frontend Linter
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -57,6 +61,8 @@ jobs:
   backend_tests:
     name: ✅ Backend Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     services:
       postgres:
         image: postgis/postgis:15-3.3-alpine
@@ -71,7 +77,6 @@ jobs:
           --health-retries 50
         ports:
           - 5432:5432
-
     steps:
       - uses: actions/checkout@v6
       - name: Install uv
