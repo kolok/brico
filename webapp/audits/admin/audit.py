@@ -1,4 +1,4 @@
-from audits.models.audit import AuditLibrary, Criterion, Tag
+from audits.models.audit import AuditLibrary, Criterion, CriterionTag
 from django.contrib import admin
 from django.utils.text import slugify
 from import_export import fields, resources
@@ -26,7 +26,7 @@ class CriterionResource(resources.ModelResource):
             tags_names = [tag.strip() for tag in tags]
             instance.tags.clear()
             for tag_name in tags_names:
-                tag, _ = Tag.objects.get_or_create(name=tag_name)
+                tag, _ = CriterionTag.objects.get_or_create(name=tag_name)
                 instance.tags.add(tag)
 
     def get_queryset(self):
@@ -56,8 +56,8 @@ class CriterionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
 
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
+@admin.register(CriterionTag)
+class CriterionTagAdmin(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ("name",)
     filter_horizontal = ("criteria",)
