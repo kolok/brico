@@ -1,0 +1,125 @@
+{% load i18n %}
+
+<div class="w-full max-w-lg mx-auto mt-10">
+  <div class="flex flex-wrap items-center border border-gray-300 rounded-md p-2 space-x-2">
+    <div id="{{ input_id }}_tags_container" class="flex flex-wrap items-center gap-2">
+      <!-- Tags will be dynamically added here -->
+    </div>
+    <input
+      id="{{ input_id }}_tag_input"
+      type="text"
+      placeholder="{% translate 'Add a tag…' %}"
+      class="flex-1 border-none outline-none focus:ring-0"
+    />
+  </div>
+  <p
+    id="{{ input_id }}_error_message"
+    class="mt-2 text-sm text-red-500 hidden"
+  >
+    {% translate "You can only add up to 5 tags." %}
+  </p>
+  <div id="{{ input_id }}_hidden_container"></div>
+  <input
+    type="hidden"
+    id="{{ input_id }}_initial"
+    value="{{ hidden_value|escape }}"
+  />
+</div>
+<script>
+  (function() {
+    const input = document.getElementById('{{ input_id }}_tag_input');
+    const tagsContainer = document.getElementById('{{ input_id }}_tags_container');
+    const errorMessage = document.getElementById('{{ input_id }}_error_message');
+    const hiddenContainer = document.getElementById('{{ input_id }}_hidden_container');
+    const initialInput = document.getElementById('{{ input_id }}_initial');
+
+    if (!input || !tagsContainer || !errorMessage || !hiddenContainer || !initialInput) {
+      return;
+    }
+
+    let tags = [];
+
+    // Load initial tags from the hidden initial input, if any
+    try {
+      const initialValue = initialInput.value || "[]";
+      const decoded = JSON.parse(initialValue);
+      if (Array.isArray(decoded)) {
+        tags = decoded.filter((tag) => typeof tag === "string" && tag.trim().length > 0);
+      }
+    } catch (e) {
+      // Ignore invalid JSON, start with an empty list
+      tags = [];
+    }
+
+    const syncHidden = () => {
+      hiddenContainer.innerHTML = '';
+      tags.forEach((tag) => {
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = '{{ name }}';
+        hidden.value = tag;
+        hiddenContainer.appendChild(hidden);
+      });
+    };
+
+    const renderTags = () => {
+      tagsContainer.innerHTML = '';
+      tags.forEach((tag, index) => {
+        const tagElement = document.createElement('div');
+        tagElement.className =
+          'flex items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-sm';
+        tagElement.innerHTML = `
+          <span>${tag}</span>
+          <button
+            type="button"
+            class="ml-2 text-blue-500 hover:text-blue-700"
+            data-index="${index}"
+          >
+            &times;
+          </button>
+        `;
+        const button = tagElement.querySelector('button');
+        if (button) {
+          button.addEventListener('click', () => {
+            removeTag(index);
+          });
+        }
+        tagsContainer.appendChild(tagElement);
+      });
+      syncHidden();
+    };
+
+    const removeTag = (index) => {
+      tags.splice(index, 1);
+      renderTags();
+      errorMessage.classList.add('hidden'); // Hide error message if a tag is removed
+    };
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && input.value.trim() !== '') {
+        event.preventDefault();
+        const newTag = input.value.trim();
+        if (tags.length >= 5) {
+          // Show error if the tag limit is exceeded
+          errorMessage.classList.remove('hidden');
+          return;
+        } else {
+          errorMessage.classList.add('hidden');
+        }
+
+        if (!tags.includes(newTag)) {
+          tags.push(newTag);
+          renderTags();
+        }
+        input.value = '';
+      }
+    });
+
+    // Initial render in case there are pre-existing tags
+    if (tags.length > 0) {
+      renderTags();
+    } else {
+      syncHidden();
+    }
+  })();
+</script>

@@ -1,0 +1,16 @@
+{% extends 'layout/base-logged.html' %}
+
+{% load i18n %}
+
+{% block title %}
+    {% translate "Organization - Cosqua" %}
+{% endblock title %}
+
+{% block content %}
+    <h2>{{ object.name }} - {% translate "Edit Organization" %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">{% translate "Save" %}</button>
+    </form>
+{% endblock content %}
