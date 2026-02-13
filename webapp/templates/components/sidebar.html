@@ -1,0 +1,26 @@
+{% load i18n %}
+
+<nav>
+    <a href="{% url 'dashboard' %}" {% if request.active_nav.dashboard %}class="active"{% endif %}>
+        {% translate "Dashboard" %}
+    </a>
+    <a href="{% url 'audits:project_list' %}" {% if request.active_nav.project %}class="active"{% endif %}>
+        {% translate "Projects" %}
+    </a>
+    <a href="{% url 'settings:index' %}" {% if request.active_nav.settings %}class="active"{% endif %}>
+        {% translate "Settings" %}
+    </a>
+    {% if request.active_nav.settings %}
+        <nav class="mt-1 ml-4 text-sm">
+            <a href="{% url 'settings:index' %}" {% if request.active_nav.organization %}class="active"{% endif %}>
+                {% translate "Organization" %}
+            </a>
+            <a href="{% url 'settings:audits' %}" {% if request.active_nav.audits %}class="active"{% endif %}>
+                {% translate "My Audits" %}
+            </a>
+            <a href="{% url 'settings:members' %}" {% if request.active_nav.members %}class="active"{% endif %}>
+                {% translate "Members" %}
+            </a>
+        </nav>
+    {% endif %}
+</nav>

@@ -1,4 +1,4 @@
-from audits.forms import ProjectForm
+from audits.forms import ProjectForm, SearchForm
 from audits.models.audit import ProjectAudit
 from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -37,6 +37,7 @@ class ProjectListView(LoginRequiredMixin, ProjectViewMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        form = SearchForm(self.request.GET or None)
         # Prefetch active and archived audits separately using to_attr
         active_audits = Prefetch(
             "audits",
@@ -54,10 +55,17 @@ class ProjectListView(LoginRequiredMixin, ProjectViewMixin, ListView):
             to_attr="archived_audits_list",
         )
         queryset = queryset.prefetch_related(active_audits, archived_audits)
-        search_query = self.request.GET.get("search", "").strip()
+        search_query = ""
+        if form.is_valid():
+            search_query = form.cleaned_data.get("search", "").strip()
         if search_query:
             queryset = queryset.filter(name__icontains=search_query)
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm(self.request.GET or None)
+        return context
 
 
 class ProjectDetailView(LoginRequiredMixin, ProjectViewMixin, DetailView):

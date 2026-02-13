@@ -13,8 +13,12 @@ urlpatterns = [
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("audits/", include(("audits.urls", "audits"), namespace="audits")),
     path(
-        "organizations/",
+        "org/",
         include(("organization.urls", "organization"), namespace="organization"),
+    ),
+    path(
+        "settings/",
+        include(("organization.settings_urls", "settings"), namespace="settings"),
     ),
     # Auth interface
     path("accounts/", include("allauth.urls")),
