@@ -1,5 +1,5 @@
 """
-Views for organization management.
+Views for core organization management (creation and switching).
 """
 
 from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY, ORGANIZATIONS_SESSION_KEY
@@ -24,7 +24,7 @@ class OrganizationCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         """Associate the created organization to the user and set it as current."""
         with transaction.atomic():
-            # Créer l'organisation
+            # Create the organization
             organization = form.save()
 
             # Check if it is the first organization of the user

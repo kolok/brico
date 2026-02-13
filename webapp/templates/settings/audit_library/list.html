@@ -1,0 +1,29 @@
+{% extends "layout/base-logged.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "My Audit Libraries - Cosqua" %}{% endblock %}
+
+{% block content %}
+    <h1>{% translate "My Audit Libraries" %}</h1>
+
+    <div class="tiles">
+        {% for library in audit_libraries %}
+            <a
+                href="{% url 'settings:audit_library_edit' library.slug %}"
+                class="tile {% cycle 'tile-even' 'tile-odd' %}"
+            >
+                <h2>{{ library.name }}</h2>
+                {% if library.description %}
+                    <p>{{ library.description|truncatewords:5 }}</p>
+                    <p>{{ library.criterias.count }} {% translate "criteria" %}</p>
+                {% endif %}
+            </a>
+        {% empty %}
+            <div class="tile tile-empty">
+                <p>
+                    {% translate "No audit libraries for this organization yet." %}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

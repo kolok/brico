@@ -7,14 +7,7 @@
     <div class="main-layout">
         <aside>
             {% block sidepanel %}
-                <nav>
-                    <a href="{% url 'dashboard' %}" {% if request.active_nav.dashboard %}class="active"{% endif %}>
-                        {% translate "Dashboard" %}
-                    </a>
-                    <a href="{% url 'audits:project_list' %}" {% if request.active_nav.project %}class="active"{% endif %}>
-                        {% translate "Projects" %}
-                    </a>
-                </nav>
+                {% include "components/sidebar.html" %}
             {% endblock sidepanel %}
         </aside>
         <section class="content">
