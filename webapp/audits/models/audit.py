@@ -12,9 +12,6 @@ from organization.models.organization import Organization, Project
 class Tag(TimestampedModel, models.Model):
     """Tag to categorize audit criteria."""
 
-    class Meta:
-        abstract = True
-
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True, null=False, blank=False)
     slug = AutoSlugField(populate_from="name")  # type: ignore[arg-type]
@@ -27,12 +24,6 @@ class Tag(TimestampedModel, models.Model):
 
     def __str__(self):
         return self.name
-
-
-class AuditLibraryTag(Tag):
-    """Tag to categorize audit libraries."""
-
-    pass
 
 
 class AuditLibrary(TimestampedModel, models.Model):
@@ -49,9 +40,7 @@ class AuditLibrary(TimestampedModel, models.Model):
     name = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from="name")  # type: ignore[arg-type]
     description = models.TextField(blank=True, default="", null=False)
-    tags = models.ManyToManyField(
-        AuditLibraryTag, related_name="audit_libraries", blank=True
-    )
+    tags = models.ManyToManyField(Tag, related_name="audit_libraries", blank=True)
 
     class Meta:
         verbose_name_plural = "Audit Libraries"
@@ -68,12 +57,6 @@ class AuditLibrary(TimestampedModel, models.Model):
         return self.name
 
 
-class CriterionTag(Tag):
-    """Tag to categorize audit criteria."""
-
-    pass
-
-
 class Criterion(TimestampedModel, models.Model):
     """Audit criterion definition from an audit library."""
 
@@ -84,7 +67,7 @@ class Criterion(TimestampedModel, models.Model):
     public_id = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="", null=False)
-    tags = models.ManyToManyField(CriterionTag, related_name="criteria", blank=True)
+    tags = models.ManyToManyField(Tag, related_name="criteria", blank=True)
 
     class Meta:
         verbose_name_plural = "Criteria"

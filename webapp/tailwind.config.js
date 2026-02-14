@@ -41,6 +41,8 @@ module.exports = {
       "gray-200": "#e5e7eb",
       "gray-600": "#6b7280",
       "blue-600": "#2563eb",
+      "blue-100": "#e6f3ff",
+      "blue-700": "#0052a3",
     },
   },
   plugins: [require("tailwindcss-animate")],
