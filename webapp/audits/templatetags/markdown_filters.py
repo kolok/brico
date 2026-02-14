@@ -1,3 +1,4 @@
+import logging
 import re
 
 import markdown
@@ -5,6 +6,13 @@ from django import template
 from django.utils.safestring import mark_safe
 
 register = template.Library()
+
+
+@register.simple_tag(takes_context=True)
+def debug_context(context):
+    """Debug: display all context variables. Remove in production."""
+    logging.warning(context)
+    return ""
 
 
 @register.filter(name="markdown")

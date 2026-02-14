@@ -2,12 +2,15 @@
 Views related to organization settings.
 """
 
+import logging
+
 from audits.forms import AuditLibraryForm
-from audits.models.audit import AuditLibrary, AuditLibraryTag
+from audits.models.audit import AuditLibrary, Tag
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DeleteView, ListView, RedirectView, UpdateView
 from organization.mixins import OrganizationPermissionMixin
@@ -145,11 +148,11 @@ class OrganizationAuditLibraryEditView(
         """
         context = super().get_context_data(**kwargs)
         if self.current_organization_id is not None:
-            context["all_tags"] = AuditLibraryTag.objects.filter(
+            context["all_tags"] = Tag.objects.filter(
                 organization_id=self.current_organization_id
             ).order_by("name")
         else:
-            context["all_tags"] = AuditLibraryTag.objects.none()
+            context["all_tags"] = Tag.objects.none()
         return context
 
     def get_success_url(self, *args, **kwargs):
@@ -159,6 +162,15 @@ class OrganizationAuditLibraryEditView(
             "settings:audit_library_edit",
             kwargs={"slug": audit_library.slug},
         )
+
+    def form_valid(self, form: AuditLibraryForm) -> HttpResponse:
+        """Save the form and return a success response."""
+        return super().form_valid(form)
+
+    def form_invalid(self, form: AuditLibraryForm) -> HttpResponse:
+        """Log validation errors for debugging."""
+        logging.warning("AuditLibrary form invalid: %s", form.errors)
+        return super().form_invalid(form)
 
 
 class OrganizationAuditLibraryDeleteView(
