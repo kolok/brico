@@ -24,6 +24,14 @@ class ActiveNavMiddleware:
             active_nav["project"] = True
         if request.path.startswith("/dashboard"):
             active_nav["dashboard"] = True
+        if request.path.startswith("/settings"):
+            active_nav["settings"] = True
+        if request.path.startswith("/settings/organization"):
+            active_nav["organization"] = True
+        if request.path.startswith("/settings/audits"):
+            active_nav["audits"] = True
+        if request.path.startswith("/settings/members"):
+            active_nav["members"] = True
 
         request.active_nav = active_nav
 
@@ -33,7 +41,7 @@ class ActiveNavMiddleware:
 
 class OrganizationMiddleware:
     """
-    Middleware pour gérer l'organisation courante de l'utilisateur en session.
+    Middleware to manage the current organization of the user in session.
     """
 
     def __init__(self, get_response):

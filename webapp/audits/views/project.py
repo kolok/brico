@@ -1,8 +1,9 @@
-from audits.forms import ProjectForm
+from audits.forms import ProjectForm, SearchForm
+from audits.models.audit import ProjectAudit
 from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import QuerySet
+from django.db.models import Prefetch, QuerySet
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, FormView, ListView
@@ -36,10 +37,35 @@ class ProjectListView(LoginRequiredMixin, ProjectViewMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        search_query = self.request.GET.get("search", "").strip()
+        form = SearchForm(self.request.GET or None)
+        # Prefetch active and archived audits separately using to_attr
+        active_audits = Prefetch(
+            "audits",
+            queryset=ProjectAudit.objects.get_active()
+            .select_related("audit_library")
+            .prefetch_related(
+                "project_audit_criteria",
+                "project_audit_criteria__criterion",
+            ),
+            to_attr="active_audits_list",
+        )
+        archived_audits = Prefetch(
+            "audits",
+            queryset=ProjectAudit.objects.get_archived(),
+            to_attr="archived_audits_list",
+        )
+        queryset = queryset.prefetch_related(active_audits, archived_audits)
+        search_query = ""
+        if form.is_valid():
+            search_query = form.cleaned_data.get("search", "").strip()
         if search_query:
             queryset = queryset.filter(name__icontains=search_query)
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm(self.request.GET or None)
+        return context
 
 
 class ProjectDetailView(LoginRequiredMixin, ProjectViewMixin, DetailView):

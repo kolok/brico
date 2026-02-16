@@ -1,0 +1,47 @@
+{% load i18n %}
+
+<div
+  data-controller="tag-select"
+  data-tag-select-name-value="{{ widget.name }}"
+  data-tag-select-max-value="5"
+  class="w-full max-w-lg"
+>
+  {# Available options from the Django widget #}
+  {% for _, options, index in widget.optgroups %}
+    {% for option in options %}
+    <!-- FIXME: could be {% include option.template_name with widget=option %} (input_tags_options.html) -->
+      <template
+        data-tag-select-target="option"
+        data-label="{{ option.label }}"
+        data-value="{{ option.value }}"
+        data-selected="{{ option.selected }}"
+      ></template>
+    {% endfor %}
+  {% endfor %}
+
+  {# Tag input UI #}
+  <div class="input flex flex-wrap items-center space-x-2">
+    <div
+      data-tag-select-target="tagsContainer"
+      class="flex flex-wrap items-center gap-2"
+    ></div>
+    <input
+      data-tag-select-target="input"
+      data-action="keydown->tag-select#handleKeydown"
+      type="text"
+      placeholder="{% translate 'Add a tag…' %}"
+      class="flex-1 border-none outline-none focus:ring-0 p-0"
+    />
+  </div>
+
+  {# Error message #}
+  <p
+    data-tag-select-target="error"
+    class="mt-2 text-sm text-red-500 hidden"
+  >
+    {% translate "You can only add up to 5 tags." %}
+  </p>
+
+  {# Hidden inputs for form submission #}
+  <div data-tag-select-target="tagSet"></div>
+</div>

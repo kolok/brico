@@ -1,0 +1,16 @@
+{% extends 'layout/base-logged.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Archive Project Audit - Cosqua" %}{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{% translate "Archive Project Audit" %}</h1>
+    <p>{% translate "Are you sure you want to archive this project audit?" %}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">{% translate "Archive" %}</button>
+        <a href="{% url 'audits:projectaudit_detail' project.slug audit.id %}" class="btn btn-secondary">{% translate "Cancel" %}</a>
+    </form>
+</div>
+{% endblock content %}

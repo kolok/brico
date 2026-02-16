@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DeleteView, DetailView, FormView
@@ -105,3 +106,29 @@ class DeleteProjectAuditView(LoginRequiredMixin, ProjectAuditViewMixin, DeleteVi
         context = super().get_context_data(**kwargs)
         context["project"] = self._get_project()
         return context
+
+
+class ArchiveProjectAuditView(LoginRequiredMixin, ProjectAuditViewMixin, DeleteView):
+    """Archive a project audit instead of deleting it."""
+
+    model = ProjectAudit
+    template_name = "audits/projectaudit/confirm_archive.html"
+
+    def get_success_url(self):
+        return reverse_lazy(
+            "audits:project_detail", kwargs={"slug": self._get_project().slug}
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project"] = self._get_project()
+        context["audit"] = self.get_object()
+        return context
+
+    def form_valid(self, form):
+        """Archive the audit instead of deleting it."""
+        audit: ProjectAudit = self.get_object()  # type: ignore[assignment]
+        audit.status = ProjectAudit.ProjectAuditStatus.ARCHIVED
+        audit.save()
+        messages.success(self.request, _("Audit archived successfully"))
+        return HttpResponseRedirect(self.get_success_url())
