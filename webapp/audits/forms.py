@@ -1,4 +1,3 @@
-import logging
 import uuid
 
 from audits.models.audit import AuditLibrary, Comment, ProjectAuditCriterion, Tag
@@ -22,7 +21,56 @@ class NewAuditForm(forms.Form):
 
 
 class TagListField(forms.ModelMultipleChoiceField):
-    widget = TagsWidget()
+    """
+    Accept tag names via TagsWidget and resolve them to Tag instances.
+
+    Unlike ModelMultipleChoiceField, this field does not reject values
+    missing from the queryset: it creates new Tags on the fly (scoped to
+    the organization set on the field).  ``cleaned_data['tags']`` therefore
+    contains a list of ``Tag`` objects, exactly like
+    ``ModelMultipleChoiceField`` would.
+    """
+
+    widget = TagsWidget
+
+    def __init__(self, *args, **kwargs) -> None:
+        self.organization: Organization | None = None
+        super().__init__(*args, **kwargs)
+
+    def clean(self, value: list[str] | str | None) -> list[Tag]:
+        """Resolve tag names to Tag instances, creating missing ones."""
+        if not value:
+            return []
+        if isinstance(value, str):
+            value = [value]
+        if not isinstance(value, list):
+            raise forms.ValidationError("Invalid tags format.")
+
+        tags: list[Tag] = []
+        for item in value:
+            if not isinstance(item, str):
+                continue
+            name = item.strip()
+            if not name:
+                continue
+            slug = slugify(name)
+            if self.organization is not None:
+                tag, _ = Tag.objects.get_or_create(
+                    slug=slug,
+                    defaults={
+                        "name": name,
+                        "organization": self.organization,
+                    },
+                )
+            else:
+                try:
+                    tag = Tag.objects.get(slug=slug)
+                except Tag.DoesNotExist:
+                    raise forms.ValidationError(
+                        'Tag "%(name)s" does not exist.', params={"name": name}
+                    )
+            tags.append(tag)
+        return tags
 
 
 class AuditLibraryForm(forms.ModelForm):
@@ -31,6 +79,10 @@ class AuditLibraryForm(forms.ModelForm):
 
     Tags are managed through a custom widget. The widget keeps a list of hidden
     inputs (one per tag) in sync with the selected tag names.
+
+    ``cleaned_data['tags']`` is a list of ``Tag`` objects (like
+    ``ModelMultipleChoiceField``).  Django's ``_save_m2m`` takes care of
+    persisting the relationship when ``save(commit=True)`` is called.
     """
 
     tags = TagListField(
@@ -51,64 +103,18 @@ class AuditLibraryForm(forms.ModelForm):
     ) -> None:
         """
         Accept an optional organization to scope tag operations.
+
+        Populates the TagsWidget choices from the instance's current tags
+        so the Stimulus controller can render them on initial page load.
         """
         self.organization: Organization | None = organization
         super().__init__(*args, **kwargs)
 
-    def clean_tags(self) -> list[str]:
-        """
-        Clean the list of tag names coming from the widget.
-        """
-        raw_value = self.cleaned_data.get("tags", [])
-        if not raw_value:
-            return []
-
-        if not isinstance(raw_value, list):
-            raise forms.ValidationError(_("Invalid tags format."))
-
-        cleaned: list[str] = []
-        for item in raw_value:
-            if not isinstance(item, str):
-                continue
-            name = item.strip()
-            if name:
-                cleaned.append(name)
-
-        return cleaned
-
-    def save(self, commit: bool = True) -> AuditLibrary:
-        """
-        Save the AuditLibrary and synchronize its tags.
-
-        Tags are created or retrieved by slug, which is generated from the tag
-        name, and scoped to the provided organization when possible.
-        """
-        instance: AuditLibrary = super().save(commit=commit)
-
-        tag_names: list[str] = self.cleaned_data.get("tags", [])
-        logging.warning(f"self.cleaned_data: {self.cleaned_data}")
-
-        organization = self.organization or instance.organization
-
-        tags: list[Tag] = []
-        if tag_names and organization is not None:
-            for name in tag_names:
-                slug = slugify(name)
-                tag, _ = Tag.objects.get_or_create(
-                    slug=slug,
-                    defaults={
-                        "name": name,
-                        "organization": organization,
-                    },
-                )
-                tags.append(tag)
-
-        if commit:
-            # If no organization is available, we leave existing tags unchanged.
-            if organization is not None:
-                instance.tags.set(tags)
-
-        return instance
+        # Let the field know which organization to scope new tags to.
+        resolved_org = organization or (
+            self.instance.organization if self.instance and self.instance.pk else None
+        )
+        self.fields["tags"].organization = resolved_org  # type: ignore[union-attr]
 
 
 class SearchForm(forms.Form):
