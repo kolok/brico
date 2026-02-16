@@ -19,6 +19,12 @@
                 {% translate "My Audits" %}
             </a>
             <a href="{% url 'settings:members' %}" {% if request.active_nav.members %}class="active"{% endif %}>
+                {% translate "Stages" %}
+            </a>
+            <a href="{% url 'settings:members' %}" {% if request.active_nav.members %}class="active"{% endif %}>
+                {% translate "Tags" %}
+            </a>
+            <a href="{% url 'settings:members' %}" {% if request.active_nav.members %}class="active"{% endif %}>
                 {% translate "Members" %}
             </a>
         </nav>
