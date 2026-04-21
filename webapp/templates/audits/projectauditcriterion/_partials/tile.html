@@ -1,0 +1,9 @@
+{% load i18n %}
+
+<a href="{% url 'audits:projectauditcriterion_detail' project.slug audit.id item.id %}" class="tile {{ tile_class }}">
+    <h2>{{ item }}</h2>
+    {% if item.criterion.description %}
+        <p>{{ item.criterion.description|truncatewords:10 }}</p>
+    {% endif %}
+    <p class="text-sm font-semibold mt-2">{{ item.get_status_display }}</p>
+</a>

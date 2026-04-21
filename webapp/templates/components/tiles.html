@@ -1,0 +1,19 @@
+{% load i18n %}
+
+<div class="tiles">
+    {% for item in items %}
+        {% include tile_template with item=item tile_class=forloop.counter|divisibleby:2|yesno:"tile-even,tile-odd" %}
+    {% empty %}
+        <div class="tile tile-empty">
+            <p>{{ empty_message }}</p>
+        </div>
+    {% endfor %}
+    {% if add_url %}
+        <a href="{{ add_url }}" class="tile">
+            <h2>{{ add_label }}</h2>
+            {% if add_description %}
+                <p>{{ add_description }}</p>
+            {% endif %}
+        </a>
+    {% endif %}
+</div>

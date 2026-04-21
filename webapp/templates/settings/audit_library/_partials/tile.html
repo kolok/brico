@@ -1,0 +1,12 @@
+{% load i18n %}
+
+<a
+    href="{% url 'settings:audit_library_edit' item.slug %}"
+    class="tile {{ tile_class }}"
+>
+    <h2>{{ item.name }}</h2>
+    {% if item.description %}
+        <p>{{ item.description|truncatewords:5 }}</p>
+        <p>{{ item.criterias.count }} {% translate "criteria" %}</p>
+    {% endif %}
+</a>
