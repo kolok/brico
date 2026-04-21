@@ -13,6 +13,14 @@
         <h2>{% translate "Description" %}</h2>
         <p>{{ project.description }}</p>
     {% endif %}
+    <details class="mb-4">
+        <summary>{% blocktranslate count count=project.resources.count %}{{ count }} Resource{% plural %}{{ count }} Resources{% endblocktranslate %}</summary>
+        {% translate "No resources yet." as empty_resources %}
+        {% translate "Add Resource" as add_resource_lbl %}
+        {% translate "Create a new resource for this project." as add_resource_desc %}
+        {% url 'audits:resource_new' project.slug as add_resource_href %}
+        {% tiles project.resources.all "audits/resource/_partials/tile.html" empty_message=empty_resources add_url=add_resource_href add_label=add_resource_lbl add_description=add_resource_desc %}
+    </details>
     <a href="{% url 'audits:project_edit' project.slug %}" class="btn btn-primary">
         {% translate "Edit Project" %}
     </a>
@@ -23,14 +31,6 @@
     {% translate "Create a new audit for this project." as start_audit_desc %}
     {% url 'audits:projectaudit_new' project.slug as add_audit_href %}
     {% tiles project.audits.all "audits/projectaudit/_partials/tile.html" empty_message=empty_audits add_url=add_audit_href add_label=start_audit_lbl add_description=start_audit_desc %}
-
-    <h2>{% translate "Resources" %}</h2>
-    {% translate "No resources yet." as empty_resources %}
-    {% translate "Add Resource" as add_resource_lbl %}
-    {% translate "Create a new resource for this project." as add_resource_desc %}
-    {% url 'audits:resource_new' project.slug as add_resource_href %}
-    {% tiles project.resources.all "audits/resource/_partials/tile.html" empty_message=empty_resources add_url=add_resource_href add_label=add_resource_lbl add_description=add_resource_desc %}
-
 
     <h2>{% translate "Danger Zone" %}</h2>
     <div class="danger-zone  bg-white border border-red rounded-lg p-4 mb-4">
