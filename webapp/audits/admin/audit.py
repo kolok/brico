@@ -60,5 +60,4 @@ class CriterionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ("name",)
-    filter_horizontal = ("criteria",)
     readonly_fields = ("created_at", "updated_at")

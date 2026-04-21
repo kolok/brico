@@ -26,6 +26,7 @@ class OrganizationPermissionMixin:
         Get queryset with organization filter,
         to be implemented by the View which implement this mixin.
         """
+        raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
     def _get_object_organization_id(self) -> int:

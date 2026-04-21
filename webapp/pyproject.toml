@@ -25,8 +25,10 @@ dependencies = [
     "pydantic-ai-examples>=1.16.0",
     "django-import-export[xls,xlsx]>=4.3.14",
     "django-extensions>=4.1",
+    "django-debug-toolbar>=6.1.0",
     "markdown>=3.7",
     "natsort>=8.4.0",
+    "django-taggit>=6.1.0",
 ]
 
 [dependency-groups]

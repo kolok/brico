@@ -7,7 +7,7 @@ from audits.views.mixin import (
 )
 from django.contrib.auth import get_user_model
 from django.http import Http404
-from organization.tests.factories import ProjectFactory
+from organization.tests.factories import OrganizationFactory, ProjectFactory
 
 User = get_user_model()
 
@@ -15,19 +15,19 @@ User = get_user_model()
 class FakeView(ProjectChildrenMixin):
     """Fake view that uses ProjectChildrenMixin."""
 
-    pass
+    current_organization_id: int | None = None
 
 
 class FakeAuditView(AuditChildrenMixin):
     """Fake view that uses AuditChildrenMixin."""
 
-    pass
+    current_organization_id: int | None = None
 
 
 class FakeCriteriaView(CriteriaChildrenMixin):
     """Fake view that uses CriteriaChildrenMixin."""
 
-    pass
+    current_organization_id: int | None = None
 
 
 @pytest.mark.django_db
@@ -38,6 +38,7 @@ class TestProjectChildrenMixin:
         project = ProjectFactory()
         view = FakeView()
         view.kwargs = {"project_slug": project.slug}
+        view.current_organization_id = project.organization_id
 
         result = view._get_project()
 
@@ -45,15 +46,19 @@ class TestProjectChildrenMixin:
         assert result.slug == project.slug
 
     def test_get_project_raises_404_for_invalid_slug(self):
+        project = ProjectFactory()
         view = FakeView()
         view.kwargs = {"project_slug": "non-existent-slug"}
+        view.current_organization_id = project.organization_id
 
         with pytest.raises(Http404):
             view._get_project()
 
     def test_get_project_with_missing_slug(self):
+        organization = OrganizationFactory()
         view = FakeView()
         view.kwargs = {}
+        view.current_organization_id = organization.id
 
         with pytest.raises(Http404):
             view._get_project()
@@ -95,6 +100,7 @@ class TestAuditChildrenMixin:
         audit = ProjectAuditFactory(project=project)
         view = FakeAuditView()
         view.kwargs = {"project_slug": project.slug, "audit_id": audit.id}
+        view.current_organization_id = project.organization_id
 
         # AuditChildrenMixin should inherit _get_project from ProjectChildrenMixin
         result = view._get_project()
@@ -164,6 +170,9 @@ class TestCriteriaChildrenMixin:
             "audit_id": project_audit_criterion.project_audit.id,
             "criterion_id": project_audit_criterion.id,
         }
+        view.current_organization_id = (
+            project_audit_criterion.project_audit.project.organization_id
+        )
 
         # CriteriaChildrenMixin should inherit _get_project from ProjectChildrenMixin
         result = view._get_project()

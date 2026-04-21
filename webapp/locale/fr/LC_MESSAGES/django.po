@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Cosqua 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-16 09:08+0000\n"
+"POT-Creation-Date: 2026-04-21 08:09+0000\n"
 "PO-Revision-Date: 2025-11-05 10:00+0000\n"
 "Last-Translator: Nicolas Oudard\n"
 "Language-Team: French\n"
@@ -16,13 +16,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: audits/forms.py:21
+#: audits/forms.py:126
+msgid "Search by project name…"
+msgstr "Chercher par le nom du projet…"
+
+#: audits/forms.py:140
 #, fuzzy
 #| msgid "Add Comment"
 msgid "Add a comment…"
 msgstr "Ajouter un commentaire…"
 
-#: audits/forms.py:37
+#: audits/forms.py:156
 msgid ""
 "Ask a question or leave it empty to get a general answer about this "
 "criterion…"
@@ -30,37 +34,45 @@ msgstr ""
 "Posez une question ou laissez vide pour obtenir une réponse générale sur ce "
 "critère…"
 
-#: audits/forms.py:74
+#: audits/forms.py:193
 msgid "Invalid status"
 msgstr "Statut invalide"
 
-#: audits/models/audit.py:83
-msgid "⚪️ Not Handled Yet"
-msgstr "⚪️ Pas encore traité"
+#: audits/models/audit.py:96
+msgid "🟢 Active"
+msgstr "🟢 Actif"
 
-#: audits/models/audit.py:84
-msgid "🔴 Not Compliant"
-msgstr "🔴 Non conforme"
+#: audits/models/audit.py:97
+msgid "⚪️ Archived"
+msgstr "⚪️ Archivé"
 
-#: audits/models/audit.py:85
-msgid "🟡 Partially Compliant"
-msgstr "🟡 Partiellement conforme"
-
-#: audits/models/audit.py:86
-msgid "🟢 Compliant"
-msgstr "🟢 Conforme"
-
-#: audits/models/audit.py:87
-msgid "❌ Not Applicable"
-msgstr "❌ Non applicable"
-
-#: audits/models/audit.py:100
+#: audits/models/audit.py:112 audits/models/audit.py:203
 #, fuzzy
 #| msgid "Status:"
 msgid "Status"
 msgstr "Statut"
 
-#: audits/models/audit.py:118
+#: audits/models/audit.py:186
+msgid "⚪️ Not Handled Yet"
+msgstr "⚪️ Pas encore traité"
+
+#: audits/models/audit.py:187
+msgid "🔴 Not Compliant"
+msgstr "🔴 Non conforme"
+
+#: audits/models/audit.py:188
+msgid "🟡 Partially Compliant"
+msgstr "🟡 Partiellement conforme"
+
+#: audits/models/audit.py:189
+msgid "🟢 Compliant"
+msgstr "🟢 Conforme"
+
+#: audits/models/audit.py:190
+msgid "❌ Not Applicable"
+msgstr "❌ Non applicable"
+
+#: audits/models/audit.py:221
 msgid "Comment"
 msgstr "Commentaire"
 
@@ -72,8 +84,14 @@ msgstr "Commentaire créé avec succès"
 msgid "Comment updated successfully"
 msgstr "Commentaire mis à jour avec succès"
 
-#: audits/views/projectaudit.py:91
+#: audits/views/projectaudit.py:92
 msgid "Audit created successfully"
+msgstr "Audit créé avec succès"
+
+#: audits/views/projectaudit.py:133
+#, fuzzy
+#| msgid "Audit created successfully"
+msgid "Audit archived successfully"
 msgstr "Audit créé avec succès"
 
 #: audits/views/projectauditcriterion.py:62
@@ -106,6 +124,8 @@ msgstr "Nom"
 
 #: organization/models/organization.py:18
 #: organization/models/organization.py:79
+#: templates/audits/project/detail.html:13
+#: templates/audits/projectaudit/detail.html:14
 #: templates/audits/resource/detail.html:22
 #: templates/audits/resource/edit.html:41 templates/audits/resource/new.html:41
 msgid "Description"
@@ -123,17 +143,17 @@ msgstr "Organisation par défaut pour l'utilisateur"
 msgid "default"
 msgstr "par défaut"
 
-#: organization/views.py:57
+#: organization/views/organization.py:57
 #, python-brace-format
 msgid "Organization \"{organization_name}\" created successfully."
 msgstr "Organisation \"{organization_name}\" créée avec succès."
 
-#: organization/views.py:89
+#: organization/views/organization.py:89
 #, python-brace-format
 msgid "Organization \"{organization_name}\" selected."
 msgstr "Organisation \"{organization_name}\" sélectionnée."
 
-#: organization/views.py:97
+#: organization/views/organization.py:97
 msgid "You do not have access to this organization."
 msgstr "Vous n'avez pas accès à cette organisation."
 
@@ -267,9 +287,8 @@ msgstr ""
 
 #: templates/audits/comment/confirm_delete.html:25
 #: templates/audits/comment/item.html:20
-#: templates/audits/project/detail.html:20
-#: templates/audits/project/detail.html:54
 #: templates/audits/projectaudit/confirm_delete.html:12
+#: templates/audits/resource/_partials/tile.html:19
 #: templates/audits/resource/confirm_delete.html:20
 #: templates/audits/resource/detail.html:29
 msgid "Delete"
@@ -277,10 +296,12 @@ msgstr "Supprimer"
 
 #: templates/audits/comment/confirm_delete.html:30
 #: templates/audits/comment/form.html:22 templates/audits/comment/form.html:48
-#: templates/audits/project/confirm_delete.html:33
+#: templates/audits/project/confirm_delete.html:34
+#: templates/audits/projectaudit/confirm_archive.html:13
 #: templates/audits/projectaudit/confirm_delete.html:13
 #: templates/audits/resource/confirm_delete.html:21
 #: templates/audits/resource/edit.html:51 templates/audits/resource/new.html:51
+#: templates/settings/audit_library/confirm_delete.html:33
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -301,7 +322,7 @@ msgid "Create"
 msgstr "Créer"
 
 #: templates/audits/comment/item.html:15
-#: templates/audits/project/detail.html:53
+#: templates/audits/resource/_partials/tile.html:18
 #: templates/audits/resource/detail.html:28
 msgid "Edit"
 msgstr "Modifier"
@@ -318,6 +339,23 @@ msgstr "Ajouter un commentaire"
 msgid "No comments yet."
 msgstr "Aucun commentaire pour le moment."
 
+#: templates/audits/project/_partials/tile.html:7
+#: templates/audits/project/detail.html:17
+#, python-format
+msgid "%(count)s Resource"
+msgid_plural "%(count)s Resources"
+msgstr[0] "%(count)s Ressource"
+msgstr[1] "%(count)s Ressources"
+
+#: templates/audits/project/_partials/tile.html:21
+#, fuzzy, python-format
+#| msgid "%(count)s Audit"
+#| msgid_plural "%(count)s Audits"
+msgid "%(count)s Archived Audit"
+msgid_plural "%(count)s Archived Audits"
+msgstr[0] "%(count)s Audit"
+msgstr[1] "%(count)s Audits"
+
 #: templates/audits/project/confirm_delete.html:4
 #, fuzzy
 #| msgid "Delete Project Audit - Cosqua"
@@ -325,16 +363,19 @@ msgid "Delete Project - Cosqua"
 msgstr "Supprimer le projet - Cosqua"
 
 #: templates/audits/project/confirm_delete.html:8
-#: templates/audits/project/confirm_delete.html:30
-#: templates/audits/project/detail.html:72
-#: templates/audits/project/detail.html:78
+#: templates/audits/project/confirm_delete.html:31
+#: templates/audits/project/detail.html:38
+#: templates/audits/project/detail.html:44
 #, fuzzy
 #| msgid "Delete Project"
 msgid "Delete Project"
 msgstr "Supprimer le projet"
 
 #: templates/audits/project/confirm_delete.html:11
-#: templates/audits/project/detail.html:69
+#: templates/audits/project/detail.html:35
+#: templates/audits/projectaudit/detail.html:21
+#: templates/settings/audit_library/confirm_delete.html:11
+#: templates/settings/audit_library/edit.html:26
 msgid "Danger Zone"
 msgstr "Zone de danger"
 
@@ -347,7 +388,7 @@ msgstr ""
 "irréversible. Tous les audits et ressources associés à ce projet seront "
 "également supprimés."
 
-#: templates/audits/project/confirm_delete.html:19
+#: templates/audits/project/confirm_delete.html:20
 msgid "Project:"
 msgstr "Projet :"
 
@@ -358,59 +399,54 @@ msgid "Project Detail - Cosqua"
 msgstr "Détail du projet - Cosqua"
 
 #: templates/audits/project/detail.html:10
-msgid "Audits"
-msgstr "Audits"
-
-#: templates/audits/project/detail.html:19
-msgid "Let's audit it"
-msgstr "Voir le détail de l'audit"
-
-#: templates/audits/project/detail.html:25
-msgid "No audits yet."
-msgstr "Aucun audit pour le moment."
-
-#: templates/audits/project/detail.html:29
 #, fuzzy
-#| msgid "Start Audit"
-msgid "Start Audit"
-msgstr "Démarrer un audit"
+#| msgid "Create Project"
+msgid "Back to projects list"
+msgstr "Retour au projet"
 
-#: templates/audits/project/detail.html:30
-#, fuzzy
-#| msgid "Create a new organization to organize your projects."
-msgid "Create a new audit for this project."
-msgstr "Créez un nouvel audit pour ce projets."
-
-#: templates/audits/project/detail.html:34
-msgid "Resources"
-msgstr "Ressources"
-
-#: templates/audits/project/detail.html:43
-#: templates/audits/resource/confirm_delete.html:15
-msgid "Type:"
-msgstr "Type :"
-
-#: templates/audits/project/detail.html:52
-msgid "View"
-msgstr "Voir"
-
-#: templates/audits/project/detail.html:59
+#: templates/audits/project/detail.html:18
 msgid "No resources yet."
 msgstr "Aucune ressource pour le moment."
 
-#: templates/audits/project/detail.html:63
+#: templates/audits/project/detail.html:19
 #, fuzzy
 #| msgid "Resources"
 msgid "Add Resource"
 msgstr "Ajout d'une ressources"
 
-#: templates/audits/project/detail.html:64
+#: templates/audits/project/detail.html:20
 #, fuzzy
 #| msgid "Create a new organization to organize your projects."
 msgid "Create a new resource for this project."
 msgstr "Créez une nouvelle resource pour ce projets."
 
-#: templates/audits/project/detail.html:75
+#: templates/audits/project/detail.html:25 templates/audits/project/edit.html:8
+#, fuzzy
+#| msgid "Project:"
+msgid "Edit Project"
+msgstr "Projet :"
+
+#: templates/audits/project/detail.html:28
+msgid "Audits"
+msgstr "Audits"
+
+#: templates/audits/project/detail.html:29
+msgid "No audits yet."
+msgstr "Aucun audit pour le moment."
+
+#: templates/audits/project/detail.html:30
+#, fuzzy
+#| msgid "Start Audit"
+msgid "Start Audit"
+msgstr "Démarrer un audit"
+
+#: templates/audits/project/detail.html:31
+#, fuzzy
+#| msgid "Create a new organization to organize your projects."
+msgid "Create a new audit for this project."
+msgstr "Créez un nouvel audit pour ce projets."
+
+#: templates/audits/project/detail.html:41
 msgid ""
 "Once you delete a project, there is no going back. Please be certain. All "
 "audits and resources associated with this project will also be deleted."
@@ -418,6 +454,16 @@ msgstr ""
 "Une fois que vous supprimez un projet, il n'y a pas de retour en arrière "
 "possible. Veuillez être certain. Tous les audits et ressources associés à ce "
 "projet seront également supprimés."
+
+#: templates/audits/project/edit.html:4
+#, fuzzy
+#| msgid "New Project - Cosqua"
+msgid "Edit Project - Cosqua"
+msgstr "Nouveau projet - Cosqua"
+
+#: templates/audits/project/edit.html:13
+msgid "Save Changes"
+msgstr "Enregistrer les changements"
 
 #: templates/audits/project/list.html:4
 msgid "My Projects - Cosqua"
@@ -427,45 +473,15 @@ msgstr "Mes projets - Cosqua"
 msgid "My Projects"
 msgstr "Mes projets"
 
-#: templates/audits/project/list.html:15
-msgid "Search by project name…"
-msgstr "Chercher par le nom du projet…"
-
-#: templates/audits/project/list.html:21
-msgid "Search"
-msgstr "Rechercher"
-
-#: templates/audits/project/list.html:28
-msgid "Clear"
-msgstr "Effacer"
-
-#: templates/audits/project/list.html:45
-#, python-format
-msgid "%(count)s Resource"
-msgid_plural "%(count)s Resources"
-msgstr[0] "%(count)s Ressource"
-msgstr[1] "%(count)s Ressources"
-
-#: templates/audits/project/list.html:48
-#, python-format
-msgid "%(count)s Audit"
-msgid_plural "%(count)s Audits"
-msgstr[0] "%(count)s Audit"
-msgstr[1] "%(count)s Audits"
-
-#: templates/audits/project/list.html:55
-msgid "No projects found matching your search."
-msgstr "Aucun projet trouvé correspondant à votre recherche."
-
-#: templates/audits/project/list.html:57
+#: templates/audits/project/list.html:11
 msgid "No projects yet."
 msgstr "Aucun projet pour le moment."
 
-#: templates/audits/project/list.html:63
+#: templates/audits/project/list.html:12
 msgid "➕ Add a new project"
 msgstr "➕ Ajouter un nouveau projet"
 
-#: templates/audits/project/list.html:64
+#: templates/audits/project/list.html:13
 msgid "Create a new project to start auditing your resources."
 msgstr "Créez un nouveau projet pour commencer à auditer vos ressources."
 
@@ -477,9 +493,69 @@ msgstr "Nouveau projet - Cosqua"
 msgid "New Project"
 msgstr "Nouveau projet"
 
-#: templates/audits/project/new.html:12
+#: templates/audits/project/new.html:13
 msgid "Create Project"
 msgstr "Créer un projet"
+
+#: templates/audits/projectaudit/_partials/kpi.html:3
+msgid "Completion:"
+msgstr "Complétion"
+
+#: templates/audits/projectaudit/_partials/kpi.html:3
+msgid "Completed"
+msgstr "Complété"
+
+#: templates/audits/projectaudit/_partials/kpi.html:3
+#, fuzzy
+#| msgid "🔴 Not Compliant"
+msgid "Not Completed"
+msgstr "Non conformé"
+
+#: templates/audits/projectaudit/_partials/kpi.html:7
+#, fuzzy
+#| msgid "🟢 Compliant"
+msgid "Compliance:"
+msgstr "Confiormité :"
+
+#: templates/audits/projectaudit/_partials/kpi.html:7
+#, fuzzy
+#| msgid "🟢 Compliant"
+msgid "Compliant"
+msgstr "Conforme"
+
+#: templates/audits/projectaudit/_partials/kpi.html:7
+#, fuzzy
+#| msgid "🟡 Partially Compliant"
+msgid "Partially Compliant"
+msgstr "Partiellement conforme"
+
+#: templates/audits/projectaudit/_partials/kpi.html:7
+msgid "Not Compliant / Not Handled"
+msgstr "Non Conforme / Non pris en charge"
+
+#: templates/audits/projectaudit/confirm_archive.html:4
+#, fuzzy
+#| msgid "Delete Project Audit - Cosqua"
+msgid "Archive Project Audit - Cosqua"
+msgstr "Archiver l'audit de projet - Cosqua"
+
+#: templates/audits/projectaudit/confirm_archive.html:8
+#, fuzzy
+#| msgid "Delete Project Audit"
+msgid "Archive Project Audit"
+msgstr "Archiver l'audit de projet"
+
+#: templates/audits/projectaudit/confirm_archive.html:9
+#, fuzzy
+#| msgid "Are you sure you want to delete this project audit?"
+msgid "Are you sure you want to archive this project audit?"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer cet audit de projet ? Cette action est "
+"irréversible."
+
+#: templates/audits/projectaudit/confirm_archive.html:12
+msgid "Archive"
+msgstr "Archiver"
 
 #: templates/audits/projectaudit/confirm_delete.html:4
 msgid "Delete Project Audit - Cosqua"
@@ -506,12 +582,51 @@ msgid "Audit:"
 msgstr "Audit :"
 
 #: templates/audits/projectaudit/detail.html:10
+#, fuzzy
+#| msgid "Create Project"
+msgid "Back to project"
+msgstr "Retour au projet"
+
+#: templates/audits/projectaudit/detail.html:17
 msgid "Criteria"
 msgstr "Critères"
 
-#: templates/audits/projectaudit/detail.html:22
+#: templates/audits/projectaudit/detail.html:18
 msgid "No criteria yet."
 msgstr "Aucun critère pour le moment."
+
+#: templates/audits/projectaudit/detail.html:26
+#: templates/audits/projectaudit/detail.html:32
+#, fuzzy
+#| msgid "Create Audit"
+msgid "Archive Audit"
+msgstr "Archiver un audit"
+
+#: templates/audits/projectaudit/detail.html:29
+msgid ""
+"Once you archive an audit, it will be marked as archived and will no longer "
+"appear in active audits."
+msgstr "Une fois Archivé, l'audit n'apparaitra plus parmis les audits actives"
+
+#: templates/audits/projectaudit/detail.html:38
+#: templates/audits/projectaudit/detail.html:44
+#, fuzzy
+#| msgid "Delete Project Audit"
+msgid "Delete Audit"
+msgstr "Supprimer l'audit de projet"
+
+#: templates/audits/projectaudit/detail.html:41
+#, fuzzy
+#| msgid ""
+#| "Once you delete a project, there is no going back. Please be certain. All "
+#| "audits and resources associated with this project will also be deleted."
+msgid ""
+"Once you delete an audit, there is no going back. Please be certain. All "
+"criteria and assessments associated with this audit will also be deleted."
+msgstr ""
+"Une fois que vous supprimez un projet, il n'y a pas de retour en arrière "
+"possible. Veuillez être certain. Tous les audits et ressources associés à ce "
+"projet seront également supprimés."
 
 #: templates/audits/projectaudit/new.html:4
 msgid "New Audit - Cosqua"
@@ -573,6 +688,15 @@ msgstr "Requête en cours, veuillez patienter"
 #: templates/audits/prompt/form.html:17
 msgid "Send"
 msgstr "Envoyer"
+
+#: templates/audits/resource/_partials/tile.html:8
+#: templates/audits/resource/confirm_delete.html:15
+msgid "Type:"
+msgstr "Type :"
+
+#: templates/audits/resource/_partials/tile.html:17
+msgid "View"
+msgstr "Voir"
 
 #: templates/audits/resource/confirm_delete.html:4
 #, fuzzy
@@ -653,15 +777,65 @@ msgstr "Nouvelle ressource"
 msgid "Create Resource"
 msgstr "Créer une ressource"
 
+#: templates/components/input_tags.html:32
+#, fuzzy
+#| msgid "Add Comment"
+msgid "Add a tag…"
+msgstr "Ajouter un tag…"
+
+#: templates/components/input_tags.html:42
+msgid "You can only add up to 5 tags."
+msgstr "Vous ne pouvez ajouter que 5 tags maximum"
+
+#: templates/components/search.html:14
+msgid "Search"
+msgstr "Rechercher"
+
+#: templates/components/search.html:21
+msgid "Clear"
+msgstr "Effacer"
+
+#: templates/components/sidebar.html:5 templates/dashboard.html:8
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: templates/components/sidebar.html:8
+msgid "Projects"
+msgstr "Projets"
+
+#: templates/components/sidebar.html:11
+msgid "Settings"
+msgstr "Paramètre"
+
+#: templates/components/sidebar.html:16
+#, fuzzy
+#| msgid "Select Organization"
+msgid "Organization"
+msgstr "Organisation"
+
+#: templates/components/sidebar.html:19
+#, fuzzy
+#| msgid "Audits"
+msgid "My Audits"
+msgstr "Mes Audits"
+
+#: templates/components/sidebar.html:22
+msgid "Stages"
+msgstr "Etapes"
+
+#: templates/components/sidebar.html:25
+msgid "Tags"
+msgstr "Tags"
+
+#: templates/components/sidebar.html:28 templates/settings/member/list.html:7
+msgid "Members"
+msgstr "Membres"
+
 #: templates/dashboard.html:5
 #, fuzzy
 #| msgid "Dashboard"
 msgid "Dashboard - Cosqua"
 msgstr "Tableau de bord - Cosqua"
-
-#: templates/dashboard.html:8 templates/layout/base-logged.html:12
-msgid "Dashboard"
-msgstr "Tableau de bord"
 
 #: templates/dashboard.html:13
 msgid "My projects"
@@ -682,10 +856,6 @@ msgstr "Assurance qualité et sécurité, en mode collaboratif et guidé par l'I
 #: templates/index.html:14
 msgid "Please sign in to access your dashboard."
 msgstr "Veuillez vous connecter pour accéder à votre tableau de bord."
-
-#: templates/layout/base-logged.html:15
-msgid "Projects"
-msgstr "Projets"
 
 #: templates/layout/base.html:34
 msgid "Hello"
@@ -730,6 +900,111 @@ msgstr ""
 #: templates/organization/organization_create.html:19
 msgid "Create a new organization to organize your projects."
 msgstr "Créez une nouvelle organisation pour organiser vos projets."
+
+#: templates/settings/audit_library/_partials/tile.html:10
+#, fuzzy
+#| msgid "Criteria"
+msgid "criteria"
+msgstr "Critères"
+
+#: templates/settings/audit_library/confirm_delete.html:4
+#, fuzzy
+#| msgid "Delete Project Audit - Cosqua"
+msgid "Delete Audit Library - Cosqua"
+msgstr "Supprimer l'audit de la librairie - Cosqua"
+
+#: templates/settings/audit_library/confirm_delete.html:8
+#: templates/settings/audit_library/confirm_delete.html:30
+#: templates/settings/audit_library/edit.html:30
+#: templates/settings/audit_library/edit.html:36
+#, fuzzy
+#| msgid "Delete Project Audit"
+msgid "Delete Audit Library"
+msgstr "Supprimer l'audit de la librairie"
+
+#: templates/settings/audit_library/confirm_delete.html:15
+#, fuzzy
+#| msgid ""
+#| "Are you sure you want to delete this project? This action cannot be "
+#| "undone. All audits and resources associated with this project will also "
+#| "be deleted."
+msgid ""
+"Are you sure you want to delete this audit library? This action cannot be "
+"undone. All criteria and assessments associated with this audit library will "
+"also be deleted."
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer cet audit de la librairie ? Cette action est "
+"irréversible. Tous les audits au sein des projets associés cette librairie seront "
+"également supprimés."
+
+#: templates/settings/audit_library/edit.html:5
+#, fuzzy
+#| msgid "Audit Detail - Cosqua"
+msgid "Audit Library - Cosqua"
+msgstr "Audit dans la librairie - Cosqua"
+
+#: templates/settings/audit_library/edit.html:9
+msgid "Edit Audit Library"
+msgstr "Editer l'audit dans la librairie"
+
+#: templates/settings/audit_library/edit.html:12
+#, fuzzy
+#| msgid "Back to login"
+msgid "Back to audit libraries list"
+msgstr "Retour à la connexion"
+
+#: templates/settings/audit_library/edit.html:20
+#: templates/settings/organization/edit.html:14
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/settings/audit_library/edit.html:33
+#, fuzzy
+#| msgid ""
+#| "Once you delete a project, there is no going back. Please be certain. All "
+#| "audits and resources associated with this project will also be deleted."
+msgid ""
+"Once you delete an audit library, there is no going back. Please be certain. "
+"All criteria and assessments associated with this audit library will also be "
+"deleted."
+msgstr ""
+"Une fois que vous supprimez un projet, il n'y a pas de retour en arrière "
+"possible. Veuillez être certain. Tous les audits et ressources associés à ce "
+"projet seront également supprimés."
+
+#: templates/settings/audit_library/list.html:4
+#, fuzzy
+#| msgid "Audit Detail - Cosqua"
+msgid "My Audit Libraries - Cosqua"
+msgstr "Mon audit dans la librairie - Cosqua"
+
+#: templates/settings/audit_library/list.html:7
+msgid "My Audit Libraries"
+msgstr "Mon audit dans la librairie"
+
+#: templates/settings/audit_library/list.html:9
+#, fuzzy
+#| msgid "You do not have access to this organization."
+msgid "No audit libraries for this organization yet."
+msgstr "Pas d'audit de dasn la librairie de cette organisation."
+
+#: templates/settings/member/list.html:4
+#, fuzzy
+#| msgid "My Projects - Cosqua"
+msgid "Members - Cosqua"
+msgstr "Membres - Cosqua"
+
+#: templates/settings/organization/edit.html:6
+#, fuzzy
+#| msgid "Create Organization"
+msgid "Organization - Cosqua"
+msgstr "Organisation - Cosqua"
+
+#: templates/settings/organization/edit.html:10
+#, fuzzy
+#| msgid "Select Organization"
+msgid "Edit Organization"
+msgstr "Editer l'organisation"
 
 #: templates/socialaccount/authentication_error.html:5
 #, fuzzy
@@ -832,6 +1107,15 @@ msgstr "Connexion annulée"
 #, python-format
 msgid "Sign up with %(provider_name)s"
 msgstr "S'inscrire avec %(provider_name)s"
+
+#~ msgid "Let's audit it"
+#~ msgstr "Voir le détail de l'audit"
+
+#~ msgid "Resources"
+#~ msgstr "Ressources"
+
+#~ msgid "No projects found matching your search."
+#~ msgstr "Aucun projet trouvé correspondant à votre recherche."
 
 #~ msgid "Audit Detail"
 #~ msgstr "Détail de l'audit"
