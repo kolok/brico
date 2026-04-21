@@ -8,9 +8,10 @@ from audits.views.comment import (
 )
 from audits.views.project import (
     DeleteProjectView,
+    ProjectCreateView,
     ProjectDetailView,
-    ProjectFormView,
     ProjectListView,
+    ProjectUpdateView,
 )
 from audits.views.projectaudit import (
     ArchiveProjectAuditView,
@@ -33,7 +34,8 @@ app_name = "audits"
 urlpatterns = [
     # Projects URLs
     path("project/", ProjectListView.as_view(), name="project_list"),
-    path("project/new/", ProjectFormView.as_view(), name="project_form"),
+    path("project/new/", ProjectCreateView.as_view(), name="project_new"),
+    path("project/<slug:slug>/edit/", ProjectUpdateView.as_view(), name="project_edit"),
     path("project/<slug:slug>/", ProjectDetailView.as_view(), name="project_detail"),
     path(
         "project/<slug:slug>/delete/",

@@ -4,9 +4,14 @@ from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch, QuerySet
-from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import DeleteView, DetailView, FormView, ListView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
 from organization.mixins import OrganizationPermissionMixin
 from organization.models.organization import Organization, Project
 
@@ -76,18 +81,17 @@ class ProjectDetailView(LoginRequiredMixin, ProjectViewMixin, DetailView):
     context_object_name = "project"
 
 
-class ProjectFormView(LoginRequiredMixin, ProjectViewMixin, FormView):
+class ProjectCreateView(LoginRequiredMixin, ProjectViewMixin, CreateView):
     """Create a new project."""
 
     form_class = ProjectForm
     template_name = "audits/project/new.html"
     model = Project
-    slug: str | None = None
 
     def get_success_url(self):
-        return reverse_lazy("audits:project_detail", kwargs={"slug": self.slug})
+        return reverse_lazy("audits:project_detail", kwargs={"slug": self.object.slug})
 
-    def form_valid(self, form: ProjectForm) -> HttpResponse:
+    def form_valid(self, form):
         project = form.save(commit=False)
         organization_id = self.request.session.get(
             CURRENT_ORGANIZATION_SESSION_KEY, [None]
@@ -99,9 +103,48 @@ class ProjectFormView(LoginRequiredMixin, ProjectViewMixin, FormView):
             )
 
         project.organization = organization
-        project.save()
-        self.slug = project.slug
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project"] = None
+        return context
+
+
+class ProjectUpdateView(LoginRequiredMixin, ProjectViewMixin, UpdateView):
+    """Edit an existing project."""
+
+    form_class = ProjectForm
+    template_name = "audits/project/edit.html"
+    model = Project
+    slug_field = "slug"
+    slug_url_kwarg = "slug"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return self._get_queryset_with_organization_filter(queryset)
+
+    def get_success_url(self):
+        return reverse_lazy("audits:project_detail", kwargs={"slug": self.object.slug})
+
+    def form_valid(self, form):
+        project = form.save(commit=False)
+        organization_id = self.request.session.get(
+            CURRENT_ORGANIZATION_SESSION_KEY, [None]
+        )[0]
+        organization = Organization.objects.filter(id=organization_id).first()
+        if organization is None:
+            raise PermissionDenied(
+                "No organization is configured. Please contact an administrator."
+            )
+
+        project.organization = organization
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project"] = self.object
+        return context
 
 
 class DeleteProjectView(LoginRequiredMixin, ProjectViewMixin, DeleteView):

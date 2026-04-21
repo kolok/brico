@@ -1,0 +1,17 @@
+{% extends 'layout/base-logged.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Edit Project - Cosqua" %}{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{% translate "Edit Project" %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">
+            {% translate "Save Changes" %}
+        </button>
+    </form>
+</div>
+{% endblock content %}
