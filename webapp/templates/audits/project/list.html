@@ -11,7 +11,7 @@
     {% translate "No projects yet." as empty_msg %}
     {% translate "➕ Add a new project" as add_lbl %}
     {% translate "Create a new project to start auditing your resources." as add_desc %}
-    {% url 'audits:project_form' as add_href %}
+    {% url 'audits:project_new' as add_href %}
     {% tiles object_list "audits/project/_partials/tile.html" empty_message=empty_msg add_url=add_href add_label=add_lbl add_description=add_desc %}
 
 {% endblock content %}
