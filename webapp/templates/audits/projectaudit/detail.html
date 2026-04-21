@@ -1,5 +1,5 @@
 {% extends 'layout/base-logged.html' %}
-{% load i18n %}
+{% load i18n tiles_tags %}
 
 {% block title %}{% translate "Audit Detail - Cosqua" %}{% endblock %}
 
@@ -15,21 +15,8 @@
         <p>{{ audit.audit_library.description }}</p>
     {% endif %}
     <h2>{% translate "Criteria" %}</h2>
-    <div class="tiles">
-        {% for criterion in audit_criteria %}
-            <a href="{% url 'audits:projectauditcriterion_detail' project.slug audit.id criterion.id %}" class="tile {% cycle 'tile-even' 'tile-odd' %}">
-                <h2>{{ criterion }}</h2>
-                {% if criterion.criterion.description %}
-                    <p>{{ criterion.criterion.description|truncatewords:10 }}</p>
-                {% endif %}
-                <p class="text-sm font-semibold mt-2">{{ criterion.get_status_display }}</p>
-            </a>
-        {% empty %}
-            <div class="tile tile-empty">
-                <p>{% translate "No criteria yet." %}</p>
-            </div>
-        {% endfor %}
-    </div>
+    {% translate "No criteria yet." as empty_criteria %}
+    {% tiles audit_criteria "audits/projectauditcriterion/_partials/tile.html" empty_message=empty_criteria %}
 
     <h2>{% translate "Danger Zone" %}</h2>
     <div class="danger-zone bg-white border border-red rounded-lg p-4 mb-4 flex flex-col gap-4">

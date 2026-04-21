@@ -1,5 +1,5 @@
 {% extends 'layout/base-logged.html' %}
-{% load i18n %}
+{% load i18n tiles_tags %}
 
 {% block title %}{% translate "My Projects - Cosqua" %}{% endblock %}
 
@@ -8,46 +8,10 @@
 
     {% include "components/search.html" with form=search_form action_url=request.path %}
 
-    <div class="tiles">
-        {% for project in object_list %}
-            <a
-                href="{% url 'audits:project_detail' project.slug %}"
-                class="tile {% cycle 'tile-even' 'tile-odd' %}"
-            >
-                <h2>{{ project.name }} ({% blocktranslate count count=project.resources.count|default:0 %}{{ count }} Resource{% plural %}{{ count }} Resources{% endblocktranslate %})</h2>
-                {% if project.description %}
-                    <p>{{ project.description|truncatewords:5 }}</p>
-                {% endif %}
-                <p>
-                </p>
-                <p>
-                    {% for audit in project.active_audits_list %}
-                        <div class="flex flex-wrap items-start gap-6 border-b border-gray-600 pb-2">
-                            <h3>{{ audit }}</h3>
-                            {% include 'audits/projectaudit/_partials/kpi.html' with audit=audit size="small" %}
-                        </div>
-                    {% endfor %}
-                    <p>
-                        {% blocktranslate count count=project.archived_audits_list|length|default:0 %}{{ count }} Archived Audit{% plural %}{{ count }} Archived Audits{% endblocktranslate %}
-                    </p>
-
-                </p>
-            </a>
-        {% empty %}
-            <div class="tile tile-empty">
-                <p>
-                    {% if request.GET.search %}
-                        {% translate "No projects found matching your search." %}
-                    {% else %}
-                        {% translate "No projects yet." %}
-                    {% endif %}
-                </p>
-            </div>
-        {% endfor %}
-        <a href="{% url 'audits:project_form' %}" class="tile">
-            <h2>{% translate "➕ Add a new project" %}</h2>
-            <p>{% translate "Create a new project to start auditing your resources." %}</p>
-        </a>
-    </div>
+    {% translate "No projects yet." as empty_msg %}
+    {% translate "➕ Add a new project" as add_lbl %}
+    {% translate "Create a new project to start auditing your resources." as add_desc %}
+    {% url 'audits:project_form' as add_href %}
+    {% tiles object_list "audits/project/_partials/tile.html" empty_message=empty_msg add_url=add_href add_label=add_lbl add_description=add_desc %}
 
 {% endblock content %}

@@ -1,5 +1,5 @@
 {% extends 'layout/base-logged.html' %}
-{% load i18n %}
+{% load i18n tiles_tags %}
 
 {% block title %}{% translate "Project Detail - Cosqua" %}{% endblock %}
 
@@ -14,61 +14,18 @@
         <p>{{ project.description }}</p>
     {% endif %}
     <h2>{% translate "Audits" %}</h2>
-    <div class="tiles">
-        {% for audit in project.audits.all %}
-            <a href="{% url 'audits:projectaudit_detail' project.slug audit.id %}"
-                class="tile {% cycle 'tile-even' 'tile-odd' %} {% if audit.status == "ARCHIVED" %}tile-archived{% endif %}"
-            >
-                <h2>{{ audit }}</h2>
-                {% include 'audits/projectaudit/_partials/kpi.html' with audit=audit size="medium" %}
-                {% if audit.audit_library.description %}
-                    <p>{{ audit.audit_library.description|truncatewords:10 }}</p>
-                {% endif %}
-            </a>
-        {% empty %}
-            <div class="tile tile-empty">
-                <p>{% translate "No audits yet." %}</p>
-            </div>
-        {% endfor %}
-        <a href="{% url 'audits:projectaudit_new' project.slug %}" class="tile">
-            <h2>➕ {% translate "Start Audit" %}</h2>
-            <p>{% translate "Create a new audit for this project." %}</p>
-        </a>
-    </div>
+    {% translate "No audits yet." as empty_audits %}
+    {% translate "Start Audit" as start_audit_lbl %}
+    {% translate "Create a new audit for this project." as start_audit_desc %}
+    {% url 'audits:projectaudit_new' project.slug as add_audit_href %}
+    {% tiles project.audits.all "audits/projectaudit/_partials/tile.html" empty_message=empty_audits add_url=add_audit_href add_label=start_audit_lbl add_description=start_audit_desc %}
 
     <h2>{% translate "Resources" %}</h2>
-    <div class="tiles">
-        {% resetcycle %}
-        {% for resource in project.resources.all %}
-            <div class="tile {% cycle 'tile-even' 'tile-odd' %}">
-                <h2>{{ resource.name }}</h2>
-                {% if resource.description %}
-                    <p>{{ resource.description|truncatewords:10 }}</p>
-                {% endif %}
-                <p class="text-sm text-gray-600">{% translate "Type:" %} {{ resource.get_type_display }}</p>
-                {% if resource.url %}
-                    <p class="text-sm">
-                        <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800">
-                            {{ resource.url|truncatechars:50 }}
-                        </a>
-                    </p>
-                {% endif %}
-                <div class="flex gap-2 mt-4">
-                    <a href="{% url 'audits:resource_detail' project.slug resource.id %}" class="btn btn-primary">{% translate "View" %}</a>
-                    <a href="{% url 'audits:resource_edit' project.slug resource.id %}" class="btn btn-secondary">{% translate "Edit" %}</a>
-                    <a href="{% url 'audits:resource_delete' project.slug resource.id %}" class="btn btn-danger">{% translate "Delete" %}</a>
-                </div>
-            </div>
-        {% empty %}
-            <div class="tile tile-empty">
-                <p>{% translate "No resources yet." %}</p>
-            </div>
-        {% endfor %}
-        <a href="{% url 'audits:resource_new' project.slug %}" class="tile">
-            <h2>➕ {% translate "Add Resource" %}</h2>
-            <p>{% translate "Create a new resource for this project." %}</p>
-        </a>
-    </div>
+    {% translate "No resources yet." as empty_resources %}
+    {% translate "Add Resource" as add_resource_lbl %}
+    {% translate "Create a new resource for this project." as add_resource_desc %}
+    {% url 'audits:resource_new' project.slug as add_resource_href %}
+    {% tiles project.resources.all "audits/resource/_partials/tile.html" empty_message=empty_resources add_url=add_resource_href add_label=add_resource_lbl add_description=add_resource_desc %}
 
 
     <h2>{% translate "Danger Zone" %}</h2>
