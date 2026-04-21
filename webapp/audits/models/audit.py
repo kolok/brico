@@ -94,7 +94,7 @@ class ProjectAudit(TimestampedModel, models.Model):
 
     class ProjectAuditStatus(models.TextChoices):
         ACTIVE = "ACTIVE", _("🟢 Active")
-        ARCHIVED = "ARCHIVED", _(" Archived")
+        ARCHIVED = "ARCHIVED", _("⚪️ Archived")
 
     objects = ProjectAuditManager()
 
