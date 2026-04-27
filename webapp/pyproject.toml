@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "dj-database-url>=3.1.2",
-    "django-allauth>=65.4.0",
+    "django-allauth>=65.16.1",
     "django-cors-headers>=4.7.0",
     "django>=5.1.4",
     "djangorestframework>=3.17.1",
