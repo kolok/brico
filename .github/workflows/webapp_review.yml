@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install uv
-        uses:  astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        uses:  astral-sh/setup-uv@d31148d669074a8d0a63714ba94f3201e7020bc3
         with:
           enable-cache: true
       - uses: actions/cache@v5
@@ -80,7 +80,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install uv
-        uses:  astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        uses:  astral-sh/setup-uv@d31148d669074a8d0a63714ba94f3201e7020bc3
         with:
           enable-cache: true
       - uses: actions/cache@v5
