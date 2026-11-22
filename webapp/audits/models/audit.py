@@ -4,6 +4,7 @@ from uuid import uuid4
 from core.models.mixin import TimestampedModel
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Case, Count, IntegerField, When
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 from organization.models.organization import Organization, Project
@@ -157,20 +158,73 @@ class ProjectAudit(TimestampedModel, models.Model):
 
     def _nb_criteria_by_status(self) -> dict[str, int]:
         """
-        Number of criteria by status
-        Use counter to limit the number of queries to DB
+        Number of criteria by status.
+
+        Cached on the instance so completion + compliance share one computation.
+        Uses the prefetch cache when available; otherwise aggregates in SQL.
         """
-        project_audit_criteria = list(self.project_audit_criteria.all())
-        counts = Counter(criterion.status for criterion in project_audit_criteria)
-        result = {
-            "NOT_HANDLED_YET": 0,
-            "NOT_COMPLIANT": 0,
-            "PARTIALLY_COMPLIANT": 0,
-            "COMPLIANT": 0,
-            "NOT_APPLICABLE": 0,
-            "ALL": counts.total(),
-        }
-        result.update({key: counts.get(key, 0) for key in counts.keys()})
+        cached = getattr(self, "_cached_nb_criteria_by_status", None)
+        if cached is not None:
+            return cached
+
+        if "project_audit_criteria" in getattr(self, "_prefetched_objects_cache", {}):
+            counts = Counter(
+                criterion.status for criterion in self.project_audit_criteria.all()
+            )
+            result = {
+                "NOT_HANDLED_YET": 0,
+                "NOT_COMPLIANT": 0,
+                "PARTIALLY_COMPLIANT": 0,
+                "COMPLIANT": 0,
+                "NOT_APPLICABLE": 0,
+                "ALL": counts.total(),
+            }
+            result.update({key: counts.get(key, 0) for key in counts})
+        else:
+            status = ProjectAuditCriterion.ProjectAuditCriterionStatus
+            aggregated = self.project_audit_criteria.aggregate(
+                ALL=Count("id"),
+                NOT_HANDLED_YET=Count(
+                    Case(
+                        When(status=status.NOT_HANDLED_YET, then=1),
+                        output_field=IntegerField(),
+                    )
+                ),
+                NOT_COMPLIANT=Count(
+                    Case(
+                        When(status=status.NOT_COMPLIANT, then=1),
+                        output_field=IntegerField(),
+                    )
+                ),
+                PARTIALLY_COMPLIANT=Count(
+                    Case(
+                        When(status=status.PARTIALLY_COMPLIANT, then=1),
+                        output_field=IntegerField(),
+                    )
+                ),
+                COMPLIANT=Count(
+                    Case(
+                        When(status=status.COMPLIANT, then=1),
+                        output_field=IntegerField(),
+                    )
+                ),
+                NOT_APPLICABLE=Count(
+                    Case(
+                        When(status=status.NOT_APPLICABLE, then=1),
+                        output_field=IntegerField(),
+                    )
+                ),
+            )
+            result = {
+                "NOT_HANDLED_YET": aggregated["NOT_HANDLED_YET"] or 0,
+                "NOT_COMPLIANT": aggregated["NOT_COMPLIANT"] or 0,
+                "PARTIALLY_COMPLIANT": aggregated["PARTIALLY_COMPLIANT"] or 0,
+                "COMPLIANT": aggregated["COMPLIANT"] or 0,
+                "NOT_APPLICABLE": aggregated["NOT_APPLICABLE"] or 0,
+                "ALL": aggregated["ALL"] or 0,
+            }
+
+        self._cached_nb_criteria_by_status = result
         return result
 
     def __str__(self):

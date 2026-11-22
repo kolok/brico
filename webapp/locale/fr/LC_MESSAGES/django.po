@@ -89,10 +89,8 @@ msgid "Audit created successfully"
 msgstr "Audit créé avec succès"
 
 #: audits/views/projectaudit.py:133
-#, fuzzy
-#| msgid "Audit created successfully"
 msgid "Audit archived successfully"
-msgstr "Audit créé avec succès"
+msgstr "Audit archivé avec succès"
 
 #: audits/views/projectauditcriterion.py:62
 #, fuzzy
@@ -347,14 +345,12 @@ msgid_plural "%(count)s Resources"
 msgstr[0] "%(count)s Ressource"
 msgstr[1] "%(count)s Ressources"
 
-#: templates/audits/project/_partials/tile.html:21
-#, fuzzy, python-format
-#| msgid "%(count)s Audit"
-#| msgid_plural "%(count)s Audits"
+#: templates/audits/project/_partials/tile.html:18
+#, python-format
 msgid "%(count)s Archived Audit"
 msgid_plural "%(count)s Archived Audits"
-msgstr[0] "%(count)s Audit"
-msgstr[1] "%(count)s Audits"
+msgstr[0] "%(count)s audit archivé"
+msgstr[1] "%(count)s audits archivés"
 
 #: templates/audits/project/confirm_delete.html:4
 #, fuzzy
@@ -506,26 +502,18 @@ msgid "Completed"
 msgstr "Complété"
 
 #: templates/audits/projectaudit/_partials/kpi.html:3
-#, fuzzy
-#| msgid "🔴 Not Compliant"
 msgid "Not Completed"
-msgstr "Non conformé"
+msgstr "Non complété"
 
 #: templates/audits/projectaudit/_partials/kpi.html:7
-#, fuzzy
-#| msgid "🟢 Compliant"
 msgid "Compliance:"
-msgstr "Confiormité :"
+msgstr "Conformité :"
 
 #: templates/audits/projectaudit/_partials/kpi.html:7
-#, fuzzy
-#| msgid "🟢 Compliant"
 msgid "Compliant"
 msgstr "Conforme"
 
 #: templates/audits/projectaudit/_partials/kpi.html:7
-#, fuzzy
-#| msgid "🟡 Partially Compliant"
 msgid "Partially Compliant"
 msgstr "Partiellement conforme"
 
@@ -546,12 +534,8 @@ msgid "Archive Project Audit"
 msgstr "Archiver l'audit de projet"
 
 #: templates/audits/projectaudit/confirm_archive.html:9
-#, fuzzy
-#| msgid "Are you sure you want to delete this project audit?"
 msgid "Are you sure you want to archive this project audit?"
-msgstr ""
-"Êtes-vous sûr de vouloir supprimer cet audit de projet ? Cette action est "
-"irréversible."
+msgstr "Êtes-vous sûr de vouloir archiver cet audit de projet ?"
 
 #: templates/audits/projectaudit/confirm_archive.html:12
 msgid "Archive"

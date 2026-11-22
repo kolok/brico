@@ -4,13 +4,25 @@
     {{ title }}
 </p>
 <div class="tooltip-group group">
-    <div class="kpi-bar">
+    <div
+        class="kpi-bar"
+        role="meter"
+        aria-label="{{ title }}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="{{ green_ratio|stringformat:'.2f' }}"
+        {% if orange_ratio %}
+            aria-valuetext="{{ green_ratio }}% {{ green_label }}, {{ orange_ratio }}% {{ orange_label }}{% if grey_label %}, {{ grey_label }}{% endif %}"
+        {% else %}
+            aria-valuetext="{{ green_ratio }}% {{ green_label }}{% if grey_label %}, {{ grey_label }}{% endif %}"
+        {% endif %}
+    >
         <div class="kpi-bar-item bg-green" style="width: {{ green_ratio|stringformat:".2f" }}%"></div>
         {% if orange_ratio %}
             <div class="kpi-bar-item bg-orange" style="width: {{ orange_ratio|stringformat:".2f" }}%"></div>
         {% endif %}
     </div>
-    <span class="tooltip-block">
+    <span class="tooltip-block" aria-hidden="true">
         <span class="kpi-legend-line"><span class="kpi-legend-dot bg-green"></span><span class="kpi-legend-text">{{ green_ratio }}%&nbsp;{{ green_label }}</span></span>
         {% if orange_ratio and orange_label %}
             <span class="kpi-legend-line"><span class="kpi-legend-dot bg-orange"></span><span class="kpi-legend-text">{{ orange_ratio }}%&nbsp;{{ orange_label }}</span></span>

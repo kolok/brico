@@ -948,3 +948,352 @@ class TestDeleteProjectAuditViewPermissions:
         assert response.status_code == 404
         # l'audit ne doit pas être supprimé
         assert ProjectAudit.objects.filter(pk=audit.pk).exists()
+
+
+@pytest.mark.django_db
+class TestArchiveProjectAuditView:
+    """Test the archive audit view."""
+
+    def test_login_required(self, client):
+        """Test that login is required to archive audit."""
+        response = client.get(
+            reverse(
+                "audits:projectaudit_archive",
+                kwargs={"project_slug": "test", "pk": 1},
+            )
+        )
+        assert response.status_code == 302
+        assert reverse("account_login") in response.url
+
+    def test_organization_required(self, client):
+        """Test that organization selection is required."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(project=project)
+
+        client.force_login(user)
+        # No organization in session
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.post(url)
+
+        assert response.status_code == 403
+
+    def test_archive_projectaudit_sets_status_and_redirects(self, client, admin_group):
+        """Test that archive sets status to ARCHIVED and redirects."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(
+            project=project,
+            status=ProjectAudit.ProjectAuditStatus.ACTIVE,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+
+        response = client.post(url, follow=True)
+
+        assert response.status_code == 200
+        audit.refresh_from_db()
+        assert audit.status == ProjectAudit.ProjectAuditStatus.ARCHIVED
+        assert ProjectAudit.objects.filter(pk=audit.pk).exists()
+
+        assert response.redirect_chain
+        last_redirect_url, status = response.redirect_chain[-1]
+        assert status == 302
+        assert (
+            reverse("audits:project_detail", kwargs={"slug": project.slug})
+            in last_redirect_url
+        )
+
+    def test_archive_projectaudit_preserves_criteria(self, client, admin_group):
+        """Test that archiving an audit keeps its criteria."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project = ProjectFactory(organization=organization)
+        audit_library = AuditLibraryFactory(organization=organization)
+        audit = ProjectAuditFactory(project=project, audit_library=audit_library)
+        criteria = CriterionFactory.create_batch(3, audit_library=audit_library)
+        for criterion in criteria:
+            ProjectAuditCriterion.objects.create(
+                project_audit=audit, criterion=criterion
+            )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.post(url, follow=True)
+
+        assert response.status_code == 200
+        audit.refresh_from_db()
+        assert audit.status == ProjectAudit.ProjectAuditStatus.ARCHIVED
+        assert ProjectAuditCriterion.objects.filter(project_audit=audit).count() == 3
+
+    def test_archive_confirmation_page_context(self, client, admin_group):
+        """Test that archive confirmation page includes project and audit."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(project=project)
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.get(url)
+
+        assert response.status_code == 200
+        assert response.context["project"] == project
+        assert response.context["audit"] == audit
+
+
+@pytest.mark.django_db
+class TestArchiveProjectAuditViewPermissions:
+    """Test permissions for archive project audit view."""
+
+    def test_reader_cannot_view_or_submit_archive(self, client, reader_group):
+        """Test that reader cannot view or submit archive (needs delete permission)."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=reader_group
+        )
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(
+            project=project,
+            status=ProjectAudit.ProjectAuditStatus.ACTIVE,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.get(url)
+        assert response.status_code == 403
+
+        response = client.post(url)
+        assert response.status_code == 403
+        audit.refresh_from_db()
+        assert audit.status == ProjectAudit.ProjectAuditStatus.ACTIVE
+
+    def test_writer_can_view_archive_form(self, client, writer_group):
+        """Test that writer can view archive confirmation page."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=writer_group
+        )
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(project=project)
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.get(url)
+
+        assert response.status_code == 200
+        assert response.context["project"] == project
+        assert response.context["audit"] == audit
+
+    def test_admin_can_view_archive_form(self, client, admin_group):
+        """Test that administrator can view archive confirmation page."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(project=project)
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.get(url)
+
+        assert response.status_code == 200
+        assert response.context["project"] == project
+        assert response.context["audit"] == audit
+
+    def test_non_member_cannot_view_archive_form(self, client):
+        """Test that non-member cannot view archive confirmation page."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(project=project)
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.get(url)
+
+        assert response.status_code == 403
+
+    def test_writer_can_archive_projectaudit(self, client, writer_group):
+        """Test that writer can archive project audit."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=writer_group
+        )
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(
+            project=project,
+            status=ProjectAudit.ProjectAuditStatus.ACTIVE,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.post(url, follow=True)
+
+        assert response.status_code == 200
+        audit.refresh_from_db()
+        assert audit.status == ProjectAudit.ProjectAuditStatus.ARCHIVED
+
+    def test_admin_can_archive_projectaudit(self, client, admin_group):
+        """Test that administrator can archive project audit."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(
+            project=project,
+            status=ProjectAudit.ProjectAuditStatus.ACTIVE,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.post(url, follow=True)
+
+        assert response.status_code == 200
+        audit.refresh_from_db()
+        assert audit.status == ProjectAudit.ProjectAuditStatus.ARCHIVED
+
+    def test_non_member_cannot_archive_projectaudit(self, client):
+        """Test that non-member cannot archive project audit."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        project = ProjectFactory(organization=organization)
+        audit = ProjectAuditFactory(
+            project=project,
+            status=ProjectAudit.ProjectAuditStatus.ACTIVE,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.post(url)
+
+        assert response.status_code == 403
+        audit.refresh_from_db()
+        assert audit.status == ProjectAudit.ProjectAuditStatus.ACTIVE
+
+    def test_cannot_archive_projectaudit_from_different_organization(
+        self, client, admin_group
+    ):
+        """Test that user cannot archive project audit from different organization."""
+        user = UserFactory()
+        organization1 = OrganizationFactory()
+        organization2 = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization1, group=admin_group
+        )
+        project = ProjectFactory(organization=organization2)
+        audit = ProjectAuditFactory(
+            project=project,
+            status=ProjectAudit.ProjectAuditStatus.ACTIVE,
+        )
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (
+            organization1.id,
+            organization1.name,
+        )
+        session.save()
+
+        url = reverse(
+            "audits:projectaudit_archive",
+            kwargs={"project_slug": project.slug, "pk": audit.pk},
+        )
+        response = client.post(url)
+
+        assert response.status_code == 404
+        audit.refresh_from_db()
+        assert audit.status == ProjectAudit.ProjectAuditStatus.ACTIVE
