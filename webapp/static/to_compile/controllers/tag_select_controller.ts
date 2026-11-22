@@ -77,19 +77,23 @@ export default class extends Controller {
   }
 
   private renderVisualTags() {
-    this.tagsContainerTarget.innerHTML = ""
+    this.tagsContainerTarget.replaceChildren()
     this.tags.forEach((tag, index) => {
       const el = document.createElement("div")
       el.className = "tag-element"
-      el.innerHTML = `
-        <span>${this.escapeHtml(tag)}</span>
-        <button
-          type="button"
-          class="tag-button"
-          data-index="${index}"
-          data-action="click->tag-select#removeTag"
-        >&times;</button>
-      `
+
+      const span = document.createElement("span")
+      span.textContent = tag
+
+      const button = document.createElement("button")
+      button.type = "button"
+      button.className = "tag-button"
+      button.dataset.index = String(index)
+      button.dataset.action = "click->tag-select#removeTag"
+      button.textContent = "×"
+
+      el.appendChild(span)
+      el.appendChild(button)
       this.tagsContainerTarget.appendChild(el)
     })
   }
@@ -104,11 +108,5 @@ export default class extends Controller {
       input.setAttribute("data-tag-select-target", "tag")
       this.tagSetTarget.appendChild(input)
     })
-  }
-
-  private escapeHtml(text: string): string {
-    const div = document.createElement("div")
-    div.textContent = text
-    return div.innerHTML
   }
 }
