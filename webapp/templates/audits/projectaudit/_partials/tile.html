@@ -1,0 +1,11 @@
+{% load i18n %}
+
+<a href="{% url 'audits:projectaudit_detail' project.slug item.id %}"
+    class="tile {{ tile_class }} {% if item.status == "ARCHIVED" %}tile-archived{% endif %}"
+>
+    <h2>{{ item }}</h2>
+    {% include 'audits/projectaudit/_partials/kpi.html' with audit=item size="medium" %}
+    {% if item.audit_library.description %}
+        <p>{{ item.audit_library.description|truncatewords:10 }}</p>
+    {% endif %}
+</a>

@@ -204,17 +204,17 @@ class TestProjectDetailView:
 
 
 @pytest.mark.django_db
-class TestProjectFormView:
-    """Test the project creation form view."""
+class TestProjectCreateView:
+    """Test the project creation view."""
 
     def test_login_required_get(self, client):
-        response = client.get(reverse("audits:project_form"))
+        response = client.get(reverse("audits:project_new"))
         assert response.status_code == 302
         assert reverse("account_login") in response.url
 
     def test_login_required_post(self, client):
         response = client.post(
-            reverse("audits:project_form"),
+            reverse("audits:project_new"),
             data={"name": "Test project", "description": "Some description"},
         )
         assert response.status_code == 302
@@ -224,7 +224,7 @@ class TestProjectFormView:
         self, client, login_user, organization
     ):
         response = client.post(
-            reverse("audits:project_form"),
+            reverse("audits:project_new"),
             data={"name": "My Project", "description": "Desc"},
         )
 
@@ -246,12 +246,112 @@ class TestProjectFormView:
         login_user.organization_memberships.all().delete()
 
         response = client.post(
-            reverse("audits:project_form"),
+            reverse("audits:project_new"),
             data={"name": "My Project", "description": "Desc"},
         )
         assert (
             response.status_code == 403
         )  # PermissionDenied when no organization selected
+
+
+@pytest.mark.django_db
+class TestProjectUpdateView:
+    """Test the project update view."""
+
+    def test_login_required_get(self, client):
+        project = ProjectFactory()
+        response = client.get(
+            reverse("audits:project_edit", kwargs={"slug": project.slug})
+        )
+        assert response.status_code == 302
+        assert reverse("account_login") in response.url
+
+    def test_login_required_post(self, client):
+        project = ProjectFactory()
+        response = client.post(
+            reverse("audits:project_edit", kwargs={"slug": project.slug}),
+            data={"name": "Updated Project", "description": "Updated description"},
+        )
+        assert response.status_code == 302
+        assert reverse("account_login") in response.url
+
+    def test_get_edit_form_preloads_data(self, client, login_user, organization):
+        project = ProjectFactory(
+            organization=organization, name="Original Name", description="Original Desc"
+        )
+        response = client.get(
+            reverse("audits:project_edit", kwargs={"slug": project.slug})
+        )
+
+        assert response.status_code == 200
+        assert response.context["form"].initial["name"] == "Original Name"
+        assert response.context["form"].initial["description"] == "Original Desc"
+
+    def test_update_project_ok_and_redirects_to_detail(
+        self, client, login_user, organization
+    ):
+        project = ProjectFactory(
+            organization=organization, name="Original Name", description="Original Desc"
+        )
+        original_slug = project.slug
+
+        response = client.post(
+            reverse("audits:project_edit", kwargs={"slug": project.slug}),
+            data={"name": "Updated Name", "description": "Updated Desc"},
+        )
+
+        assert response.status_code == 302
+        project.refresh_from_db()
+        assert project.name == "Updated Name"
+        assert project.description == "Updated Desc"
+        assert project.slug == original_slug
+        assert response.url == reverse(
+            "audits:project_detail", kwargs={"slug": project.slug}
+        )
+
+    def test_update_project_slug_never_changes_even_if_name_changes(
+        self, client, login_user, organization
+    ):
+        project = ProjectFactory(organization=organization, name="Original")
+        original_slug = project.slug
+
+        client.post(
+            reverse("audits:project_edit", kwargs={"slug": project.slug}),
+            data={"name": "Completely Different Name", "description": ""},
+        )
+
+        project.refresh_from_db()
+        assert project.slug == original_slug
+
+    def test_update_project_404_for_invalid_slug(
+        self, client, login_user, organization
+    ):
+        url = reverse("audits:project_edit", kwargs={"slug": "non-existent-slug"})
+        response = client.get(url)
+
+        assert response.status_code == 404
+
+    def test_cannot_edit_project_from_different_organization(self, client, admin_group):
+        user = UserFactory()
+        organization1 = OrganizationFactory()
+        organization2 = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization1, group=admin_group
+        )
+        project = ProjectFactory(organization=organization2)
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (
+            organization1.id,
+            organization1.name,
+        )
+        session.save()
+
+        url = reverse("audits:project_edit", kwargs={"slug": project.slug})
+        response = client.get(url)
+
+        assert response.status_code == 404
 
 
 @pytest.mark.django_db
@@ -434,8 +534,8 @@ class TestProjectDetailViewPermissions:
 
 
 @pytest.mark.django_db
-class TestProjectFormViewPermissions:
-    """Test permissions for project form view."""
+class TestProjectCreateViewPermissions:
+    """Test permissions for project creation."""
 
     def test_reader_cannot_create_project(self, client, reader_group):
         """Test that reader cannot create project."""
@@ -450,7 +550,7 @@ class TestProjectFormViewPermissions:
         session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
         session.save()
 
-        url = reverse("audits:project_form")
+        url = reverse("audits:project_new")
 
         response = client.post(
             url,
@@ -473,7 +573,7 @@ class TestProjectFormViewPermissions:
         session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
         session.save()
 
-        url = reverse("audits:project_form")
+        url = reverse("audits:project_new")
         response = client.post(
             url,
             data={"name": "My Project", "description": "Desc"},
@@ -496,7 +596,7 @@ class TestProjectFormViewPermissions:
         session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
         session.save()
 
-        url = reverse("audits:project_form")
+        url = reverse("audits:project_new")
         response = client.post(
             url,
             data={"name": "My Project", "description": "Desc"},
@@ -516,7 +616,7 @@ class TestProjectFormViewPermissions:
         session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
         session.save()
 
-        url = reverse("audits:project_form")
+        url = reverse("audits:project_new")
         response = client.post(
             url,
             data={"name": "My Project", "description": "Desc"},
@@ -524,3 +624,102 @@ class TestProjectFormViewPermissions:
 
         assert response.status_code == 403
         assert Project.objects.filter(name="My Project").count() == 0
+
+
+@pytest.mark.django_db
+class TestProjectUpdateViewPermissions:
+    """Test permissions for project updates."""
+
+    def test_reader_cannot_update_project(self, client, reader_group):
+        """Test that reader cannot update project."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=reader_group
+        )
+        project = ProjectFactory(organization=organization, name="Original")
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse("audits:project_edit", kwargs={"slug": project.slug})
+
+        response = client.post(
+            url,
+            data={"name": "Updated", "description": "Desc"},
+        )
+
+        assert response.status_code == 403
+        project.refresh_from_db()
+        assert project.name == "Original"
+
+    def test_writer_can_update_project(self, client, writer_group):
+        """Test that writer can update project."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=writer_group
+        )
+        project = ProjectFactory(organization=organization, name="Original")
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse("audits:project_edit", kwargs={"slug": project.slug})
+        response = client.post(
+            url,
+            data={"name": "Updated", "description": "Desc"},
+        )
+
+        assert response.status_code == 302
+        project.refresh_from_db()
+        assert project.name == "Updated"
+
+    def test_admin_can_update_project(self, client, admin_group):
+        """Test that administrator can update project."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        OrganizationMemberFactory(
+            user=user, organization=organization, group=admin_group
+        )
+        project = ProjectFactory(organization=organization, name="Original")
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse("audits:project_edit", kwargs={"slug": project.slug})
+        response = client.post(
+            url,
+            data={"name": "Updated", "description": "Desc"},
+        )
+
+        assert response.status_code == 302
+        project.refresh_from_db()
+        assert project.name == "Updated"
+
+    def test_non_member_cannot_update_project(self, client):
+        """Test that non-member cannot update project."""
+        user = UserFactory()
+        organization = OrganizationFactory()
+        project = ProjectFactory(organization=organization, name="Original")
+
+        client.force_login(user)
+        session = client.session
+        session[CURRENT_ORGANIZATION_SESSION_KEY] = (organization.id, organization.name)
+        session.save()
+
+        url = reverse("audits:project_edit", kwargs={"slug": project.slug})
+        response = client.post(
+            url,
+            data={"name": "Updated", "description": "Desc"},
+        )
+
+        assert response.status_code == 403
+        project.refresh_from_db()
+        assert project.name == "Original"

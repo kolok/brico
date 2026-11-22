@@ -3,7 +3,10 @@ URL configuration for organization app.
 """
 
 from django.urls import path
-from organization.views import OrganizationCreateView, OrganizationSwitchView
+from organization.views.organization import (
+    OrganizationCreateView,
+    OrganizationSwitchView,
+)
 
 app_name = "organization"
 

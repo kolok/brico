@@ -1,0 +1,13 @@
+{% extends "layout/base-logged.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Members - Cosqua" %}{% endblock %}
+
+{% block content %}
+    <h2>{% translate "Members" %}</h2>
+
+    {% if members %}
+        <ul class="mt-4 space-y-2">
+            {% for member in members %}
+                <li class="card">
+                    <h3>{{ member.username }}</h3>

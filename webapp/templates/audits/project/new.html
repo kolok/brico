@@ -9,7 +9,9 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">{% translate "Create Project" %}</button>
+        <button type="submit" class="btn btn-primary">
+            {% translate "Create Project" %}
+        </button>
     </form>
 </div>
 {% endblock content %}

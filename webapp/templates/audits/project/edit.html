@@ -1,0 +1,44 @@
+{% extends 'layout/base-logged.html' %}
+{% load i18n tiles_tags %}
+
+{% block title %}{% translate "Edit Project - Cosqua" %}{% endblock %}
+
+{% block content %}
+    <h1>{% translate "Edit Project" %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="action" class="btn btn-primary">
+            {% translate "Save Changes" %}
+        </button>
+        <button type="submit" name="action" value="continue" class="btn btn-secondary">
+            {% translate "Save Changes and Continue" %}
+        </button>
+        <a href="{% url 'audits:project_detail' project.slug %}" class="btn btn-tertiary">
+            {% translate "Cancel" %}
+        </a>
+    </form>
+    <hr>
+
+    <h2>{% translate "Ressources" %}</h2>
+    {% translate "No resources yet." as empty_resources %}
+    {% translate "Add Resource" as add_resource_lbl %}
+    {% translate "Create a new resource for this project." as add_resource_desc %}
+    {% url 'audits:resource_new' project.slug as add_resource_href %}
+    {% tiles project.resources.all "audits/resource/_partials/tile.html" empty_message=empty_resources add_url=add_resource_href add_label=add_resource_lbl add_description=add_resource_desc %}
+
+    <hr>
+
+    <h2>{% translate "Danger Zone" %}</h2>
+    <div class="danger-zone  bg-white border border-red rounded-lg p-4 mb-4">
+        <h3>
+            {% translate "Delete Project" %}
+        </h3>
+        <p>
+            {% translate "Once you delete a project, there is no going back. Please be certain. All audits and resources associated with this project will also be deleted." %}
+        </p>
+        <a href="{% url 'audits:project_delete' project.slug %}" class="btn btn-danger">
+            {% translate "Delete Project" %}
+        </a>
+    </div>
+{% endblock content %}
