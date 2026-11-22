@@ -27,7 +27,7 @@
 
     <h2>{% translate "Audits" %}</h2>
     {% translate "No audits yet." as empty_audits %}
-    {% translate "Start Audit" as start_audit_lbl %}
+    {% translate "Start a new audit" as start_audit_lbl %}
     {% translate "Create a new audit for this project." as start_audit_desc %}
     {% url 'audits:projectaudit_new' project.slug as add_audit_href %}
     {% tiles project.audits.all "audits/projectaudit/_partials/tile.html" empty_message=empty_audits add_url=add_audit_href add_label=start_audit_lbl add_description=start_audit_desc %}

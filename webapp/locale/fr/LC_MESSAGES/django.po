@@ -436,9 +436,9 @@ msgstr "Aucun audit pour le moment."
 
 #: templates/audits/project/detail.html:30
 #, fuzzy
-#| msgid "Start Audit"
-msgid "Start Audit"
-msgstr "Démarrer un audit"
+#| msgid "Start a new audit"
+msgid "Start a new audit"
+msgstr "Démarrer un nouvel audit"
 
 #: templates/audits/project/detail.html:31
 #, fuzzy

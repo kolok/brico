@@ -1,3 +1,5 @@
+from typing import cast
+
 from audits.forms import ProjectForm, SearchForm
 from audits.models.audit import ProjectAudit
 from core.middleware import CURRENT_ORGANIZATION_SESSION_KEY
@@ -125,7 +127,10 @@ class ProjectUpdateView(LoginRequiredMixin, ProjectViewMixin, UpdateView):
         return self._get_queryset_with_organization_filter(queryset)
 
     def get_success_url(self):
-        return reverse_lazy("audits:project_detail", kwargs={"slug": self.object.slug})
+        obj = cast(Project, self.get_object())
+        if self.request.POST.get("action") == "continue":
+            return reverse_lazy("audits:project_edit", kwargs={"slug": obj.slug})
+        return reverse_lazy("audits:project_detail", kwargs={"slug": obj.slug})
 
     def form_valid(self, form):
         project = form.save(commit=False)
