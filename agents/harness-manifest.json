@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "description": "Fichiers du harnais COSQUA et patterns qui déclenchent une revue du harnais après modification de code.",
+  "harness_paths": [
+    "HARNESS.md",
+    "agents/harness-manifest.json",
+    "agents/skills/",
+    ".cursor/hooks.json",
+    ".cursor/hooks/",
+    ".cursor/rules/",
+    "AGENTS.md",
+    "CLAUDE.md"
+  ],
+  "triggers": [
+    {
+      "id": "webapp-tooling",
+      "pattern": "^webapp/(Makefile|pyproject\\.toml|package\\.json|Procfile\\.dev)$",
+      "suggest_updates": [
+        "agents/skills/cosqua-webapp/SKILL.md",
+        "webapp/AGENTS.md",
+        ".cursor/rules/webapp-stack.mdc"
+      ],
+      "reason": "Commandes ou dépendances webapp modifiées."
+    },
+    {
+      "id": "webapp-django-core",
+      "pattern": "^webapp/core/(settings\\.py|urls\\.py)",
+      "suggest_updates": [
+        "agents/skills/cosqua-webapp/SKILL.md",
+        "webapp/AGENTS.md",
+        "webapp/agents-docs/"
+      ],
+      "reason": "Configuration Django centrale modifiée."
+    },
+    {
+      "id": "webapp-new-app",
+      "pattern": "^webapp/[^/]+/apps\\.py$",
+      "suggest_updates": [
+        "webapp/AGENTS.md",
+        "agents/skills/cosqua-webapp/SKILL.md"
+      ],
+      "reason": "Nouvelle ou structure d’app Django."
+    },
+    {
+      "id": "mobile-tooling",
+      "pattern": "^mobileapp/(Makefile|pubspec\\.yaml)$",
+      "suggest_updates": [
+        "agents/skills/cosqua-mobile/SKILL.md",
+        "mobileapp/AGENTS.md"
+      ],
+      "reason": "Tooling Flutter modifié."
+    },
+    {
+      "id": "docs-tooling",
+      "pattern": "^docs/(Makefile|conf\\.py)",
+      "suggest_updates": [
+        "agents/skills/cosqua-docs/SKILL.md",
+        "docs/AGENTS.md"
+      ],
+      "reason": "Build Sphinx modifié."
+    },
+    {
+      "id": "infra",
+      "pattern": "^(docker-compose\\.yml|\\.github/workflows/)",
+      "suggest_updates": [
+        "HARNESS.md",
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "reason": "Infra ou CI modifiée."
+    },
+    {
+      "id": "agent-docs",
+      "pattern": "^(.*/)?AGENTS\\.md$",
+      "suggest_updates": [
+        "HARNESS.md",
+        "agents/harness-manifest.json"
+      ],
+      "reason": "Documentation agent modifiée — garder le manifeste aligné."
+    }
+  ]
+}
