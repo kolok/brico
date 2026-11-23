@@ -15,6 +15,12 @@ All code is in **English**.
 
 ---
 
+## Agent harness (Cursor + Claude)
+
+Shared harness: **[HARNESS.md](./HARNESS.md)** — skills under `agents/skills/`, Cursor hooks in `.cursor/hooks.json`, rules in `.cursor/rules/`. **Simple tasks** should be delegated to faster models or subagents (`explore`, targeted `make`/tests); use the main model for architecture and cross-cutting changes. **No git write commands** by agents (no commit/push/add). After structural edits, follow skill `harness-sync` (see [agents/harness-manifest.json](./agents/harness-manifest.json)).
+
+---
+
 ## Quick Start
 
 ### First Time Setup
@@ -61,6 +67,10 @@ brico/
 │   ├── sources/           # Documentation content
 │   └── Makefile           # Build commands
 ├── docker-compose.yml     # PostgreSQL service definition
+├── HARNESS.md             # Agent harness (hooks, skills, delegation)
+├── agents/                # harness-manifest.json, skills/
+├── .cursor/               # Cursor hooks + rules (skills → agents/skills)
+├── .claude/               # Claude Code harness pointer
 ├── CLAUDE.md              # This file (monorepo overview)
 └── README.md              # Project description
 ```

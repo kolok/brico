@@ -8,6 +8,25 @@ Ce dépôt embarque un **harnais** : règles, skills et hooks qui orientent les 
 2. **Compatibilité Cursor et Claude** : les skills vivent sous `agents/skills/` ; Cursor les charge via `.cursor/skills` (lien symbolique).
 3. **Délégation aux modèles adaptés** : les tâches simples ne doivent pas consommer le modèle le plus capable.
 4. **Maintenance automatique** : après modification de fichiers « structurants », l’agent doit vérifier si le harnais doit être mis à jour (hook + skill `harness-sync`).
+5. **Git en lecture seule** : l’agent **ne lance jamais** de commande git (ni `gh`) qui modifie le dépôt — **pas de `commit`, pas de `push`**, pas de `add`, rebase, merge, etc.
+
+## Git : lecture seule (obligatoire)
+
+L’agent **ne doit pas** exécuter de commandes git ou GitHub CLI qui écrivent dans le dépôt ou sur le remote. Les commits et pushes sont **réservés à l’humain**.
+
+| Autorisé (exemples)                                                   | Interdit                                                                |
+| --------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `git status`, `git diff`, `git log`, `git show`, `git branch` (liste) | `git commit`, `git push`, `git add`                                     |
+| `git rev-parse`, `git merge-base`, `git blame` (lecture)              | `git reset`, `git rebase`, `git merge`, `git cherry-pick`, `git revert` |
+| `gh pr view`, `gh run list` (lecture)                                 | `gh pr create`, `gh repo create`                                        |
+
+**Cursor** : le hook `beforeShellExecution` (`git-no-write.sh`) bloque ces commandes.
+
+**Claude Code** : même règle sans hook — ne pas contourner en shell.
+
+Si l’utilisateur veut versionner : indiquer les commandes à lancer **localement**, sans les exécuter.
+
+Voir [agents/skills/no-git-writes/SKILL.md](agents/skills/no-git-writes/SKILL.md).
 
 ## Arborescence
 
@@ -57,6 +76,7 @@ Voir le skill [agents/skills/delegate-tasks/SKILL.md](agents/skills/delegate-tas
 | `cosqua-webapp`  | Travail dans `webapp/` (Django, Hotwire, tests)                    |
 | `cosqua-mobile`  | Travail dans `mobileapp/` (Flutter)                                |
 | `cosqua-docs`    | Travail dans `docs/` (Sphinx)                                      |
+| `no-git-writes`  | Avant toute commande `git` / `gh` — lecture seule uniquement       |
 
 ## Hooks Cursor
 
@@ -67,6 +87,7 @@ Configurés dans [.cursor/hooks.json](.cursor/hooks.json) :
 | `sessionStart`                         | Rappel : lire `HARNESS.md`, politique de délégation, composant cible |
 | `postToolUse` (`Write` / `StrReplace`) | Vérifie si le fichier modifié impose une mise à jour du harnais      |
 | `subagentStart`                        | Rappel de délégation selon le type de sous-agent                     |
+| `beforeShellExecution` (`git` / `gh`)  | Refuse commit, push, add et autres écritures git/gh                  |
 
 Claude Code n’exécute pas ces hooks localement ; les mêmes règles sont dans ce fichier et dans la règle Cursor `harness-governance.mdc` — **à appliquer manuellement** après des edits importants.
 
@@ -91,6 +112,7 @@ Détail : skill [harness-sync](agents/skills/harness-sync/SKILL.md) et manifeste
 - [ ] Si fichier structurant modifié : harnais à jour ou explicitement « non nécessaire »
 - [ ] Tâches simples bien déléguées (pas de surconsommation du modèle principal)
 - [ ] Diff minimal, code en anglais
+- [ ] Aucune commande git/gh en écriture exécutée par l’agent
 
 ## Évolution du harnais
 
